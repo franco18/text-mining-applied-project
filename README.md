@@ -1,6 +1,24 @@
 # Text-mining-applied-project
-Proyecto Integrador I --- MAESTRÍA EN CIENCIAS DE LOS DATOS Y ANALÍTICA
-Integrantes:
+Proyecto Integrador I
+
+# Proyecto integrador
+
+## Descripción
+Este proyecto tiene como finalidad brindar las utilidades necesarias para la preparación de datos en texto de los documentos que se encuentran en el [repositorio de articulos](https;//www.repo.com) 
+
+### Descripcion de documentos
+
+## Arquitectura de código
+
+## Guía de uso
+
+## Trabajo a futuro
+
+## Contribución
+
+
+## Autores
+
 Andres Franco
 Juan Diego Estrada
 Johan Steward Rios
