@@ -1,1 +1,0 @@
-A common alternative to using dictionaries is the hashing trick, where words are mapped directly to indices with a hashing function[5]. Thus, no memory is required to store a dictionary. Hash collisions are typically dealt via freed-up memory to increase the number of hash buckets. In practice, hashing simplifies the implementation of bag-of-words models and improves scalability.
