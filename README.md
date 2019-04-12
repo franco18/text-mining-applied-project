@@ -65,6 +65,8 @@ Dentro de los métodos para recuperar información de los textos, existen varios
 
 ## Arquitectura del código
 
+![Diagrama de arquitecuta de código](https://github.com/franco18/text-mining-applied-project/blob/master/diagram.jpeg)
+
 ## Guía de uso
 
 Para correr el programa se necesita instalar las siguientes librerías
