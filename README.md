@@ -9,7 +9,7 @@ El proceso de correr o utilizar el modelo mas apropiado una vez se tiene la info
 
 Esta primera fase del proyecto contempla las tres fases iniciales del proceso CRISP-DM, el cual es un framework que permite traducir problemas del negocio en tareas de mineria de datos. A continuación se describen las herramientas, métodos y aprendizajes en cada fase implementada hasta el momento:
 
-### Entendimiento de Negocio
+### Entendimiento de Negocio
 
 Realizar un motor de búsqueda y una aplicación para poder navegar entre artículos similares. Ésta búsqueda debe ser sobre un conjunto de artículos que se encuentran almacenados en un sistema de archivos bajo Linux OS. La información utilizada para la construcción de estas aplicaciones son: los archivos en formato pdf y texto, y un archivo con la información de los meta datos de cada artículo.
 
