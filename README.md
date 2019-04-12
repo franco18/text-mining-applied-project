@@ -33,7 +33,7 @@ Se selecciona la estructura b) la cual permite a nivel de documento tener las pa
 
 ### Preparación de los Datos
 
-Se realiza procesos de tokenización dada una expresión regular la cual permite limpiar el texto de palabras, que no tenga caracteres alfanuméricos.
+Se realiza un proceso de tokenización dada una expresión regular la cual permite limpiar el texto de palabras, que no tenga caracteres alfanuméricos.
 
 Se utilizan métodos de stemming y lematización de palabras - de la librería nltk - además de un diccionario de stopwords en idioma inglés.
 
