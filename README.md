@@ -47,5 +47,7 @@ Para correr el programa se necesita instalar las siguientes librerías
 
 1.
 
+## Documentación detallada del proyecto
 
+Para mas información del proyecto ingres a la wiki dando click [aqui](https://github.com/franco18/text-mining-applied-project/wiki/Documentaci%C3%B3n-detallada-proyecto)
 
