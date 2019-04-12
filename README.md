@@ -33,11 +33,21 @@ Se selecciona la estructura b) la cual permite a nivel de documento tener las pa
 
 ### Preparación de los Datos
 
-Se realiza un proceso de tokenización dada una expresión regular la cual permite limpiar el texto de palabras, que no tenga caracteres alfanuméricos.
+A continuación, se describe la manera en que se lleva a cabo el proceso de pre procesamiento de los datos en una primeria instancia para luego pasar a la etapa de etapa de Búsqueda y Recuperación, dicho procedimiento aplica tanto para los datos globales así como para la búsqueda o Query.
 
-Se utilizan métodos de stemming y lematización de palabras - de la librería nltk - además de un diccionario de stopwords en idioma inglés.
+La manera en que se almacenarán los datos es por medio de un diccionario, que es una estructura de datos que facilita su manipulación y tratamiento puesto que utiliza una clave para acceder a un valor. El proceso para preparar los datos consta de varias etapas:
 
-Se construye un lector de propiedades de la metadata para incluirlas en el bag of words [ver codigo](https://github.com/franco18/text-mining-applied-project/tree/master/xml_parser)
+1. Validar que sólo se trabaje con elementos alfanuméricos
+2. Tokenización, que es segmentar el texto mediante espacios en blanco o signos de puntuación definidos
+3. Stemming, que es convertir cada token a su propia forma de raíz utilizando reglas gramaticales definidas
+4. Lematización, que es llevar los tokens a su forma canónica
+5. Eliminación de stop-words, artículos, conjunciones y preposiciones
+6. Verificar que las palabras restantes tengan una longitud mayor a 1
+
+Luego de esto, se almacena en el diccionario que llamamos Bag of Words, junto con el conteo de la frecuencia de cada palabra asociada.
+
+Adicional a lo antarior, se construye un lector de propiedades de la metadata para incluirlas en el bag of words [ver codigo](https://github.com/franco18/text-mining-applied-project/tree/master/xml_parser)
+
 
 ## Arquitectura del código
 
