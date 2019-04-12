@@ -11,7 +11,7 @@ Esta primera fase del proyecto contempla las tres fases iniciales del proceso CR
 
 ### Entendimiento de Negocio
 
-Realizar un motor de búsqueda y una aplicación para poder navegar entre artículos similares. Ésta búsqueda debe ser sobre un conjunto de artículos que se encuentran almacenados en un sistema de archivos bajo Linux OS. La información utilizada para la construcción de estas aplicaciones son: los archivos en formato pdf y texto, y un archivo con la información de los meta datos de cada artículo.
+Realizar un motor de búsqueda y una aplicación para poder navegar entre artículos similares. Esta búsqueda debe ser sobre un conjunto de artículos que se encuentran almacenados en un sistema de archivos bajo Linux OS. La información utilizada para la construcción de estas aplicaciones son: los archivos en formato pdf y texto, y un archivo con la información de los meta datos de cada artículo.
 
 ### Entendimiento de los Datos
 
