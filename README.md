@@ -7,7 +7,7 @@ de búsqueda de conocimiento, mediante la aplicación de estadística y algoritm
 
 El proceso de correr o utilizar el modelo más apropiado una vez se tiene la información adecuada es una tarea fácil, mientras que la adquisición, la limpieza y preparación de datos requiere un esfuerzo considerable de tiempo, además de ser éste el proceso responsable del éxito o fracaso en la aproximación del modelo y su eficiencia.
 
-Esta primera fase del proyecto contempla las tres fases iniciales del proceso CRISP-DM, el cual es un framework que permite traducir problemas del negocio en tareas de minería de datos. A continuación se describen las herramientas, métodos y aprendizajes en cada fase implementada hasta el momento:
+Esta primera fase del proyecto contempla las cuatro fases iniciales del proceso CRISP-DM, el cual es un framework que permite traducir problemas del negocio en tareas de minería de datos. A continuación se describen las herramientas, métodos y aprendizajes en cada fase implementada hasta el momento:
 
 ### Entendimiento de Negocio
 
@@ -15,7 +15,11 @@ Realizar un motor de búsqueda y una aplicación para poder navegar entre artíc
 
 ### Entendimiento de los Datos
 
-En esta fase fue importante entender la globalidad del problema, y tener discusiones a nivel técnico de alto nivel para empezar tener idea de cual sería la estructura más adecuada para almacenar las palabras.
+Son un conjunto de documentos o de datos no estructurados compuestos por palabras. Se cuenta con 980 documentos en diferentes formatos de texto como lo son: .txt, .pdf y .dc
+
+Dichos documentos pertenecen al mismo dominio de interés, por ejemplo: ingeniería, medicina, o astronomía, entre muchos otros campos de conocimiento o aplicación.
+
+En esta fase también fue necesario entender la globalidad del problema, y tener discusiones a nivel técnico de alto nivel para empezar tener idea de cual sería la estructura más adecuada para almacenar las palabras.
 
 Se tuvieron inicialmente dos aproximaciones:
 
@@ -30,6 +34,7 @@ b)
 ```
 
 Se selecciona la estructura b) la cual permite a nivel de documento tener las palabras correspondientes junto con sus métricas.
+
 
 ### Preparación de los Datos
 
@@ -48,6 +53,15 @@ Luego de esto, se almacena en el diccionario que llamamos Bag of Words, junto co
 
 Adicional a lo antarior, se construye un lector de propiedades de la metadata para incluirlas en el bag of words [ver codigo](https://github.com/franco18/text-mining-applied-project/tree/master/xml_parser)
 
+### Modelación
+
+Dentro de los métodos para recuperar información de los textos, existen varios tipos de modelos. Por el momento, los modelos que están implementados para la recuperación de información son:
+
+1. **Term Frequency (TF):** Es la técnica más simple para reconocer la relevancia de un término dentro de un texto. Básicamente realiza el conteo de la palabra en el texto y mientras más grande sea este número más relevante es
+2. **Relative Term Frequency (RTF):** Está técnica vuelve relativo al número de palabras total el conteo anterior, representando entonces cuánto porcentaje del texto está explicado por esa palabra
+3. **T-Term Frequency (T-TF):** Para eliminar riesgos de modelo cuando se realiza el conteo lineal de la frecuencia de los términos, se propone trabajar con una transformación del conteo: T-TF = 1 + log(x) de esta manera no se benefician aquellas palabras que aparecen muchas veces en un documento, pues no necesariamente son más relevantes que las demás
+4. **Inverse Document Frequency (IDF):** Este modelo está basado en el principio de que mientras menor sea la frecuencia de la palabra en el documento, más relevante y más información puede tener IDF = log(# total de documentos/# de documentos donde está la palabra)
+5. **TF-IDF:** Al tener los modelos ya cuantificados, tanto el TF (recomendable trabajar con la transformación) y el IDF, la multiplicación de ambos entrega información valiosa de cara a la similaridad de la búsqueda o Query con el documento.
 
 ## Arquitectura del código
 
