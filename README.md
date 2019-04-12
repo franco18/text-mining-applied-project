@@ -90,7 +90,3 @@ parser_metadata.ipynb
 
 Ubicado en la siguiente [ruta](https://github.com/franco18/text-mining-applied-project/blob/master/xml_parser/parser_metadata.ipynb)
 
-## Documentación detallada del proyecto
-
-Para mas información del proyecto ingresa a la wiki dando click [aquí](https://github.com/franco18/text-mining-applied-project/wiki/Documentaci%C3%B3n-detallada-proyecto)
-
