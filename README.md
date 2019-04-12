@@ -45,9 +45,28 @@ Se construye un lector de propiedades de la metadata para incluirlas en el bag o
 
 Para correr el programa se necesita instalar las siguientes librerías
 
-1.
+1. Instalar las librerias 'stopwords','punkt', 'wordnet' de la siguiente manera:
+```python
+nltk.download(['stopwords','punkt', 'wordnet'])
+```
+
+2. Instalar librería xmltodict, para mas información ver documentación [aquí](https://github.com/martinblech/xmltodict#xmltodict)
+
+3. Cada vez que se agregue un nuevo archivo se debe generar el bag of words. Para esto se ejecuta paso a paso el notebook llamado 
+
+```python
+ProyectoIntegrador.ipynb
+```
+
+4. En caso de necesitar generar de nuevo la información de la metadata, se debe ejecutar paso a paso el notebook llamado
+
+```python
+parser_metadata.ipynb
+```
+
+Ubicado en la siguiente [ruta](https://github.com/franco18/text-mining-applied-project/blob/master/xml_parser/parser_metadata.ipynb)
 
 ## Documentación detallada del proyecto
 
-Para mas información del proyecto ingres a la wiki dando click [aqui](https://github.com/franco18/text-mining-applied-project/wiki/Documentaci%C3%B3n-detallada-proyecto)
+Para mas información del proyecto ingresa a la wiki dando click [aquí](https://github.com/franco18/text-mining-applied-project/wiki/Documentaci%C3%B3n-detallada-proyecto)
 
