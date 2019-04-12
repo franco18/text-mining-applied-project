@@ -19,10 +19,19 @@ En esta fase fue importante entender la globalidad del problema, y tener discusi
 
 Se tuvieron inicialmente dos aproximaciones:
 
-a) Una estructura de datos tipo diccionario [:palabra][:documento][:metricas]
 
-b) Una estructura de datos tipo diccionario [:documento][:palabra][:documento]
 
+a)
+
+```python
+[:palabra][:documento][:propiedades]
+```
+
+b) 
+
+```python
+[:documento][:palabra][:propiedades]
+```
 Se selecciona la estructura b) la cual permite a nivel de documento tener las palabras correspondientes juntoc con sus métricas.
 
 ### Preparación de los Datos
@@ -33,7 +42,7 @@ Se utilizan metodos de stemming y lematización de palabras - de la libreria nlt
 
 Se construye un lector de propiedades de la metadata para incluirlas en el bag of words.
 
-## Arquitectura del código 
+## Arquitectura del código 
 
 ## Guía de uso
 
