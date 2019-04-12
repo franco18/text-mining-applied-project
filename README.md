@@ -15,7 +15,7 @@ Realizar un motor de búsqueda y una aplicación para poder navegar entre artíc
 
 ### Entendimiento de los Datos
 
-En esta fase fue importante entender la globalidad del problema, y tener discusiones a nivel técnico de alto nivel para empezar tener idea que cual sería la estructura más adecuada para almacenar las palabras.
+En esta fase fue importante entender la globalidad del problema, y tener discusiones a nivel técnico de alto nivel para empezar tener idea de cual sería la estructura más adecuada para almacenar las palabras.
 
 Se tuvieron inicialmente dos aproximaciones:
 
