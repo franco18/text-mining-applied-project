@@ -2,7 +2,7 @@
 
 ## Descripción
 
-Las metodologías en minería de datos fueron introducidas para proveer una vista holística para en el proceso
+Las metodologías en minería de datos fueron introducidas para proveer una vista holística en el proceso
 de búsqueda de conocimiento, mediante la aplicación de estadística y algoritmos de machine learning. Su objetivo es definir un flujo genérico, comenzando con la determinación de preguntas relevantes, lo que lleva al procesamiento de los datos en bruto y a menudo no estructurados y en última instancia descubrir nuevo conocimiento mediante la implementación de modelos que utilizan estos datos como insumo.
 
 El proceso de correr o utilizar el modelo más apropiado una vez se tiene la información adecuada es una tarea fácil, mientras que la adquisición, la limpieza y preparación de datos requiere un esfuerzo considerable de tiempo, además de ser éste el proceso responsable del éxito o fracaso en la aproximación del modelo y su eficiencia.
@@ -37,7 +37,7 @@ Se realiza procesos de tokenización dada una expresión regular la cual permite
 
 Se utilizan métodos de stemming y lematización de palabras - de la librería nltk - además de un diccionario de stopwords en idioma inglés.
 
-Se construye un lector de propiedades de la metadata para incluirlas en el bag of words.
+Se construye un lector de propiedades de la metadata para incluirlas en el bag of words [ver codigo](https://github.com/franco18/text-mining-applied-project/tree/master/xml_parser)
 
 ## Arquitectura del código
 
