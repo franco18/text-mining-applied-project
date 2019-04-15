@@ -1,0 +1,709 @@
+Proceedings of the International MultiConference of Engineers and Computer Scientists 2009 Vol I
+IMECS 2009, March 18 - 20, 2009, Hong Kong
+
+On The Development of Low-power MAC
+Protocol for WBANs
+Sana Ullah Member IAENG, Pervez Khan, and Kyung Sup Kwak
+
+Abstract- Current advances in wireless communication,
+microelectronics, semiconductor technologies, and intelligent
+sensors have contributed to the development of unobtrusive
+WBANs. These networks provide long term health monitoring
+of patients without any constraint in their normal activities.
+Traditional MAC protocols do not accommodate the assorted
+WBAN traffic requirements in a power efficient manner. In
+this paper, we present a brief discussion on the development
+process of a low power MAC protocol for WBANs. We observe
+the behavior of a beacon-enabled IEEE 802.15.4 for on-body
+sensor networks. We further propose a low power technique
+called traffic based wakeup mechanism for a WBAN that exploits
+the traffic patterns of the BAN Nodes to ensure power efficient
+and reliable communication.
+Index Terms— MAC, On-body, In-body, WBAN, BSN
+
+I. INTRODUCTION
+Cardiovascular disease is the foremost cause of death in the
+United States and Europe since 1900. More than ten million
+people are affected in Europe, one million in the US, and
+twenty two million people in the world [1] – [3]. The number
+is projected to be triple by 2020, or 20% of the Gross
+Domestic Product (GDP). The ratio is 17% in South Korea
+and 39% in UK [4]-[5]. The healthcare expenditure in the US
+is expected to increase from 2.9 trillion in 2009 to 4 trillion in
+2015 [6]. The impending health crisis attracts researchers,
+industrialists, and economists towards optimal and quick
+health solutions. The non-intrusive and ambulatory health
+monitoring of patient’s vital signs with real time updates of
+medical records via internet provides economical solutions to
+the health care systems.
+A WBAN contains a number of portable, miniaturised, and
+autonomous sensor nodes that monitors the body function for
+sporting, health, entertainment, and emergency applications.
+It provides long term health monitoring of patients under
+natural physiological states without constraining their normal
+activities. In-body sensor networks allow communication
+between implanted devices and remote monitoring
+equipments. They may be used to collect information from
+Implantable Cardioverter Defibrillators (ICDs) in order to
+
+Manuscript received January 4, 2009. This work was supported by the IT
+R&D program of Ministry of Knowledge Economy (MKE)/Institute of
+Information Technology Assessment (IITA), [2008-F-050-01, Development
+of WBAN system for In-body and On-body Sensor Networks]
+Sana Ullah, Pervez Khan, and Kyung Sup Kwak are with Graduate School of
+IT and Telecommunications, Inha University, 253 Yonghyun-Dong,
+Nam-Gu, Incheon 402-751, South Korea (sanajcs@hotmail.com,
+pervaizkanju@hotmail.com, and kskwak@inha.ac.kr)
+
+ISBN: 978-988-17012-2-0
+
+detect and treat ventricular tachyarrhythmia 1 and prevent
+Sudden Cardiac Death (SCD) [7].
+A number of ongoing projects such as CodeBlue,
+MobiHealth, and iSIM have contributed to establish a
+proactive and unobtrusive WBAN system [8]-[10]. A system
+architecture presented in [11] performs real time analysis of
+sensor’s data, provides real time feedback to the user, and
+forwards the user’s information to a telemedicine server.
+UbiMon aims to develop a smart and affordable health care
+system [12]. MIT Media Lab is developing MIThril that
+gives a complete insight of human-machine interface [13]
+HIT lab focuses on quality interfaces and innovative
+wearable computers [14]. IEEE 802.15.6 aims to provide
+low-power in-body and on-body wireless communication
+standards for medical and non-medical applications [15].
+NASA is developing a wearable physiological monitoring
+system for astronauts called LifeGuard system [16]. ETRI
+focuses on the development of a low power MAC protocol
+for a WBAN [17].
+In this paper, we focus on the development of a low power
+MAC protocol for in-body and on-body sensor networks. We
+use the terms BAN Node (BN) and BAN Network
+Coordinator (BNC) for the sensor node and the network
+coordinator in a WBAN. The rest of the paper is organized
+into five sections. Section II presents the WBAN traffic
+classification. Section III and IV discuss MAC for on-body
+and in-body sensor networks including a performance
+analysis of several low power MAC protocols. Section V
+presents a low power technique called traffic based wakeup
+mechanism. Section VI concludes our work.
+II. TRAFFIC CLASSIFICATION
+The assorted WBAN traffic requires sophisticated and
+power efficient techniques to ensure safe and reliable
+operation. Existing MAC protocols such as SMAC [18],
+TMAC [19], IEEE 802.15.4 [20], and WiseMAC [21] give
+limited answers to the heterogeneous traffic. The in-body
+BNs do not appreciate synchronized wakeup periods because
+they confine the accommodation of sporadic emergency
+events. Medical data usually needs high priority and
+reliability than non-medical data. In case of emergency
+events, the BNs should be able to access the channel in less
+than one second [22]. IEEE 802.15.4 Guaranteed Time Slots
+(GTS) can be utilized to handle time critical events but they
+expire in case of a low traffic. Furthermore, some in-body
+BNs have high data transmission frequency than others. We
+classify the entire WBAN traffic into Normal, On-demand,
+
+1
+
+Ventricular tachyarrhythmia are abnormal patterns of electrical activity
+originating within ventricular tissue.
+
+IMECS 2009
+
+Proceedings of the International MultiConference of Engineers and Computer Scientists 2009 Vol I
+IMECS 2009, March 18 - 20, 2009, Hong Kong
+
+and Emergency traffics as given in Fig 1. The normal traffic
+is further classified into High, Medium, and Low traffics.
+A- Normal Traffic: Normal traffic is the data traffic in a
+normal condition with no time critical and on-demand events.
+This includes unobtrusive and routine health monitoring of a
+patient for diagnosis and treatment of many diseases such as
+gastrointestinal tract, neurological disorders, cancer
+detection, handicap rehabilitation, and the most threatening
+heart disease. Some BNs have frequent wakeup periods and
+thus are designated as high traffic BNs. For example, an ECG
+node may send data 4 times per hour, while other BNs may
+send 4 times a day. The ECG node is thus designated as a
+high traffic BN. However, the normal traffic classification
+from high to low and vice-versa depends on the application
+requirements. The normal data is collected and processed by
+the BNC.
+WBAN Traffic
+
+Normal
+Traffic
+
+High
+Traffic
+
+Medium
+Traffic
+
+On-demand
+Traffic
+
+Low
+Traffic
+
+Continuous
+Traffic
+
+Emergency
+rocedure for Pap
+
+Non-Continuous
+Traffic
+
+research topic for the last few years. A novel TDMA protocol
+for on-body sensor network called H-MAC exploits the
+biosignal features to perform TDMA synchronization and
+improves the energy efficiency [23]. Other protocols like
+WASP, CICADA, and BSN-MAC are investigated in [24] –
+[26]. The performance analysis of a non-beacon IEEE
+802.15.4 is adapted to extend lifetime of a node from 10 to 15
+years [27]. This work considers low upload/download rates,
+mostly per hour. Further the data transmission is based on
+periodic intervals, which limits the performance to certain
+applications. There is no reliable support for on-demand and
+emergency traffics. Intel Corporation has carried out a series
+of experiments to analyze the performance of IEEE 802.15.4
+for an on-body sensor network [28]. They deployed a number
+of Intel Mote 2 [29] devices on chest, waist, and the right
+ankle. Experimental results show that the packet delivery
+ratios are 100%, 99%, and 84% at waist, chest, and ankle
+respectively. The connection between ankle and waist cannot
+be established, even for a short distance of 1.5 meters.
+We present the performance analysis of a beacon-enabled
+IEEE 802.15.4, Preamble-Based TDMA [30], and SMAC
+protocols for on-body sensor networks. Our analysis is
+verified by extensive simulations using NS-2. Simulation
+results show that IEEE 802.15.4, when configured in a
+beacon-enabled mode, outperforms SMAC and PB-TDMA
+as shown in Fig 2. However, the precise location of BNs and
+the body position influence the packet delivery ratio.
+
+Fig 1. WBAN Traffic Classification
+
+B- On-demand Traffic: On-demand traffic is initiated by the
+BNC or doctor to know certain information, mostly for the
+purpose of diagnosis and prescription. This is further divided
+into continuous (in case of surgical events) and
+non-continuous (when limited information is required).
+C- Emergency Traffic: This is initiated by BNs when they
+exceed a predefined threshold and should be accommodated
+in less than one second. This kind of traffic is not generated
+on regular intervals.
+III. ON-BODY SENSOR NETWORK
+On-body sensor networks comprise of miniaturized and
+non-invasive sensor nodes that are used for various
+applications, ranging from medical to interactive gaming and
+entertainment applications. They use Wireless Medical
+Telemetry Services (WMTS), unlicensed ISM, and UWB
+bands for data transmission. WMTS is a licensed band
+designated for medical telemetry system. Federal
+Communication Commission (FCC) urges the use of WMTS
+for medical applications due to fewer interfering sources.
+However, only authorized users such as physicians and
+trained technicians are eligible to use this band. Further the
+restricted WMTS (14 MHz) bandwidth cannot support video
+and voice transmission. The alternative spectrum for medical
+applications is to use 2.4 GHz ISM band that includes guard
+bands to protect adjacent channel interference. UWB is a
+promising candidate to satisfy the baseline power
+consumption requirements of on-body sensor networks.
+The design and implementation of a low power MAC
+protocol for on-body sensor networks have been a hot
+
+ISBN: 978-988-17012-2-0
+
+Fig 2. Packet Delivery Ratio of IEEE 802.15.4, SMAC, and
+PB-TDMA for On-body Sensor Networks
+
+IV.
+
+IN-BODY SENSOR NETWORK
+
+In-body sensor networks allow communication between
+implanted BNs and external monitoring equipments. Unlike
+on-body BNs, in-body BNs are implanted under human skin
+where the electrical properties of the body affect the signal
+propagations. The human body is a medium that poses many
+wireless transmission challenges. The body is composed of
+several components that are not predictable and will change.
+Monitoring in-body functions and the ability to communicate
+with implanted therapeutic devices, such as pacemakers, are
+essential for their best use. Applications include monitoring
+and programme changes for pacemakers and ICDs, control of
+bladder function, and restoration of limb movement. The
+space within a body is very limited and the available
+materials are few. These applications may require continuous
+or occasional one or two-way transmission. Some
+applications will require a battery where the current drain
+IMECS 2009
+
+Proceedings of the International MultiConference of Engineers and Computer Scientists 2009 Vol I
+IMECS 2009, March 18 - 20, 2009, Hong Kong
+
+must be low so as not to reduce the working life of the
+implant function.
+Zarlink semiconductor has introduced a wireless chip that
+supports a very high data rate RF link for communication
+with an implantable BN [31]. The ZL70101 ultra-low power
+transceiver chip satisfies the power and size requirements for
+implanted communication systems and operates in 402-405
+MHz MICS band [32]-[33]. Other frequency bands such as
+916MHz, 1.5GHz, and Ultra-Wideband are also considered
+for in-body sensor networks [34]-[36]. The use of open air
+models for implant communication is discouraged in [37]. A
+Finite-Difference Time-Domain (FDTD) is used to calculate
+the power deposition in a human head and is measured by the
+SAR in W/Kg [38]. However, the distance from the implant
+source has not been discussed. For 0.05% duty cycle at 400
+kbps, the SubQore radio architecture from Cambridge
+university consumes a peak current less than 1.7mA [39]. An
+implantable medical microsystems for interfaces to the
+central nervous system is presented in [40].
+The diverse nature of in-body BNs together with the
+electrical properties of the human body influences the
+development process of a low power and heterogeneous
+MAC for in-body sensor networks. The data rate of
+implanted BNs varies, ranging from few kbps in pacemaker
+to several Mbps in capsular endoscope. Fig 3 explains the
+in-body sensor networks and implementation issues [41].
+
+techniques, i.e., Preamble Detector and De-correlation Based
+Detector can be investigated for in-body BNs. Preamble
+detector indicates a busy channel only on detecting the
+preamble part of the frame. De-correlation on the other hand,
+looks for certain spreading characteristics other than
+preamble.
+
+Fig 4. Average Packet Latency for Critical and Non-critical BNs
+
+Battery
+Energy
+Scavenging
+
+External
+Coupling
+Power
+supply
+Actuators
+(ICDs, Pacemaker)
+
+Processor
+
+Inductive Link
+Infrared
+Analog
+
+Sensors
+
+Power
+Management
+
+Transceiver
+
+(Capsular Endoscop
+
+Interface
+
+Peripheral
+(EMG,EEG)
+
+WMTS, MICS
+
+Fig 5. CCA for In-body and On-body BNs
+
+V.
+Fig 3. Implementation issues in the in-body sensor network
+
+In the in-body sensor network, critical data requires low
+latency and high reliability. The solution is to adjust initial
+back-off windows for critical and non-critical traffics [42].
+Non-critical BNs have larger initial back-off window than
+critical BNs, i.e., (W0α ≤ W0β) where W0α is initial back-off
+window for critical BNs α and W0β is initial back-off window
+for non-critical BNs β. Fig 4 illustrates the average packet
+latency for a number of in-body BNs. The smaller initial
+back-off window for the critical BNs results in lower latency.
+The Fig also shows packet latency of a standard CSMA/CA
+scheme used in IEEE 802.15.4.
+The traditional CSMA/CA technique does not provide
+reliable solution in multiple piconets [41]. For a threshold of
+-85dBm and -95dBm, the on-body BNs cannot see the
+activity of in-body BNs when they are away at 3 meters
+distance from the body surface as given in Fig 5. However, in
+3 meters or less distance, the CCA works correctly in the
+same piconet. The main reason of improper energy detection
+is that the path loss inside human body is much higher than in
+free space. However, the performance of other CCA
+
+ISBN: 978-988-17012-2-0
+
+TRAFFIC BASED WAKEUP MECHANISM FOR WBAN
+
+The heterogeneous BNs require power efficient and
+dynamic wakeup techniques for reliable operation. We
+propose a low power technique called traffic based wakeup
+mechanism that exploits the traffic patterns of BNs to
+accommodate the assorted WBAN traffic. The initial wakeup
+patterns are either predefined (by the company) or created
+and modified (by the BNC). Table 1 shows the
+aforementioned traffic classification and the corresponding
+solutions.
+Table 1. Solutions to the Classified WBAN Traffic
+On-demand
+Traffic
+
+Emergency
+Traffic
+
+Send data based on the
+Traffic-based
+Wake-up Table
+
+Receives a
+Wakeup
+Radio Signal
+from the
+BNC and
+respond
+
+Send a
+Wake-up
+Radio Signal
+to the BNC in
+case of
+emergency
+
+Send data based on the
+Traffic-based
+Wake-up
+Table
+
+Send a
+Wake-up
+Radio Signal
+to BNs
+
+Receives a
+Wake-up
+Radio Signal
+and respond
+
+Traffic
+Device
+
+Normal Traffic
+High
+
+BAN Nodes
+(BNs)
+
+BAN
+Network
+Controller
+(BNC)
+
+Medium
+
+Low
+
+IMECS 2009
+
+Proceedings of the International MultiConference of Engineers and Computer Scientists 2009 Vol I
+IMECS 2009, March 18 - 20, 2009, Hong Kong
+
+The wakeup patterns of all BNs are organized into a table
+called traffic based wakeup table. The table is maintained
+and modified by the BNC according to the requirements.
+Based on the BNs wakeup patterns, the BNC can also
+calculate its own wakeup pattern. This could save significant
+energy at the BNC. The BNC does not need to stay active
+when there is no traffic from the BNs. The designation of
+normal traffic levels, i.e, high, medium, and low traffics BNs
+depend on the application. For example, some BNs may
+repeat their wakeup patterns per BAN superframe and thus
+are designated as high traffic BNs. Others may repeat per
+hour (medium traffic BNs) and per day (low traffic BNs). Fig
+6 shows the repetition of wakeup patterns in a multiple
+number of BAN superframes . In this case, BN-1 is a high
+traffic node having a wakeup pattern equal to 10x where x is
+the duration of a single BAN superframe. BN-3 is the low
+traffic BN having a wakeup pattern equal to 43x. BNs having
+the same wakeup patterns contend for the channel.
+10x
+
+10x
+
+10x
+
+10x
+
+BN-1
+
+CCA for in-body sensor networks is not a reliable approach
+due to high path loss inside the human body. We proposed a
+low power traffic based wakeup mechanism for a WBAN that
+exploits the traffic patterns of BNs to accommodate the entire
+traffic classification. In future, we will extend our technique
+towards a complete implementation. Our proposed approach
+will provide a power efficient and innovative solution for
+in-body and on-body sensor networks.
+
+REFERENCES
+[1]
+
+[2]
+[3]
+[4]
+[5]
+[6]
+
+18x
+
+18x
+
+BN-2
+
+[7]
+43x
+
+[8]
+
+BN-3
+9x
+
+9x
+
+9x
+
+9x
+
+BN-4
+
+[9]
+[10]
+[11]
+
+Wake- Up
+
+Contention
+
+Fig 6. Superframe Based Wakeup Patterns
+In case of TDMA, the wakeup patterns represent the
+corresponding slots in the TDMA superframe. The data slots
+are active according to the wakeup patterns. For example,
+10x would allow using the BN-1 data slot after 10 TDMA
+superframes.
+For emergency and on-demand traffics, the BNs and the
+BNC send a wake-up signal for a very short duration to each
+other. However, traditional wake-up radio concepts have
+several limitations when considered in the in-body sensor
+networks. They are not able to wake-up a particular node. All
+BNs wake-up in response to a single wake-up signal, which is
+not the required environment. The use of different radio
+frequencies to wake-up a particular node may provide an
+optimal solution.
+VI.
+
+CONCLUSIONS
+
+In this paper, we presented a technical discussion on low
+power MAC protocols for a heterogeneous in-body and
+on-body sensor networks. The traffic is classified into
+normal, on-demand, and emergency traffics. For emergency
+events, the BNs should be able to access the channel in less
+than one second. Furthermore, the beacon enabled IEEE
+802.15.4 transcended other low power MAC protocols in
+terms of throughput. However, it is not sufficient to
+accommodate the entire WBAN traffic characteristics
+including time critical events. Time critical events require
+low latency and high reliability. The adjustment of initial
+back-off window in the traditional CSMA/CA technique
+provides limited solution. But the use of energy detection
+
+ISBN: 978-988-17012-2-0
+
+[12]
+[13]
+[14]
+[15]
+[16]
+[17]
+[18]
+
+[19]
+
+[20]
+
+[21]
+
+[22]
+[23]
+
+[24]
+
+[25]
+
+Cleland JG, Swedberg K, Follath F, "A Survey of the Quality of Care
+Among Patients with Heart Failure in Europe. Part 1: Patient
+Characteristics and Diagnosis" The Euro Heart Failure Survey
+Programme, pg 24:442-463 Eur Heart J 2003.
+http://www.foxnews.com/story/0,2933,142436,00.html
+Date Visited: 15 December 2008.
+Heart Failure Facts and Figures: OU Medical Centre.
+http://www.who.int/whosis/mort/profiles/mortwprokorrepofkorea.pdf
+Barroso, A., Benson, J., et al.: The DSYS25 sensor platform. In
+Proceedings of the ACM sensys 2004.
+Borger, C., et al.: Health Spending Projections Through 2015:
+Changes on the Horizon. In Health Affairs Web Exclusive W61
+February 22, 2006.
+Electromagnetic compatibility and Radio spectrum Matters (ERM),
+ETSI TR 102 655, pg 21, 11-2008.
+http://fiji.eecs.harvard.edu/CodeBlue
+Date Visited: 21 November 2008.
+http://www.mobihealth.org/ Date Visited: 20 January 2009.
+http://www.cs.uoregon.edu/research/wearables/index.html
+Date Visited: 21 July 2008.
+Jovanov, E., Milenkovic, A., Otto, C., de Groen, P.: A wireless body
+area network of intelligent motion sensors for computer assisted
+physical rehabilitation. Journal of NeuroEngineering and
+Rehabilitation, Vol 2 No.6, March 2005.
+http://www.ubimon.net Date Visited: 16 March 2008.
+http://www.media.mit.edu/wearables/mithril/
+Date Visited: 09 Febuary 2008.
+http://www.hitl.washington.edu/ Date Visited: 25 April 2008
+http://www.ieee802.org/15/pub/TG6.html
+Date Visited: 16 December 2008
+http://lifeguard.stanford.edu/
+Date Visited: 11 January 2009
+http://www.etri.re.kr/eng/
+Date Visited: 14 June 2008
+Wei Ye, John Heidemann and Deborah Estrin, Medium Access
+Control with Coordinated Adaptive Sleeping for Wireless Sensor
+Networks, IEEE Communications Letters Vol. 12 No 3 Pages 493 –
+506 June 2004.
+T. V. Dam and K. Langendoen, “An Adaptive Energy-Efficient MAC
+Protocol for Wireless Sensor Networks,” in SenSys’03, Los Angeles,
+Nov.2003, pp.171-180.
+IEEE Std.802.15.4: Wireless medium access control (MAC) and
+physical layer (PHY) specifications for low data rate wireless
+personal area networks (WPAN), 2006.
+A. El-Hoiydi and J.-D. Decotignie, WiseMAC: An Ultra Low Power
+MAC Protocol for the Downlink of InfrastructureWireless Sensor
+Networks, in the Proceedings of the Ninth IEEE Symposium on
+Computers and Communication, ISCC’04, pages 244-251,
+Alexandria, Egypt, June 2004.
+Technical Requirement Document, IEEE 802.15.6, January 2009.
+Huaming Li H Jindong Tan H , Medium Access Control for Body
+Sensor Networks, Proceedings of 16th International Conference on
+TTComputer Communications and Networks, pg T210-215T 2007.
+ICCCN 2007.
+B. Braem, B. Latre, I. Moerman, C. Blondia, and P. Demeester, The
+Wireless Autonomous Spanning tree Protocol for multihop wireless
+body area networks, in Proceedings of the First International
+Workshop on Personalized Networks. San Jose, California, USA:
+ICST, 2006.
+Latre, B.; Braem, B.; Moerman, I.; Blondia, C.; Reusens, E.; Joseph,
+W.; Demeester, P., "A Low-delay Protocol for Multihop Wireless
+Body Area Networks," Mobile and Ubiquitous Systems: Networking
+
+IMECS 2009
+
+Proceedings of the International MultiConference of Engineers and Computer Scientists 2009 Vol I
+IMECS 2009, March 18 - 20, 2009, Hong Kong
+
+[26]
+
+[27]
+
+[28]
+
+[29]
+[30]
+
+[31]
+[32]
+[33]
+[34]
+
+[35]
+
+[36]
+
+[37]
+
+[38]
+
+[39]
+[40]
+
+[41]
+
+[42]
+
+& Services, 2007. MobiQuitous 2007. Fourth Annual International
+Conference on , vol., no., pp.1-8, 6-10 Aug. 2007
+Huaming Li; Jindong Tan, "Medium Access Control for Body Sensor
+Networks," Computer Communications and Networks, 2007. ICCCN
+2007. Proceedings of 16th International Conference on , vol., no.,
+pp.210-215, 13-16 Aug. 2007
+Nicholas F. Timmons, William G. Scanlon, ``Analysis of the
+performance of IEEE 802.15.4 for medical sensor body area
+networking'', IEEE SECON 2004.
+Shah, R.C.; Yarvis, M., "Characteristics of on-body 802.15.4
+networks," 2nd IEEE Workshop on Wireless Mesh Networks, 2006.
+vol., no., pp.138-139, 25-28 Sept. 2006.
+R. Adler et. al., “Intel Mote 2: An advanced platform for demanding
+sensor network applications”, Demo session, Sensys 2005.
+Sana Ullah, Riazul Islam, Ahasanun Nessa, Yingji Zhong, Kwak
+Kyung Sup, Performance Analysis of a Preamble Based TDMA
+Protocol for Wireless Body Area Network, Journal of
+Communications Software and Systems, Vol 4, No 3, November
+2008.
+Sana Ullah, H.Higgins, Kyung Sup Kwak, A study of implanted and
+wearable BSN, KES-AMSTA, Volume 4953/2008, pg 464-473 2008.
+http://products.zarlink.com/productprofiles/ZL70101.htm
+Date Visited: 21 December 2008.
+MICS Band. Australian Communications Agency Paper SP 6/03
+(October 2003).
+W.G. Scanlon, J.B. Buirns, and N.E. Evans, “Radiowave propagation
+from a tissue-implanted source at 418MHz and 916.5MHz,” IEEE
+Trans. on Biomedical Engineering, vol.47, no.4, p.527-534, 2000.
+J. Wang and D. Su, “Design of anthUltra-wideband system for in-body
+wireless communications,” 4
+Asia-Pacific conference on
+Enviromental Electromagnectic,p.565-568, 2006.
+J. Kim and Y. Rahmat-Samii, “Electromagnetic interactions between
+biological tissues and implantable biotelemetry systems,” IEEE Inter.
+Microwave Symposium, vo.1801-1804, 2005.
+S.K.S. Gupta, S. Lalwani and Y. prakash et al, “Towards a propagation
+model for wireless biomedical applications,” IEEE international
+conference on communications, vol.3,p.1993-1997,2003
+V.Pandit,R.McDermott,G.Lazzi,C.Furse,O.Gandhi,”
+Electrical
+Energy Absorption in the Human Head From a Cellular Telephone”,
+Proceedings of the 7th conference on Visualization, 1996.
+Cambridge Consultants, New radioarchitecture meets medical implant
+designers’ needs for higher performance and longer life, 2005.
+K. D. Wise, D. J. Anderson, J. F. Hetke, D. R. Kipke, and K. Najafi,
+“Wireless implantable microsystems: high-density electronic
+interfaces to the nervous system,” Proc. IEEE, vol. 92, no. 1, pp.
+76–97, Jan. 2004.
+Bin Zhen, Huan-Bang Li, and Ryuji Kohno, IEEE body area networks
+and medical implant communications, Proceedings of the ICST 3rd
+international conference on Body area networks, Tempe, Arizona,
+2008.
+Feng Shu, Guido Dolmans, QoS Support in Wireless BANs, IEEE
+P802.15 Working Group for Wireless Personal Area Networks
+(WPANs), November 2008.
+
+ISBN: 978-988-17012-2-0
+
+IMECS 2009
+
+

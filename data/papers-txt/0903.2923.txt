@@ -1,0 +1,1807 @@
+arXiv:0903.2923v2 [math.CA] 9 Sep 2010
+
+ON UNCERTAINTY PRINCIPLES IN THE FINITE DIMENSIONAL
+SETTING
+SAIFALLAH GHOBBER AND PHILIPPE JAMING
+Abstract. The aim of this paper is to prove an uncertainty principle for the representation
+of a vector in two bases. Our result extends previously known “qualitative” uncertainty
+principles into more quantitative estimates. We then show how to transfer such results to
+the discrete version of the Short Time Fourier Transform.
+
+1. Introduction
+The aim of this paper is to deal with uncertainty principles in finite dimensional settings.
+Usually, an uncertainty principle says that a function and its Fourier transform can not be
+both well concentrated. Of course, one needs to give a precise meaning to “well concentrated”
+and we refer to [18, 14] for numerous versions of the uncertainty principle for the Fourier
+transform in various settings. Our aim here is to present results of that flavour for unitary
+operators on Cd and then to apply those results to the discrete short-time Fourier transform.
+Let us now be more precise and describe our main results and the relations with existing
+literature.
+1.1. Main results. Before presenting our results, we need some further notation. Let d be
+an integer and ℓ2d be Cd equipped with its standard norm denoted kakℓ2 or simply kak2 and
+the associated scalar product h·, ·i. More generally, for 0 < p < +∞, the ℓp -“norm” is defined
+1/p
+P
+d−1
+p
+by kakℓp =
+|a
+|
+. For a set E ⊂ {0, . . . , d− 1} we will write E c for its complement,
+j
+j=0
+
+|E| for the number of its elements. Further, for a = (a0 , . . . , ad−1 ) ∈ ℓ2d , we denote kakℓ2 (E) =
+1
+P
+2 2 . Finally, the support of a is defined as supp a = {j : a 6= 0} and we set
+|a
+|
+j
+j
+j∈E
+kakℓ0 = |supp a|.
+Our aim here is to deal with finite dimensional analogues of the uncertainty principle. Here,
+instead of the Fourier transform, we will consider general unitary operators, (i.e. a change
+of coordinates from one orthonormal bases to another one), and concentration is measured
+in the following sense:
+Definition.
+Let Φ = {Φj }j=0,...,d−1 and Ψ = {Ψj }j=0,...,d−1 be two orthonormal bases of ℓ2d . Let S, Σ ⊂
+{0, . . . , d − 1}. Then (S, Σ) is said to be a
+— weak annihilating pair (for those bases) if supp (ha, Φj i)0≤j≤d−1 ⊂ S and supp ha, Ψj i ⊂
+Σ implies that a = 0;
+1991 Mathematics Subject Classification. 42A68;42C20.
+Key words and phrases. Fourier transform, short-time Fourier transform, uncertainty principle, annihilating
+pairs.
+1
+
+2
+
+SAIFALLAH GHOBBER AND PHILIPPE JAMING
+
+— strong annihilating pair (for those bases) if there exists a constant C(S, Σ) such that
+for every a ∈ ℓ2d
+
+(1.1)
+kakℓ2 ≤ C(S, Σ) kha, Φj ikℓ2 (S c ) + kha, Ψj ikℓ2 (Σc ) .
+
+Of course, any strong annihilating pair is also a weak one. This notion is an adaptation of
+a similar one for the Fourier transform for which it has been extensively studied. We refer
+to [18, 14] for more references. The advantage of the second notion over the first one is that
+it states that if the coordinates of a in the basis Φ outside S and those of a in the basis Ψ
+outside Σ are small, then a itself is small.
+It follows from a standard compactness argument (that we reproduce after Formula (2.5)
+below) that, in a finite dimensional setting, both notions are equivalent. However, this
+argument does not give any information on C(S, Σ). It is our aim here to modify an argument
+from [12] to obtain quantitative information on this constant in terms of S and Σ. More
+precisely, we will prove the following Uncertainty Principles:
+Theorem A.
+Let d be an integer. Let Φ = {Φj }j=0,...,d−1 and Ψ = {Ψj }j=0,...,d−1 be two orthonormal bases
+of Cd and define the coherence of Φ, Ψ by M (Φ, Ψ) = max |hΦj , Ψk i|. Let S, Σ be two
+0≤j,k≤d−1
+
+1
+. Then for every a ∈ Cd ,
+subsets of {0, . . . , d − 1}. Assume that |S||Σ| <
+M (Φ, Ψ)2
+
+
+
+1
+kha,
+Φ
+ik
++
+kha,
+Ψ
+ik
+kak2 ≤ 1 +
+j ℓ2 (S c )
+j ℓ2 (Σc ) .
+1 − M (Φ, Ψ)(|S||Σ|)1/2
+
+As a first corollary of this result, we will show that a sequence may not be too compressive in
+two different bases (see Corollary 2.4 for a precise statement). Further, we show in Proposition
+2.7 that, if M (Φ, Ψ) = d−1/2 (in which case, the bases are said to be unbiased), then any
+set Σ that is not too large is a member of a strong annihilating pair. More precisely, if
+√
+(d − |Σ|)2
+|Σ| ≤ d − 240d, there exists a set S such that |S| ≥
+and (S, Σ) is a strong
+240d
+annihilating pair.
+Let us stress that all results mentioned so far apply to the discrete Fourier transform Fd
+which may be seen as the unitary operator that changes the standard basis ∆ = {δj }j=0,...,d−1
+of ℓ2d into the Fourier basis defined by Ψ = {Ψj }j=0,...,d−1 with
+Ψj = Fd [δj ] = d−1/2 (1, . . . , e2iπjk/d , . . . , e2iπj(d−1)/d ).
+Note that these two bases are unbiased.
+Finally, we will apply our results to the discrete short-time Fourier transform. Let us
+describe these results in a slightly simplified setting. First, for d an integer, we will consider
+elements of ℓ2d as d-periodic functions on {0, . . . , d − 1}. For f, g ∈ ℓ2d , the short-time (or
+windowed) Fourier transform of f with window g is then defined for j, k ∈ {0, . . . , d − 1} by
+d−1
+
+1 X
+Vg f (j, k) = √
+f (ℓ)g(ℓ − j)e2iπkℓ/d .
+d ℓ=0
+
+ON UNCERTAINTY PRINCIPLES IN THE FINITE DIMENSIONAL SETTING
+
+3
+
+Note that, if we write τj g(ℓ) = g(ℓ−j), then Vg f (j, k) = Fd [f τj g](k), so the windowed Fourier
+transform can be seen as the Fourier transform of f seen through a sliding window g. We
+refer to e.g. [20, 19, 25] for various applications of the discrete short-time Fourier transform
+in signal processing. Our aim is to show that this transform satisfies an uncertainty principle:
+Theorem B.
+Let Σ be a subset of {0, . . . , d − 1}2 with |Σ| < d and g ∈ ℓ2d with kgk2 = 1. Then for every
+f ∈ ℓ2d ,
+1/2
+
+√
+2 2  X
+|Vg f (j, k)|2  .
+kf k2 ≤
+1 − |Σ|/d
+(j,k)∈Σ
+/
+
+Following [25], the definition of the windowed Fourier transform will be extended to the
+setting of finite Abelian groups. We will prove an analogue of the above theorem in that
+general setting.
+
+1.2. Comparison with existing results. .
+The two uncertainty principles given in Theorems A and B are quantitative improvements
+of known results.
+First, uncertainty principles for the discrete Fourier transform Fd are known for some
+time. To our knowledge, the first occurrence of such a result is due to Matolcsi-Szucs[26] and
+was rediscovered by Donoho-Stark [12]. More precisely, if one considers Fd as the change of
+coordinate operator from the standard basis to the Fourier basis then Theorem A reads as
+follows: if |S||Σ| < d then
+
+
+
+1
+kak
++
+kF
+[a]k
+(1.2)
+kak2 ≤ 1 +
+d
+ℓ2 (S c )
+ℓ2 (Σc ) .
+1 − (|S||Σ|/d)1/2
+
+In particular, if a is supported in S and Fd [a] is supported in Σ, then a = 0, which is the
+result proved in [26, 12].
+This result may also be seen as a discrete counterpart of an uncertainty principle for the
+continuous Fourier transform on L2 (Rn ) originally proved by F. Nazarov for n = 1 [28] and
+the second author for arbitrary dimension [23]. This was one of the motivations in writing
+this paper.
+At this stage, we would also like to mention that T. Tao [32] proved that, if the dimension
+d is a prime number, and if |S| + |Σ| ≤ d, than (S, Σ) is an annihilating pair. Unfortunately,
+Tao’s proof does not give any information on the constant C(S, Σ), and our method of proof
+does not recover his result neither. For sake of completeness, we would like to mention the
+work of Meshulam [27] and Delvaux-Van Barel [8, 9] that pursue Tao’s work.
+Further, Donoho-Huo [11] considered other particular pairs of bases. For the general case
+of two arbitrary bases, Theorem 2.3 gives a quantitative version of a result of Elad-Bruckstein
+[13]. Note that Elad-Bruckstein’s result was extended to more than two bases by GribonvalNielsen [16]. Note also that [11, 13, 16] further deal with the problem of recovering a vector
+that is sparse (i.e. with small support) in one basis from knowledge of a small number of its
+coordinates in an other basis via ℓ1 -minimization, an issue we do not tackle here.
+Next, if the sets S, Σ are chosen randomly, then one may improve the result in Theorem A.
+This was done for the discrete Fourier transform by Candès-Tao and almost simultaneously
+
+4
+
+SAIFALLAH GHOBBER AND PHILIPPE JAMING
+
+by Rudelson-Vershynin [30] who obtained a slightly better result that also applies to unbiased
+bases. As we will use it for the discrete short-time Fourier transform, we will reproduce the
+result in Theorem 2.5. Further results of probabilistic nature may be found in the work of
+Tropp [35, 34].
+Finally, the uncertainty principle for the short-time Fourier transform that we prove here is
+a quantitative strengthening of the main result of Krahmer, Pfander, Rashkov [25]. Its proof
+is an adaptation of a method that was originally developed in [22, 24] and improved in [10, 17]
+in the continuous setting. More precisely, we first prove that the discrete Fourier transform
+of the product of two short-time Fourier transforms is again a product of short-time Fourier
+transforms (Lemma 3.1). This allows us to prove a transfer principle from strong annihilating
+pairs for the discrete Fourier transform into a similar result for its short-time version (Lemma
+3.2). From this, we deduce Theorem B (in a more general version, Corollary 3.3) as well as
+a “probabilistic improvement” (Corollary 3.4).
+1.3. Link with compressive sensing. Although our results do not apply directly to the
+blooming subject of compressed sensing, this subject was one of the motivations of our research. Let us recall that the Uniform Uncertainty Principle was introduced by E. Candès
+and T. Tao in their seminal series of papers [4, 5, 6, 7].
+Definition.
+Let T : ℓ2d → ℓ2d be a unitary operator. Let s ≤ d be an integer and Ω ⊂ {0, . . . , d − 1}.
+Then (T, Ω, s) is said to have the Uniform Uncertainty Principle (also called the Restricted
+Isometry Property) if there exists δs ∈ (0, 1) such that, for every S ⊂ {0, . . . , d − 1} with
+|S| = s and for every a ∈ ℓ2d with supp a ⊂ S
+
+|Ω|
+|Ω|
+kak22 ≤ kT ak2ℓ2 (Ω) ≤ (1 + δs ) kak22
+d
+d
+We will call δs the Restricted Isometry Constant of (T, Ω, s).
+The purpose of this property was to show that, one may recover a from the knowledge of
+PΩ T a (where PΩ is the projection onto the coordinates in Ω), under the restriction of a to
+be sufficiently sparse, that is |supp a| to be sufficiently small. Moreover, if δ2s is sufficiently
+small, a may be reconstructed by an ℓ1 -minimization program (see the paper of Candès [3]
+and Foucard-Lai [15] for the best results to date).
+Let us now mention how the Uniform Uncertainty Principle (UUP) is linked to the notion of
+annihilating pairs. If (T, Ω, s) has the UUP with constant δs then for every S of cardinality s,
+(S, Ωc ) is an annihilating pair for the standard basis ∆ = {δj }0≤j≤d−1 and the orthonormal
+basis T ∆ = {T δj }0≤j≤d−1 . More precisely, a standard computation (see (2.7) where we
+reproduce the simple argument) shows that
+s
+!
+
+d
+kakℓ2 (S c ) + kT akℓ2 (Ω) .
+kak2 ≤ 1 +
+(1 − δs )|Ω|
+(1.3)
+
+(1 − δs )
+
+Conversely, assume that Σ is such that, for every S such that |S| = s, (S, Σ) is a strong
+annihilating pair for ∆ and T ∆. Let C(Σ) = sup|S|=s C(S, Σ), then (T, Σc , s) satisfies the
+1
+1
+Uniform Uncertainty Principle with δs = 1 −
+.
+C(Σ) 1 − |Σ|/d
+
+ON UNCERTAINTY PRINCIPLES IN THE FINITE DIMENSIONAL SETTING
+
+5
+
+Outline of the paper. This article is organized as follows: in the next section, we prove
+results about strong annihilating pairs for a change of basis. The following section deals
+with applications to the short-time Fourier transform. We devote the last section to a short
+conclusion.
+2. The Uncertainty Principle for expansions in two bases.
+2.1. Further notations on Hilbert spaces.
+Let Φ = {Φj }j=0,...,d−1 be a basis of Cd that is normalized i.e. kΦj k2 = 1 for all j. If
+d−1
+X
+ai Φi . We will denote by kakℓp (Φ) = k(a0 , . . . , ad−1 )kℓp and
+a ∈ Cd , then we may write a =
+i=0
+
+suppΦ a = {i : ai 6= 0}. We also define kakℓ2 (Φ,E) in the obvious way when E is a subset of
+{0, . . . , d − 1}. When no confusion can arise, we simply write kakℓ2 (E) .
+Next, we will denote by Φ∗ = {Φ∗j }j=0,...,d−1 the dual basis1 of Φ. More precisely, Φ∗ is
+(
+0 if j 6= k
+the basis defined by hΦj , Φ∗k i = δj,k where δj,k is the Kronecker symbol, δj,k =
+.
+1 if j = k
+Every a ∈ Cd can then be written as
+a=
+
+d−1
+X
+
+
+j=0
+
+
+a, Φ∗j Φj .
+
+Moreover, there exist two positive numbers α(Φ) and β(Φ), called the lower and upper Riesz
+bounds of Φ such that
+
+1/2
+d−1
+X
+
+
+
+| a, Φ∗j |2  ≤ β(Φ)kak2 .
+(2.4)
+α(Φ)kak2 ≤ 
+j=0
+
+Note that, if we take a = Φk , we obtain α(Φ) ≤ 1 ≤ β(Φ). Moreover, α(Φ) = β(Φ) = 1 if
+and only if Φ is orthonormal.
+If Φ and Ψ are two normalized bases of Cd , we will define their coherence by
+M (Φ, Ψ) =
+
+max
+
+0≤j,k≤d−1
+
+|hΦj , Ψk i|.
+
+1
+Obviously M (Φ, Ψ) ≤ 1 and, if Φ and Ψ are orthonormal bases, then M (Φ, Ψ) ≥ √ . If
+d
+M (Φ, Ψ) = √1 , then Φ and Ψ are said to be unbiased. A typical example of a pair of unbiased
+d
+
+bases is the standard basis and the Fourier basis of Cd , see Section 3.1.
+1We would like to point the reader’s attention to the notation adopted here and that is standard in linear
+algebra. The vectors Φj may be seen as the row (or column) vector of its coordinates in the standard basis.
+Then Φ∗j may be seen as the transposed-conjugate of Φj if the basis Φj is orthonormal. In general, this is not
+the case.
+
+6
+
+SAIFALLAH GHOBBER AND PHILIPPE JAMING
+
+Let us recall that the Hilbert-Schmidt norm of a linear operator is the ℓ2d norm of its matrix
+in an orthonormal basis Φ:
+1
+
+2
+d−1
+X
+2
+
+.
+|hU Φi , Φj i|
+kU kHS =
+i,j=0
+
+As is well known, this definition does not depend on the orthonormal basis and it controls
+the norm of U as a linear operator ℓ2d → ℓ2d :
+kU kℓ2 →ℓ2 :=
+d
+
+d
+
+max
+
+a∈Cd : kak2 =1
+
+kU ak2 ≤ kU kHS .
+
+2.2. The strong version of Elad and Bruckstein’s Uncertainty Principle.
+Let us start by giving a simple proof of a result of Elad and Bruckstein [13].
+Lemma 2.1.
+Let Φ and Ψ be two normalized bases of Cd . Then for every a ∈ Cd \ {0},
+
+In particular,
+
+1
+kakℓ0 (Φ) kakℓ0 (Ψ) ≥ 
+n
+o2 .
+β(Φ)
+∗ , Ψ)
+min α(Ψ)
+M (Φ, Ψ∗ ), β(Ψ)
+M
+(Φ
+α(Φ)
+kakℓ0 (Φ) + kakℓ0 (Ψ) ≥
+
+min
+
+n
+
+2
+
+o.
+
+β(Φ)
+∗ β(Ψ)
+∗
+α(Ψ) M (Φ, Ψ ), α(Φ) M (Φ , Ψ)
+
+Proof. As the arithmetic mean dominates the geometric mean, the second statement immediately follows from the first one. The proof mimics the proof given in [32] for the Fourier
+basis. For a 6= 0 and j = 0, . . . , d − 1,
+
+ 
+ d−1
+d−1
+X
+
+
+ X
+
+
+
+
+
+
+
+∗
+∗
+∗
+∗ 
+|ha, Φ∗k i|
+| a, Ψj | = 
+ha, Φk i Φk , Ψj  ≤
+max  Φk , Ψj 
+
+
+j,k=0,...,d−1
+k=0
+k=0
+!1/2
+d−1
+X
+≤ M (Φ, Ψ∗ )|suppΦ a|1/2
+|ha, Φ∗k i|2
+≤ β(Φ)M (Φ, Ψ
+
+It follows that
+
+∗
+
+k=0
+1/2
+)kakℓ0 (Φ) kakℓ2
+
+d−1
+X
+
+!1/2
+
+≤
+
+β(Φ)
+1/2
+M (Φ, Ψ∗ )kakℓ0 (Φ)
+α(Ψ)
+
+≤
+
+β(Φ)
+1/2
+1/2
+M (Φ, Ψ∗ )kakℓ0 (Φ) kakℓ0 (Ψ) max |ha, Ψ∗k i|.
+k=0,...,d−1
+α(Ψ)
+
+
+k=0
+
+2
+
+|ha, Ψ∗k i|
+
+−2
+β(Φ)
+∗
+kakℓ0 (Φ) kakℓ0 (Ψ) ≥
+.
+M (Φ, Ψ )
+α(Ψ)
+Exchanging the roles of Φ and Ψ, we obtain the result.
+
+
+
+ON UNCERTAINTY PRINCIPLES IN THE FINITE DIMENSIONAL SETTING
+
+7
+
+Remark 2.2. Let Φ and Ψ be two unbiased orthonormal bases. The lemma then reads
+|suppΦ a||suppΨ a| ≥ d. We can thus reformulate the lemma as follows: if S and Σ are two
+subsets of {1, . . . , d} with |S||Σ| < d, and if suppΦ a ⊂ S and suppΨ a ⊂ Σ then a = 0.
+We will now switch to strong annihilating pairs. First, note that if (S, Σ) is a weak
+annihilating pair, then it is also a strong annihilating pair, i.e. there exists a constant
+C = C(S, Σ, Φ, Ψ) such that, for every a ∈ Cd ,
+
+
+(2.5)
+kak2 ≤ C kakℓ2 (Φ,S c ) + kakℓ2 (Ψ,Σc ) .
+
+Indeed, C = D −1 where D is the minimum of kakℓ2 (Φ,S c ) + kakℓ2 (Ψ,Σc ) over a ∈ Sd−1 , the
+unit sphere of Cd . This minimum is reached in some a0 ∈ Sd−1 and is thus non-zero since
+(S, Σ) is a weak annihilating pair. However, this does not allow to obtain an estimate on the
+constant C. This will be overcome in the next theorem, Theorem A from the introduction.
+Theorem 2.3.
+Let d be an integer. Let Φ and Ψ be two orthonormal bases of Cd and S, Σ be two subsets of
+1
+. Then for every a ∈ Cd ,
+{0, . . . , d − 1}. Assume that |S||Σ| <
+M (Φ, Ψ)2
+
+
+
+1
+kak
++
+kak
+kak2 ≤ 1 +
+2
+c
+2
+c
+ℓ (Φ,S )
+ℓ (Ψ,Σ ) .
+1 − M (Φ, Ψ)(|S||Σ|)1/2
+Remark :
+For comparison with the previous lemma, recall that as Φ, Ψ are orthonormal they are equal
+to their dual bases and that their lower and upper Riesz bounds are 1.
+Proof. The proof we present here is in the spirit of [18] and is also inspired by [12].
+Let U be the change of basis from Ψ to Φ, that is the linear operator defined by U Ψi = Φi .
+We will still denote by U its matrix in the basis Φi , so that U = [Ui,j ]1≤i,j≤d is given by
+Ui,j = hΦj , Ψi i. As U is unitary, U ∗ Φi = Ψi .
+P
+For a set E ⊂ {1, . . . , d} let PE be the projection PE a =
+j∈E ha, Φj iΦj . A direct
+computation then shows that kakℓ2 (Φ,S c ) = kPS c ak2 while
+
+
+kakℓ2 (Ψ,E) = 
+
+
+
+= 
+
+X
+
+j∈E
+
+X
+
+j∈E
+
+1/2
+
+|ha, Ψj i|2 
+
+= kPE U ak2 .
+
+=
+
+1/2
+
+|hU a, Φj i|2 
+
+
+
+X
+
+j∈E
+
+
+
+=
+
+1/2
+
+|ha, U ∗ Φj i|2 
+
+d
+X
+j=1
+
+1/2
+
+|hPE U a, Φj i|2 
+
+Assume first that a ∈ Cd is such that suppΦ a ⊂ S. Then
+kPΣ U ak2 = kPΣ U PS ak2 ≤ kPΣ U PS kℓ2 →ℓ2 kakℓ2 (Φ,S) .
+
+8
+
+SAIFALLAH GHOBBER AND PHILIPPE JAMING
+
+It follows that
+kakℓ2 (Ψ,Σc ) = kPΣc U ak2 ≥ kU ak2 − kPΣ U ak2 ≥ kak2 − kPΣ U PS kℓ2 →ℓ2 kakℓ2 (Φ,S)
+
+
+(2.6)
+=
+1 − kPΣ U PS kℓ2 →ℓ2 kakℓ2 (Φ,S) .
+
+The last equality comes from the assumption suppΦ x ⊂ S which implies kak2 = kakℓ2 (Φ,S) .
+Note that, if we are able to prove that kPΣ U PS kℓ2 →ℓ2 < 1, then this inequality implies that (S, Σ) is an annihilating pair. The following computation allows to estimate
+the constant C(S, Σ) appearing in the definition of a strong annihilating pair: write D =
+−1
+
+then for a ∈ Cd ,
+1 − kPΣ U PS kℓ2 →ℓ2
+(2.7)
+
+kak2 = kPS a + PS c ak2 ≤ kPS ak2 + kPS c ak2 ≤ DkPΣc U PS ak2 + kPS c ak2
+= DkPΣc U (a − PS c a)k2 + kPS c ak2
+≤ DkPΣc U ak2 + DkU PS c ak2 + kPS c ak2
+
+since kPΣc xk2 ≤ kxk2 for every x ∈ Cd . Now, as U is unitary, we get
+
+kak2 ≤ DkPΣc U ak2 + 1 + D kPS c ak2
+
+which immediately gives an estimate of the desired form with
+−1
+
+.
+C(S, Σ, Φ, Ψ) = 1 + 1 − kPΣ U PS kℓ2 →ℓ2
+
+It remains to give an upper bound on kPΣ U PS kℓ2 →ℓ2 :
+
+1/2
+d X
+d
+X
+|hΦi , PΣ U PS Φj i|2 
+=
+kPΣ U PS k 2 2 ≤ kPΣ U PS k
+HS
+
+ℓ →ℓ
+
+i=1 j=1
+
+
+
+(2.8)
+
+= 
+
+XX
+i∈Σ j∈S
+
+1/2
+
+|hΦi , U Φj i|2 
+
+≤ M (Φ, Ψ)(|S||Σ|)1/2
+
+which completes the proof of the theorem.
+
+
+
+Remark : A similar result can be obtained for more general bases. Let us outline the proof
+of such a result: let Φ, Ψ be two bases of Cd and S, Σ two subsets of {0, . . . , d − 1} such
+that |S||Σ|β(Φ)2 M (Φ, Ψ∗ )2 < α(Ψ)2 . The following computation replaces (2.6) and (2.8): if
+supp Φ a ⊂ S,
+
+2
+!
+!
+
+X 
+
+X X
+X 
+
+X X
+
+
+
+
+
+
+| a, Ψ∗j |2 =
+ha, Φ∗k i Φk , Ψ∗j  ≤
+|ha, Φ∗k i|2
+| Φk , Ψ∗j |2
+
+
+
+j∈Σ
+j∈Σ k∈S
+j∈Σ k∈S
+k∈S
+X
+∗ 2
+∗ 2
+|ha, Φk i|
+≤ |S||Σ|M (Φ, Ψ )
+k∈S
+
+≤ |S||Σ|M (Φ, Ψ ) β(Φ)2 kak2 .
+∗ 2
+
+ON UNCERTAINTY PRINCIPLES IN THE FINITE DIMENSIONAL SETTING
+
+9
+
+But then
+kak2ℓ2 (Ψ,Σc ) =
+≥
+
+(2.9)
+
+d−1
+X
+X 
+
+
+
+
+
+| a, Ψ2j |2 −
+| a, Ψ∗j |2
+j=0
+
+j∈Σ
+
+
+α(Ψ) − |S||Σ|M (Φ, Ψ∗ )2 β(Φ)2 kak2 .
+2
+
+It then remains to mimic the computation in (2.7) to obtain the result: write (2.9) as kak ≤
+Dkakℓ2 (Ψ,Σc ) if supp Φ a ⊂ S (note that the hypothesis on S, Σ is equivalent to D > 0). Now,
+if a ∈ Cd , write a = aS + aS c where supp Φ aS ⊂ S and supp Φ aS c ⊂ S c . Then
+kak2 ≤ kaS k2 + kaS c k2 ≤ DkaS kℓ2 (Ψ,Σc ) + kaS c k2
+
+
+≤ Dkakℓ2 (Ψ,Σc ) + DkaS c kℓ2 (Ψ,Σc ) + kaS c k2 ≤ Dkakℓ2 (Ψ,Σc ) + 1 + Dβ(Ψ) kaS c k2
+
+1 + Dβ(Ψ)
+1 + Dβ(Ψ)
+kakℓ2 (Φ,S c ) ≤
+kakℓ2 (Ψ,Σc ) + kakℓ2 (Φ,S c ) .
+≤ Dkakℓ2 (Ψ,Σc ) +
+α(Φ)
+α(Φ)
+
+Of course, we may exchange the roles of Φ and Ψ in these computations.
+
+In order to illustrate our main theorem, let us show that a vector can not be too compressible in two different bases. First, let us recall the definition.
+Definition.
+Let C > 0 and α > 1/2. We will say that a ∈ Cd is (C, α)-compressible in the basis Φ
+if, for j = 0, . . . , d − 1, the j-th biggest coefficient |ha, Φi|∗ (j) of a in the basis Φ satisfies
+√
+C
+kak.
+|ha, Φi|∗ (j) ≤ 2α − 1
+(j + 1)α
+We will restrict our statement to a simple enough case, the proof being easy to adapt to
+more general settings:
+Corollary 2.4.
+Let Φ and Ψ be two unbiased orthonormal bases of Cd . Let d ≥ 4, C > 0 and α > 1/2 be
+√
+1
+([ d] − 1)α− 2
+√
+such that C <
+(where [x] is the largest integer less than x). Then the only
+4 d
+vector a that is (C, α)-compressible in both bases is 0.
+Proof. Let a 6= 0 and assume that a is (C, α)-compressible in both bases. Without loss of
+generality, we may assume that kak2 = 1. 
+
+Let σ = σΦ be a permutation such that |ha, Φσ(j) i|
+is non-increasing. For k =
+0≤j≤d−1
+
+1, . . . , d define Sk = {σΦ (0), . . . , σΦ (k − 1)}, the set of the k biggest coefficients of a in the
+basis Φ. Then
+kak2ℓ2 (Φ,S c )
+k
+
+=
+
+X
+
+j ∈S
+/ k
+
+2
+
+|ha, Φj i| =
+
+≤ (2α − 1)C
+
+2
+
+d
+X
+
+d−1
+X
+j=k
+
+j=k+1
+
+j
+
+|ha, Φσ(j) i|2
+
+−2α
+
+≤ (2α − 1)C
+
+2
+
+Z
+
+k
+
++∞
+
+C2
+dx
+=
+.
+x2α
+k2α−1
+
+10
+
+SAIFALLAH GHOBBER AND PHILIPPE JAMING
+
+C
+C
+It follows that kakℓ2 (Φ,Skc ) ≤ α−
+1 . In a similar way, we get kakℓ2 (Ψ,Σc ) ≤
+1 where Σk is
+k
+2
+k
+k α− 2
+the set of the k biggest coefficients of a in the basis Ψ.
+√
+Let us now apply Theorem 2.3 with S = Sk and Σ = Σk . Then as long as k < d,
+1
+k  α− 1
+2C
+2
+√
+.
+In
+other
+words,
+C
+≥
+1
+−
+×
+1≤
+k 2.
+1
+4
+1 − √kd
+d
+kα− 2
+√
+√
+Assume now that d ≥ 4 and chose k = [ d] − 1 so that k < d. It follows that
+!
+√
+√
+1
+√
+[ d] − 1
+1
+([ d] − 1)α− 2
+α− 12
+√
+√
+1−
+C≥
+≥
+([ d] − 1)
+4
+d
+4 d
+
+which completes the proof.
+
+
+
+Remark :
+— This corollary may be seen as a discrete analogue of Hardy’s Uncertainty Principle which
+states that an L2 (R) function and its Fourier transform can not both decrease too fast (see
+[18, 14]).
+— The above proof also works if the bases are not unbiased, in which case the condition on
+C has to be replaced by
+
+
+α−1/2
+1
+M (Φ, Ψ)
+.
+−1
+C<
+4
+M (Φ, Ψ)
+
+— Let Φ be an orthonormal basis of Cd and a ∈ Cd with kak = 1 and 0 < p < 2. From
+Bienaymé-Chebyshev, we get
+∗
+
+k + 1 ≤ |{j : |ha, Φj i| ≥ |ha, Φi| (k)}| ≤
+thus
+∗
+
+kakℓp (Φ)
+
+r
+
+2
+−1
+p
+
+r
+
+kakpℓp (Φ)
+
+p
+|ha, Φi|∗ (k)
+
+
+p
+kakℓp (Φ) (k + 1)−1/p .
+p−2
+
+=
+|ha, Φi| (k) ≤
+(k + 1)1/p
+
+r
+1
+p
+kakℓp (Φ) ,
+-compressible in Φ.
+It follows that a is
+2−p
+p
+This shows that a vector can not have coefficients in two bases with too small ℓp -norm,
+namely: if Φ and Ψ be two unbiased orthonormal bases of Cd , d ≥ 4, and if 0 < p < 2 then,
+for every a ∈ Cd ,
+√
+r
+r
+1
+−1
+
+1 2 − p 1p −1
+2 − p ([ d] − 1) p 2
+√
+∼
+.
+max kakℓp (Φ) , kakℓp (Ψ) ≥
+d
+p
+4
+p
+4 d
+2.3. Results on annihilating pairs using probability techniques.
+So far, we have only used deterministic techniques, which lead to rather weak results. In
+this section, we will recall some results that may be obtained using probability methods.
+First, let us describe a model of random subsets of average cardinality k. Let k ≤ d
+be an integer and let δ0 , . . . , δd−1 be d independent random variables take the value 1 with
+probability k/d and 0 with probability 1 − k/d. We then define the random subset of average
+cardinality k, Ω ⊂ {0, . . . , d − 1} by Ω = {i : δi = 1}. Those sets have of course average
+
+ON UNCERTAINTY PRINCIPLES IN THE FINITE DIMENSIONAL SETTING
+
+11
+
+P
+cardinality k (which is immediate once one write 1Ω = d−1
+j=0 δj 1j ). Moreover, one has the
+following standard estimate (see e.g. [1, Theorems A.1.12 and A.1.13] or [21]):
+
+
+k
+≤ 2e−k/10 .
+P |Ω − k| ≥
+2
+Therefore, some authors call those sets “random sets of cardinality k”. In the next section, we
+will use the following result of Rudelson-Vershynin [30], (improving a result of Candès-Tao):
+Theorem 2.5 (Rudelson-Vershynin [30]).
+There exist two absolute constants C, c such that the following holds: let Φ = {Φ0 , . . . , Φd−1 }
+and Ψ = {Ψ0 , . . . , Ψd−1 } be two unbiased orthonormal bases of Cd and let T : ℓ2d → ℓ2d be
+defined by T ψj = Φj for j = 0, . . . , d − 1.
+Let 0 < η < 1, t > 1 be real numbers and s ≤ d be an integer. Let k ≥ 1 be an integer such
+that,
+(2.10)
+
+k ≃ (Cts log d) log(Cts log d) log2 s.
+
+Then with probability at least 1−7e−c(1−η)t , a random set Ω of average cardinality k satisfies
+√
+√
+k − tk ≤ |Ω| ≤ k + tk
+
+and (T, Ω, s) satisfies the Uniform Uncertainty Principle with Restricted Isometry Constant
+δs ≤ 1 − η. In particular, for any S ⊂ {0, . . . , d} with |S| ≤ s, for every a ∈ ℓ2d ,
+s
+!
+
+d
+kakℓ2 (Φ,S c ) + kakℓ2 (Ψ,Ω) .
+(2.11)
+kakℓ2 ≤ 1 +
+η|Ω|
+
+The parameter η is not present in their statement, but it can be obtained by straightforward
+modification of their proof.
+log d
+d
+−κ(1−η)
+Taking s =
+5 , t = 2C we obtain k ≃ d/2. Thus, with probability ≥ 1 − 7d
+log d
+(κ some universal constant) Ω has cardinal |Ω| = d/2 + O(d1/2 log1/2 d) and every set S with
+cardinal |S| ≤ logd5 d and Ωc form a strong annihilating pair in the sense of (2.11) which may
+now (for d big enough) be reduced to
+
+2
+(2.12)
+kakℓ2 ≤ √ kakℓ2 (Φ,S c ) + kakℓ2 (Ψ,Ω) .
+η
+Another question that one may ask is the following. Given a set Σ, does there exist a
+“large” set S such that (S, Σ) is an annihilating pair? In order to answer this question, let
+us recall that Bourgain-Tzafriri [2] proved the following:
+Theorem 2.6 (Bourgain-Tzafriri, [2]). 2
+If T : ℓ2n → ℓ2n is such that kT ei k2 = 1 for i = 0, . . . , n − 1 (where the ei ’s stand for the
+such
+standard basis of ℓ2n ), then there exists a set σ ⊂ {0, . . . , n − 1} with |σ| ≥ 240kT nk2
+
+that, for every a = (aj )j=0,...,n−1 with support in σ such that kT ak ≥
+In other words, the matrix of T in the standard basis has a well
+
+1
+12 kak.
+
+ℓ2 →ℓ2
+n
+d
+
+2The dimension of the ℓ2 space in this theorem is denoted by n as we will apply it to a n-dimensional
+
+subspace of ℓ2d .
+
+12
+
+SAIFALLAH GHOBBER AND PHILIPPE JAMING
+
+In other words, this theorem states that a matrix with columns of norm 1 has a wellconditioned sub-matrix of large size. The original proof of this theorem uses probabilistic
+techniques (somewhat similar to those used later in [30]). Recently, an elementary constructive proof of the set σ was given by Spielman-Srivastava [31]. The values of the numerical
+constants where given in [21].
+We may apply this theorem in the following way: consider two mutually unbiased orthonormal bases Φ = {φj } and Ψ = {ψj } of ℓ2d and let S, Ω ⊂ {0, . . . , d − 1} be two sets with
+|S| = |Ω| = n and enumerate them:
+r S = {j0 , . . . , jn−1 } and Ω = {ω0 , . . . , ωn−1 }. Let T be
+d
+ψω for k = 0, . . . , n − 1. Then T satisfies the hypothesis
+the operator defined by T φjk =
+n k
+d
+of Bourgain-Tzafriri’s Theorem and kT k2 ≤ . Thus there exists σ ⊂ S with |σ| ≥ n2 /240d
+n
+such that, for every a ∈ ℓ2n with support in σ,
+r
+1 n
+kakℓ2 (Ψ,Ω) ≥
+kakℓ2 (σ) .
+12 d
+From which we immediately deduce the following (where Σ = Ωc ):
+
+Proposition 2.7.
+Let Φ and Ψ be two mutually unbiased bases of ℓ2d and let S, Σ ⊂ {0, . . . , d − 1} be two sets
+(d − |Σ|)2
+and, for every a ∈ ℓ2d ,
+with |S| + |Σ| = d. Then there exists σ ⊂ S such that |σ| ≥
+240d
+
+13
+kakℓ2 (Φ,σc ) + kakℓ2 (Ψ,Σc ) .
+(2.13)
+kakℓ2 ≤ p
+1 − |Σ|/d
+√
+Of course, this proposition only makes sense when |Σ| ≤ d − 240d otherwise there is no
+guarantee to have σ 6= ∅. We may thus rewrite (2.13) as
+
+kakℓ2 ≤ 4d1/4 kakℓ2 (Φ,σc ) + kakℓ2 (Ψ,Σc ) .
+3. The uncertainty principle for the discrete short-time Fourier transform
+
+The short-time Fourier transform (or windowed Fourier transform) is a useful tool in timefrequency analysis and in signal processing. For f, g ∈ L2 (R), we define Vg f on R2 by the
+formula
+Z
+Vg f (x, ξ) =
+
+f (t)g(t − x)e−2iπtξ dξ.
+
+This may be rewritten as Vg f (x, ξ) = F[f τx g](ξ) where F is the Fourier transform on L2 (R)
+and τx g(t) = g(t − x) is the translation operator. Written like this, it is straightforward to
+generalize this transform to the more general setting of locally Abelian groups G and its dual
+Ĝ as
+Z
+(x, ξ) ∈ G × Ĝ
+f (t)g(t − x)hξ, ti dν(t),
+Vg f (x, ξ) =
+G
+
+where dνG is the Haar measure on G.
+For the reader that is not acquainted with this general setting, it may be sufficient to
+consider G = Z/dZ the cyclic group seen as {0, . . . , d − 1}, Ĝ the (multiplicative group of)
+
+ON UNCERTAINTY PRINCIPLES IN THE FINITE DIMENSIONAL SETTING
+
+13
+
+d-th roots of unity. Note that, if we identify the d-th root of unity e2iπk/d with the integer k,
+then Ĝ is identified to {0, . . . , d − 1}.
+For j ∈ G and ξ ∈ Ĝ, we write hξ, ji = ξ j . Then L2 (G) may be seen either as the set
+of d-periodic sequences or as ℓ2d . If a ∈ L2 (G), the discrete Fourier transform Fd [a](k) =
+d−1
+1 X
+√
+aj e−2iπjk/d may be seen as a function on Ĝ if we identify k with ζ = e2iπk/d :
+d j=0
+X
+1
+FG [a](ζ) = √
+aj hζ, ji.
+d j∈{0,...,d−1}
+
+Note that G may also be seen as the “dual group” of Ĝ if we write hj, ξi = hξ, ji for j ∈ G
+and ξ ∈ Ĝ. The Fourier transform on Ĝ is then defined by
+X
+X
+1
+1
+FĜ [b](j) = √
+bk e2iπkj/d
+bζ hj, ζi = √
+d
+d
+2iπ/d
+2iπ(d−1)/d
+k∈{0,...,d−1}
+ζ∈{1,e
+
+,...,e
+
+}
+
+if we write bk for be2iπk/d (i.e. if we identify the d-th roots of unity with {0, . . . , d − 1}). Thus
+the Fourier transform on Ĝ is the inverse discrete Fourier transform. Finally, we will use
+the Fourier transform on G × Ĝ, this is then just the discrete Fourier transform in the first
+variable and the inverse discrete Fourier transform in the second one.
+Now take f, g two d-periodic sequences. With these notations, the discrete short-time
+Fourier transform is defined on G × Ĝ = {0, . . . , d − 1} × {0, . . . , d − 1} as
+d−1
+
+1 X
+fℓ gℓ−j e−2iπkℓ/d .
+Vg f (j, k) = √
+d ℓ=0
+
+The symmetry lemma (Lemma 3.1) then reads
+
+Fd ⊗ Fd−1 [Vg f Vh k](j, k) = Vk f (−k, j)Vh g(−k, j).
+
+The reader that does not want to enter the details concerning finite Abelian groups nor
+the proof of the symmetry lemma may now skip the following two sections and replace G, Ĝ
+by {0, . . . , d − 1} in the statements of Section 3.3.
+3.1. Finite Abelian groups.
+In this section, we recall some notations on the Fourier transform on finite Abelian groups.
+Results stated here may be found in [33] and (with slightly modified notations) in [25].
+Throughout the remaining of this paper, we will denote by G a finite Abelian group for
+which the group law will be denoted additively. The identity element of G is denoted by
+0. The dual group of characters Ĝ of G is the set of homomorphisms ξ ∈ Ĝ which map
+G into the multiplicative group S1 = {z ∈ C : |z| = 1}. The set Ĝ is an Abelian group
+under pointwise multiplication and, as is customary, we shall write this commutative group
+operation additively. Note that G is isomorphic to Ĝ, in particular |G| = |Ĝ|. Further,
+b̂
+Pontryagin duality implies that G can be canonically identified with G, a fact which is
+emphasized by writing hξ, xi = ξ(x). Note that, as group operations are written additively,
+h−ξ, xi = hξ, −xi = hξ, xi.
+
+14
+
+SAIFALLAH GHOBBER AND PHILIPPE JAMING
+
+The Fourier transform FG f = fˆ ∈ CĜ of f ∈ CG is given by
+fˆ(ξ) =
+
+1 X
+f (x)hξ, xi,
+|G|1/2 x∈G
+
+ξ ∈ Ĝ.
+
+The transform is unitary : kfˆk2 = kf k2 , thus FG is invertible. The inversion formula is given
+by the following
+f (x) = FGb [fˆ ](x) =
+
+1 X ˆ
+f (ξ)hξ, xi,
+|G|1/2
+ξ∈Ĝ
+
+x ∈ G.
+
+Moreover, as the normalized characters {|G|−1/2 ξ}ξ∈Ĝ form an orthonormal basis of CG that
+is unbiased with the standard basis we can reformulate Theorem 2.3 as follows:
+Strong Uncertainty Principle on Finite Abelian Groups.
+Let G be a finite Abelian group and let S ⊂ G and Σ ⊂ Ĝ be such that |S||Σ| < |G|. Then
+for every f ∈ CG ,
+
+1/2 
+!1/2 
+X
+X
+2
+
+
+|fˆ(ξ)|2   .
++
+|f (x)|2
+(3.14)
+kf k2 ≤
+
+1/2
+1 − (|S||Σ|/|G|)
+x∈S
+/
+
+ξ ∈Σ
+/
+
+For any x ∈ G, we define the translation operator Tx as the unitary operator on CG given
+by Tx f (y) = f (y − x), y ∈ G. Similarly, we define the modulation operator Mξ for ξ ∈ Ĝ as
+the unitary operator defined by Mξ f = f · ξ, where here and in the following f · g denotes the
+d
+ˆ
+pointwise product of f, g ∈ CG . Since M
+ξ f = Tξ f , we refer to Mξ also as a frequency shift
+ˆ
+operator. Note also that Td
+x f = M−x f
+We denote by π(λ) = Mξ Tx , λ = (x, ξ) ∈ G × Ĝ the time-frequency shift operators. Note
+that these are unitary operators. The short-time Fourier transformation VgG : C G → CG×Ĝ
+with respect to the window g ∈ CG \ {0} is given for x ∈ G, ξ ∈ Ĝ by
+VgG f (x, ξ) =
+
+1
+1 X
+hf, π(x, ξ)gi =
+f (y)g(y − x) hξ, yi = FG [f · Tx g](ξ)
+1/2
+|G|
+|G|1/2 y∈G
+
+where f ∈ CG . The inversion formula for the short-time Fourier transform is
+f (y) =
+
+1
+|G|1/2 kgk22
+
+X
+
+(x,ξ)∈G×Ĝ
+
+VgG f (x, ξ)g(y − x)hξ, yi.
+
+Further, kVg f k2 = kf k2 kgk2 , in particular Vg f = 0 if and only if either f = 0 or g = 0.
+Finally, let us note that a simple computation shows that
+(3.15)
+
+G
+Vπ(b,v)g
+π(a, u)f (x, ξ) = hu − v − ξ, aihv, xiVgG f (x − a + b, ξ − u + v).
+
+ON UNCERTAINTY PRINCIPLES IN THE FINITE DIMENSIONAL SETTING
+
+15
+
+3.2. The symmetry lemma.
+Let us first note that the short-time Fourier transform on Ĝ is defined by
+VγĜ ϕ(ξ, x) =
+
+1
+|Ĝ|1/2
+
+hϕ, Mx Tξ γi =
+
+1
+|Ĝ|1/2
+
+X
+
+η∈Ĝ
+
+ϕ(η)γ(η − ξ) η(x).
+
+This is linked to V G in the following way:
+VgG f (x, ξ) =
+=
+so that
+
+
+1
+1 
+ G
+G
+F
+f,
+F
+[M
+T
+g]
+hf,
+π(x,
+ξ)gi
+=
+x
+ξ
+|G|1/2
+|G|1/2
+
+
+hξ, xi 
+ G
+1 
+ G
+F f, Tξ M−x F G g =
+F f, M−x Tξ F G g ,
+|Ĝ|1/2
+|Ĝ|1/2
+VgG f (x, ξ) = hξ, xiVĝĜ fˆ(ξ, −x).
+
+(3.16)
+
+Lemma 3.1. Let f, g, h, k ∈ CG . Then for every u ∈ G and every η ∈ Ĝ,
+FG×Ĝ [VgG f VhG k](η, u) = VkG f (−u, η)VhG g(−u, η).
+Proof. First note that
+1
+
+FG×Ĝ [VgG f VhG k](η, u) =
+
+|G|1/2 |Ĝ|1/2
+1
+
+=
+
+|G|1/2 |Ĝ|1/2
+
+XX
+
+x∈G ξ∈Ĝ
+
+XX
+
+x∈G ξ∈Ĝ
+
+VgG f (x, ξ) VhG k(x, ξ) hη, xi hξ, ui
+VgG f (x, ξ) V Ĝ k̂(ξ, −x) hη, xi hξ, u − xi
+ĥ
+
+with (3.16). Using the definition of the short-time Fourier transform, this is further equal to
+1
+
+XXXX
+
+|Ĝ||G| x∈G
+(3.17)
+
+=
+
+ξ∈Ĝ y∈G ζ∈Ĝ
+
+1
+
+f (y)g(y − x) hξ, yi k̂(ζ)ĥ(ζ − ξ)hζ, −xi hη, xi hξ, u + xi
+
+XXXX
+
+|Ĝ||G| x∈G
+
+ξ∈Ĝ y∈G ζ∈Ĝ
+
+f (y)g(y − x) k̂(ζ)ĥ(ζ − ξ) hη + ζ, xi hξ, u − x + yi
+
+We will now invert the orders of summation. First
+1 X
+1 X
+ĥ(ζ − ξ)hξ, u − x + yi =
+ĥ(ξ + ζ)hξ, u − x + yi
+|Ĝ|1/2
+|Ĝ|1/2
+ξ∈Ĝ
+
+ξ∈Ĝ
+
+=
+
+1
+
+|Ĝ|1/2
+
+X
+
+ξ∈Ĝ
+
+\
+M
+−ζ h(ξ)hξ, u − x + yi = [M−ζ h](u − x + y)
+
+= hζ, xih−ζ, u + yih(u − x + y).
+
+16
+
+SAIFALLAH GHOBBER AND PHILIPPE JAMING
+
+Then
+1
+|Ĝ|1/2 |G|1/2
+
+X
+
+x∈G
+
+g(y − x) hζ + η, xi
+=
+=
+
+X
+
+ξ∈Ĝ
+
+ĥ(ζ − ξ)hξ, u − x + yi
+
+hζ, u + yi X
+g(y − x) hη, xih(u − x + y)
+|G|1/2 x∈G
+hζ, u + yi X
+g(z)h(z + u)hη, zi hη, yi
+|G|1/2 z∈G
+
+= hζ, ui hη + ζ, yi VhG g(−u, η).
+
+It follows that
+1
+|Ĝ||G|1/2
+
+X
+
+ζ∈Ĝ
+
+k̂(ζ)
+
+X
+
+x∈G
+
+=
+
+=
+
+g(y − x) hζ + η, xi
+1
+
+|Ĝ|1/2
+
+X
+
+ζ∈Ĝ
+
+X
+
+ξ∈Ĝ
+
+ĥ(ζ − ξ)hξ, u − x + yi
+
+k̂(ζ)hζ, ui hη + ζ, yi VhG g(−u, η)
+
+hη, yi VhG g(−u, η) X
+|Ĝ|1/2
+
+k̂(ζ)hζ, y + ui
+
+ζ∈Ĝ
+
+= hη, yi VhG g(−u, η) k(y + u).
+
+Finally, it remains to take the sum in the y-variable in (3.17) to obtain
+
+as announced.
+
+FG×Ĝ [VgG f VhG k](η, u) = VkG f (−u, η)VhG g(−u, η).
+
+
+In the case G = Rd , this lemma was given independently in [22, 24].
+3.3. The Uncertainty Principle for the short-time Fourier transform.
+We will conclude this section with the following lemma that allows to transfer results about
+strong annihilating pairs in G × Ĝ to Uncertainty Principles for the short-time Fourier transform and then give two corollaries.
+\
+Lemma 3.2. Let Σ ⊂ G × Ĝ and Σ̃ = {(ξ, −x) : (x, ξ) ∈ Σ} ⊂ G
+× Ĝ = Ĝ × G. Assume
+that (Σ, Σ̃) is a strong annihilating pair in G × Ĝ, i.e. that there is a constant C(Σ) such
+that, for every F ∈ CG×Ĝ ,
+
+
+X
+X
+|F (x, ξ)|2 +
+kF k22 ≤ C(Σ) 
+|FG×Ĝ F (ξ, x)|2 
+(x,ξ)∈Σ
+/
+
+then for every f, g ∈ CG , with kgk2 = 1,
+
+kf k22 ≤ 2C(Σ)
+
+(x,ξ)∈
+/ Σ̃
+
+X
+
+(x,ξ)∈Σ
+/
+
+|VgG f (x, ξ)|2 .
+
+ON UNCERTAINTY PRINCIPLES IN THE FINITE DIMENSIONAL SETTING
+
+17
+
+Proof. We will adapt the proof in the case G = Rd given in [10] to our situation. Let us fix
+f, g ∈ CG .
+We will only use Lemma 3.1 in a simple form: for a ∈ G, η ∈ Ĝ define the function Fa,η on
+G × Ĝ by
+Fa,η (x, ξ) = hξ − η, aiVfG g(x − a, ξ − η)VgG f (x, ξ).
+
+G
+Note that Fa,η (x, ξ) = VfG π(a, η)gVπ(a,η)g
+f so that then FG×Ĝ Fa,η (ξ, x) = Fa,η (−x, ξ).
+It follows that
+
+
+X
+X
+|Fa,η (x, ξ)|2 +
+kFa,η k22 ≤ C(Σ) 
+|Fa,η (−x, ξ)|2 
+(x,ξ)∈Σ
+/
+
+(3.18)
+
+= 2C(Σ)
+
+|VfG g(x
+
+X
+
+X
+
+(x,ξ)∈Σ
+/
+
+Now note that
+X
+
+(a,η)∈G×Ĝ
+
+kFa,η k22 =
+
+(x,ξ)∈
+/ Σ̃
+
+X
+
+− a, ξ − η)|2 |VgG f (x, ξ)|2 .
+
+(a,η)∈G×Ĝ (x,ξ)∈G×Ĝ
+
+|VfG g(x − a, ξ − η)|2 |VgG f (x, ξ)|
+
+= kVfG gk2 kVgG f k2 = kf k42 kgk42
+where we inverted the summation over (a, η) and the summation over (x, ξ). Finally, summing
+inequality (3.18) over (a, η) ∈ G × Ĝ gives
+X
+|VgG f (x, ξ)|2
+kf k42 kgk42 ≤ 2C(Σ)kf k22 kgk22
+(x,ξ)∈Σ
+/
+
+which completes the proof.
+
+
+
+Combining this result with (3.14) we immediately get the following:
+Corollary 3.3.
+Let Σ ⊂ G × Ĝ with |Σ| < |G|. Let g ∈ CG with kgk2 = 1. Then for every f ∈ CG ,
+X
+8
+kf k22 ≤
+|VgG f (x, ξ)|2 .
+(1 − |Σ|/|G|)2
+(x,ξ)∈Σ
+/
+
+The corresponding weak annihilating property for Σ was obtained by F. Krahmer, G. E.
+Pfander and P. Rashkov [25].
+Finally, using the fact that two random events A and B that each occur with probability
+≥ 1 − α, jointly occur with probability ≥ 1 − 2α, we deduce the following from Theorem 2.5,
+as reformulated in (2.12):
+Corollary 3.4.
+There exist two absolute constants C, c such that the following holds: Let 0 < η < 1, let g ∈ ℓ2d
+with kgk2 = 1.
+Then with probability at least 1 − 14|G|−c(1−η) , a random set Ω of average cardinality |G|/2
+satisfies
+|Ω| = |G|/2 + O(|G|1/2 log1/2 |G|)
+
+18
+
+SAIFALLAH GHOBBER AND PHILIPPE JAMING
+
+and, for any S ⊂ G with |S| ≤
+(3.19)
+
+kf kℓ2
+
+|G|
+,
+log5 |G|
+
+≤
+
+for every f ∈ CG ,
+
+
+1/2
+√
+2 2 X
+|VgG f (x, ξ)|2  .
+√
+η
+x∈S,ξ∈Ω
+/
+
+4. Conclusion and future directions
+
+In this paper, we have shown how to obtain quantitative uncertainty principles for the
+representation of a vector in two different bases. These estimates are stated in terms of
+annihilating pairs and both extend and simplify previously known qualitative results. We
+then apply our main theorem to the discrete short time Fourier transform, following the path
+of corresponding results in the continuous setting.
+Let us now describe a question raised by our work. First note that we may rewrite (3.19)
+
+1/2
+√
+X
+2 2 1 
+|hf, π(x, ξ)gi|2  .
+(4.20)
+kf k2 ≤ √
+η |G|1/2
+x∈S,ξ∈Ω
+/
+
+But, the family {π(x, ξ)g, x ∈ G, ξ ∈ Ĝ} forms a so-called finite (tight) Gabor frame (see [25]
+and references therein for more on finite Gabor frames). In other words, we have a system
+of |G||Ĝ| = |G|2 := d2 vectors e1 , . . . , ed2 in Cd such that, for every f ∈ Cd
+2
+
+d
+X
+j=1
+
+|hf, ej i|2 = dkf k2 .
+
+If we write Ω̃ for the subset of {1, . . . , d2 } such that {ej , j ∈ Ω̃} is an enumeration of
+{π(x, ξ)g, x ∈
+/ S, ξ ∈ Ω}, then (4.20) may be rewritten as
+X
+ηd
+kf k2 ≤
+|hf, ej i|2
+8
+j∈Ω̃
+
+As a consequence, we obtain that, if hf1 , ej i = hf2 , ej i for every j ∈ Ω̃, then applying this to
+f = f1 − f2 , we obtain that f1 = f2 . It would thus be desirable to have an algorithm that
+allows to reconstruct f from its frame coefficients {hf, ej i, j ∈ Ω̃}. In particular, we ask the
+following:
+Problem 1. Let {e1 , . . . , ed2 } be a Gabor frame in Cd . Assume that Ω̃ ⊂ {1, . . . , d2 } and
+0 < δ < 1 are such that, for every f ∈ Cd ,
+X
+δdkf k2 ≤
+|hf, ej i|2 .
+j∈Ω̃
+
+Is it true that every f in Cd is given by
+
+
+d2
+
+X
+|hf˜, ej i| : hf˜, ej i = hf, ej i ∀j ∈ Ω̃ ?
+f = argmin
+
+
+j=1
+
+ON UNCERTAINTY PRINCIPLES IN THE FINITE DIMENSIONAL SETTING
+
+19
+
+Note that no sparsity is assumed on f here which make this problem differ from the one
+considered by Pfander-Rauhut [29]. Also, we expect that there is a minimal δ0 > 0 such that
+this property only holds for δ0 < δ < 1.
+A slightly different problem that may arise in radar theory is that of recovering f and g
+from partial knowledge of VgG f . It is totally unclear to us whether our results may contribute
+to this task. In particular, note that this problem is quadratic (bilinear), so that an identity
+such as (3.19)-(4.20) does not immediately imply that if VgG f = Vg̃G f˜ on S c × Ω, then g̃ = cg
+and f˜ = cf with c ∈ C, |c| = 1.
+Ackowledgments. Both authors were partially supported by the ANR project AHPI Analyse Harmonique et Problèmes Inverses.
+The authors are also particularly grateful to the anonymous referee who helped in clarifying
+the presentation of the manuscript and pointed out a normalization issue in the UUP.
+References
+[1] N. Alon & J. H. Spencer, The probabilist method. 2nd Edition. Wiley-Interscience Series in Discrete
+Mathematics and Optimization. Wiley-Interscience, New York, 2000.
+[2] J. Bourgain & L. Tzafriri, Invertibility of “large” submatrices and applications to the geometry of
+Banach spaces and Harmonic Analysis. Israel J. Math. 57 (1987), 137-224.
+[3] E. Candès, The Restricted Isometry Property and Its Implications for Compressed Sensing. C. R. Acad.
+Sci. Paris Sér. I Math. 346 (2008), 589–592.
+[4] E. Candès & T. Tao, Decoding by linear programming. IEEE Trans. Inform. Theory 51 (2005) 4203–
+4215.
+[5] E. Candès & T. Tao, Near-optimal signal recovery from random projections: universal encoding strategies. IEEE Trans. Inform. Theory 52 (2006), 5406–5425.
+[6] E. Candès, J. Romberg & T. Tao, Robust uncertainty principles: exact signal reconstruction from
+highly incomplete frequency information. IEEE Trans. Inform. Theory, 52 (2006) 489–509.
+[7] E. Candès & J. Romberg, Quantitative robust uncertainty principles and optimally sparse decompositions. Found. of Comput. Math. 6 (2006), 227–254.
+[8] S. Delvaux & M. Van Barel, Rank-deficient submatrices of Kronecker products of Fourier matrices.
+Linear Algebra Appl. 426 (2007), 349–367.
+[9] S. Delvaux & M. Van Barel, Rank-deficient submatrices of Fourier matrices. Linear Algebra Appl.
+429 (2008), 1587–1605.
+[10] B. Demange, Uncertainty principles for the ambiguity function. J. London Math. Soc. (2) 72 (2005),
+717–730.
+[11] D. L. Donoho & X. Huo, Uncertainty principles and ideal atomic decomposition. IEEE Trans. Inform.
+Theory 47 (2001), 2845-2862.
+[12] D. L. Donoho & P. B. Stark, Uncertainty principles and signal recovery. SIAM J. Appl. Math. 49
+(1989), 906–931.
+[13] M. Elad & A. M. Bruckstein, A Generalized Uncertainty Principle and Sparse Representation in Pairs
+of Bases. IEEE Trans. Inform. Theory 48 (2002), 2558–2567.
+[14] G. B. Folland & A. Sitaram, The uncertainty principle — a mathematical survey. J. Fourier Anal.
+Appl. 3 (1997), 207–238.
+[15] S. Foucart & M. J. Lai, Sparsest Solutions of Underdetermined Linear Systems via ℓq -minimization
+for 0 ≤ q ≤ 1. Appl. Comput. Harmon. Anal. 26 (2009), 395–407.
+[16] R. Gribonval & M. Nielsen, Sparse representations in unions of base. IEEE Trans. Inform. Theory
+49 (2003) 3320–3325.
+[17] K. Gröchenig & G. Zimmermann, Hardy’s theorem and the short-time Fourier transform of Schwartz
+functions. J. London Math. Soc. (2) 63 (2001), 205–214.
+[18] V. Havin & B. Jöricke, The uncertainty principle in harmonic analysis. Springer-Verlag, Berlin, 1994.
+
+20
+
+SAIFALLAH GHOBBER AND PHILIPPE JAMING
+
+[19] M. Herman & T. Strohmer, High Resolution Radar via Compressed Sensing. IEEE Trans. Signal
+Processing, to appear.
+[20] S. D. Howard, A. R. Calderbank & W. Moran, The Finite Heisenberg-Weyl Groups in Radar and
+Communication. EURASIP Journal on Applied Signal Processing 2006 (2006), Article ID 85685, 12
+pages.
+[21] Ph. Jaming, Inversibilité Restreinte, Problème de Kadison-Singer et Applications à l’Analyse Harmonique
+-d’après J. Bourgain et L. Tzafriri- (sous la direction de M. Deschamps). Publications Mathématiques
+d’Orsay 94-24 (1994) ,71–154.
+[22] Ph. Jaming, Principe d’incertitude qualitatif et reconstruction de phase pour la transformée de Wigner.
+C. R. Acad. Sci. Paris Sér. I Math. 327 (1998), 249–254.
+[23] Ph. Jaming Nazarov’s uncertainty principle in higher dimension. J. Approx. Theory 149 (2007), 611–630.
+[24] A. J. E. M. Janssen, Proof of a conjecture on the supports of Wigner distributions. J. Fourier Anal. Appl.
+4 (1998), 723–726.
+[25] F. Krahmer, G. E. Pfander & P. Rashkov, Uncertainty in timefrequency representations on finite
+Abelian groups and applications. Appl. Compt. Harm. Anal. 25 (2008) 209–225.
+[26] T. Matolcsi & J. Szucs, Intersection des mesures spectrales conjugées. C.R. Acad. Sci. Sr. I Math. 277
+(1973), 841-843.
+[27] R. Meshulam, An uncertainty inequality for finite abelian groups. European J. Combin. 27 (2006), 63–67.
+[28] F. L. Nazarov Local estimates for exponential polynomials and their applications to inequalities of the
+uncertainty principle type. (Russian) Algebra i Analiz 5 (1993), 3–66; translation in St. Petersburg Math.
+J. 5 (1994), 663–717.
+[29] G. Pfander & H. Rauhut Sparsity in Time-Frequency Representations. J. Fourier Anal. Appl, to appear.
+[30] M. Rudelson & R. Vershynin, On sparse reconstruction from Fourier and Gaussian measurements.
+Comm. Pure and Appl. Math. 61 (2008), 1025–1045.
+[31] D. A. Spielman & N. Srivastava, An Elementary Proof of the Restricted Invertibility Theorem. Available at arXiv:0911.1114v3 [math.FA]
+[32] T. Tao, An uncertainty principle for cyclic groups of prime order. Math. Res. Letters 12 (2005), 121–127.
+[33] A. Terras, Fourier analysis on finite groups and application. London Mathematical Society Student
+Texts, 43. Cambridge University Press, Cambridge, 1999.
+[34] J. A. Tropp, The random paving property for uniformly bounded matrices. Studia Math. 185 (2008),
+67–82.
+[35] J. A. Tropp, On the linear independence of spikes and sines. J. Fourier Anal. Appl. 14 (2008), 838–858.
+S.G. Département Mathématiques, Faculté des Sciences de Tunis, Université de Tunis El
+Manar, Campus Universitaire, 1060 Tunis, Tunisie
+E-mail address: Saifallah.Ghobber@math.cnrs.fr
+P.J. and S.G Université d’Orléans, Faculté des Sciences, MAPMO - Fédération Denis Poisson,
+BP 6759, F 45067 Orléans Cedex 2, France
+P.J. (current address) : Institut de Mathématiques de Bordeaux UMR 5251, Université Bordeaux 1, cours de la Libération, F 33405 Talence cedex, France
+E-mail address: Philippe.Jaming@gmail.com
+
+

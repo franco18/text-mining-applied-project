@@ -1,0 +1,4258 @@
+Errors-and-Erasures Decoding for Block Codes with
+Feedback
+Barış Nakiboğlu
+
+Lizhong Zheng
+
+Electrical Engineering and Computer Science
+Massachusetts Institute of Technology
+MA 02139 Cambridge
+
+Electrical Engineering and Computer Science
+Massachusetts Institute of Technology
+MA 02139 Cambridge
+
+arXiv:0903.4386v4 [cs.IT] 1 Sep 2011
+
+Abstract
+Inner and outer bounds are derived on the optimal performance of fixed length block codes on discrete memoryless
+channels with feedback and errors-and-erasures decoding. First an inner bound is derived using a two phase encoding
+scheme with communication and control phases together with the optimal decoding rule for the given encoding scheme,
+among decoding rules that can be represented in terms of pairwise comparisons between the messages. Then an outer
+bound is derived using a generalization of the straight-line bound to errors-and-erasures decoders and the optimal error
+exponent trade off of a feedback encoder with two messages. In addition upper and lower bounds are derived, for the
+optimal erasure exponent of error free block codes in terms of the rate. Finally we present a proof of the fact that the
+optimal trade off between error exponents of a two message code does not increase with feedback on DMCs.
+
+I. I NTRODUCTION :
+Shannon showed in [30] that the capacity of discrete memoryless channels (DMCs) does not increase even when a
+noiseless and delay free feedback link is available from the receiver to the transmitter. On symmetric DMCs the sphere
+packing exponent bounds the error exponent of fixed length block codes from above, as shown by Dobrushin1 in [11].
+Thus relaxations like errors-and-erasures decoding or variable length coding are needed for feedback to increase the
+error exponent of block codes at rates larger than the critical rate on symmetric DMCs. In this work we investigate one
+such relaxation, namely errors-and-erasures decoding and find inner and outer bounds to the optimal error exponent
+erasure exponent trade off.
+Finding the optimal encoding and decoding schemes, and hence finding optimal performance by characterizing
+the surface of achievable error exponent erasure exponent pairs is an important motivation for the investigation of
+errors-and-erasure decoding. Note, however, that finding the optimal performance with erasures will implicitly solve
+the problem of finding the optimal feedback encoder and determining the error exponent for the erasure free fixed
+length block codes with feedback which is a long standing open problem. Finding the optimal performance, however,
+is far from being the only important aspect of the problem. Determining the performance of feedback encoding
+schemes that are easier to implement, more robust to the degradations of the feedback link and bounding the loss
+in the performance compared to the more complicated encoding schemes are both important tasks practically and
+interesting ones intellectually. This will be our aim in this paper. We will first analyze the performance of a two phase
+encoding scheme inspired by the optimal encoding schemes for variable length block codes and derive inner bounds
+to the optimal performance. Then we will derive outer bounds to the performance of general feedback encoding
+schemes with erasures and quantify the loss of performance by restricting ourselves to the above mentioned two
+phase schemes. This analysis complements the research on two related block coding schemes: variable length block
+coding and errors-and-erasures decoding for block codes without feedback. We start with a very brief overview of
+the previous work on these problems to motivate our investigation further.
+Burnashev [3], [4], [5] was the first one to consider variable-length block codes with feedback, instead of fixed
+length ones. He obtained the exact expression for the error exponent at all rates. Later Yamamoto and Itoh, [34],
+suggested a coding scheme which achieves the best error exponent for variable-length block codes with feedback
+by using a fixed length block code with an errors-and-erasures decoding and repeating the same codeword until a
+non-erasure decoding occurs.2 In fact any fixed length block code with erasures can be used in this repetitive fashion,
+1
+
+Later Haroutunian, [17], established an upper bound on the error exponent of block codes with feedback. This upper bound is equal to
+sphere packing exponent for symmetric channels but it is strictly larger than the sphere packing exponent for non-symmetric channels.
+2
+Including erasures will not increase the exponent for variable-length block codes with feedback.
+
+like it was done in [34], to get a variable length block code with essentially the same error exponent as the original
+fixed length block code. Thus [3] can be reinterpreted to give an upper bound to the error exponent achievable by
+fixed length block codes with erasures. Furthermore this upper bound is achieved by the fixed length block codes with
+erasures described in [34], when erasure probability is decaying to zero subexponentially with block length. However
+the techniques used in this line of work are insufficient for deriving proper inner or outer bounds for the situation
+when erasure probability is decaying exponentially with block length. As explained in the following paragraph the case
+with strictly positive erasure exponent is important both for engineering applications and for a better understanding of
+soft decoding with feedback. Our investigation provides proper tools for such an analysis, results in inner and outer
+bounds to the trade off between error and erasure exponents, while recovering all previously known results for the
+zero erasure exponent case.
+When considered together with higher layers, the codes in the physical layer are part of a variable length/delay
+communication scheme with feedback. However in the physical layer itself fixed length block codes are used instead
+of variable length ones because of their amenability to modular design and robustness against the noise in the feedback
+link. In such an architecture retransmissions affect the performance of higher layers. The average transmission time is
+only a first order measure of this effect: as long as the erasure probability is vanishing with increasing block length,
+average transmission time will essentially be equal to the block length of the fixed length block code. Thus with
+an analysis like the one in [34], the cost of retransmissions are ignored as long as the erasure probability goes to
+zero with increasing block length. In a communication system with multiple layers, however, retransmissions usually
+have costs beyond their effect on average transmission time, which are described by constraints on the probability
+distribution of the decoding time. Knowledge of error erasure exponent trade off is useful in coming up with designs
+to meet those constraints. An example of this phenomena is variable length block coding schemes with hard deadlines
+for decoding time, which has already been investigated by Gopala et. al. [16] for block codes without feedback.
+They have used a block coding scheme with erasures and they resend the message whenever an erasure occurs. But
+because of the hard deadline, they employ this scheme only for some fixed number of trials. If all those trials fail,
+i.e. lead to an erasure, they use a non-erasure block code. Using the error exponent erasure exponent trade off they
+were able to obtain the best over all error performance for the given architecture.
+This brings us to the second line of research we complement with our investigation: errors-and-erasures decoding
+for block codes without feedback. Forney [14] was the first one to consider errors-and-erasures decoding without
+feedback. He obtained an achievable trade off between the exponents of error and erasure probabilities. Then Csiszár
+and Körner, [10] achieved the same performance using universal coding and decoding algorithms. Later Telatar and
+Gallager, [33], introduced a strict improvement on certain channels over the results presented in [14] and [10]. Recently
+there has been a revived interest in the errors-and-erasures decoding for universally achievable performances [22], [21],
+for alternative methods of analysis [20], for extensions to the channels with side information [27] and implementation
+with linear block codes [18]. The encoding schemes in these codes do not have access to any feedback. However if
+the transmitter can learn whether the decoded message was an erasure or not, it can resend the message whenever it is
+erased. Because of this block retransmission variant, these problems are sometimes called decision feedback problems.
+We complement the results on the error exponent erasure exponent trade off without feedback and the results about
+error exponent of variable length block codes with feedback, by finding inner and outer bounds to the error exponent
+erasure exponent trade off of fixed length block codes with feedback. We first introduce our model and notation
+in Section II. Then in Section III we derive a lower bound using a two phase coding algorithm similar to the one
+described by Yamamoto and Ito in [34] and decoding rule and analysis techniques, inspired by Telatar’s in [32] for
+the non-feedback case. Note that the analysis and the decoding rule in [32] is tailored for a single phase scheme and
+without feedback and the two phase scheme of [34] is tuned specifically to zero-erasure exponent; coming up with
+framework in which both of the ideas can be used efficiently is the main technical challenge here. In Section IV we
+first extend the straight line bound idea introduced by Shannon, Gallager and Berlekamp in [31] to block codes with
+erasures. Then we use it together with the outer bound on the error exponent trade off between two codewords with
+feedback to establish an outer bound for the error exponent of fixed length block codes with feedback and erasures.
+In Section V we first introduce error free block codes with erasures and discuss their relation to the fixed length block
+codes with errors-and-erasures-decoding, and then we present inner and outer bounds to the erasure exponent of error
+free block codes and point out its relation to the error exponent erasure exponent trade off.
+Before presenting our analysis, let us make a brief digression and discuss two channel models in which the use
+2
+
+of feedback had been investigated for block codes without erasures. First channel model is the well known additive
+white Gaussian noise channel (AWGNC) model. In AWGNCs if the power constraint P is on the expected value
+of the energy spent on a block E[Sn ] i.e. power constraint is of the form E[Sn ] ≤ Pn, the error probability can be
+made to decay faster than any exponential function with block length n. Schalkwijk and Kailath suggested a coding
+algorithm in [29] which achieves a doubly exponential decay in error probability for continuous time AWGNCs, i.e.
+infinite bandwidth case. Later Schalkwijk [28] modified that scheme to achieve the same performance in discrete time
+AWGNCs, i.e. finite bandwidth case. Concatenating Schalkwijk and Kailath scheme with pulse amplitude modulation
+stages, gives a multi-fold exponential decrease in the error probability [26], [35], [15]. However this behavior relies
+on the absence of any amplitude limit, the particular form of the power constraint and the noise free nature of the
+feedback link. First of all, as observed in [5] and [24] when there is an amplitude limit, error probability decays only
+exponentially with block length. More importantly if the power constraint restricts the energy spent in transmission
+of each message for all noise realizations, i.e. if the power constraint is an almost sure power constraint3 of the form
+Sn ≤ Pn; then sphere packing exponent is still an upper bound to the error exponent for AWGNCs as shown by
+Pinsker, [26]. Furthermore if the feedback link is also an AWGNC and if there is a power constraint4 on the feedback
+transmissions, then even in the case when there are only two messages, error probability decays only exponentially
+as it has been recently shown by Kim et.al. [19].
+The second channel model is the DMC model. Although feedback can not increase the error exponent for rates
+over the critical rate, it can simplify the encoding scheme [35], [13]. Furthermore, for rates below the critical rate
+it is possible to improve the error exponent using feedback. Zigangirov [35] has established lower bounds to the
+error exponent for BSCs using a simple encoding scheme. Zigangirov’s lower bound is equal to the sphere packing
+′
+′
+exponent for all rates in the interval [Rcrit , C] where Rcrit < Rcrit and Zigangirov’s lower bound is strictly larger than
+′
+the corresponding non-feedback exponent for rates below Rcrit . Later Burnashev [6] introduced an improvement to
+′
+Zigangirov’s bound for all positive rates less than Rcrit . D’yachkov [13] generalized Zigangirov’s encoding scheme
+for general DMCs and established a lower bound to the error exponent for general binary input channels and k-ary
+symmetric channels. However it is still an open problem to find a constructive technique that can be used for all
+DMCs which outperforms the random coding bound. Like AWGNCs there has been a revived interest in the effect of
+a noisy feedback link and achievable performances with noisy feedback on DMCs. Burnashev and Yamamoto recently
+showed that error exponent of BSC channel increases even with a noisy feedback link [7], [8]. Furthermore Draper
+and Sahai [12] investigated the use of noisy feedback link in variable length schemes.
+II. M ODEL
+
+AND
+
+N OTATION :
+
+The input and output alphabets of the forward channel are X and Y , respectively. The channel input and output
+symbols at time t will be denoted by Xt and Yt respectively. Furthermore, the sequences of input and output symbols
+from time t1 to time t2 are denoted by Xtt21 and Ytt12 . When t1 = 1 we omit t1 and simply write Xt2 and Yt2 instead
+of Xt12 and Y1t2 . The forward channel is a stationary memoryless channel characterized by an |X |-by-|Y| transition
+probability matrix W .
+
+
+P Yt | Xt , Yt−1 = P[Yt | Xt ] = W (Yt |Xt )
+∀t.
+(1)
+
+The feedback channel is noiseless and delay free i.e. the input of the feedback channel Zt−1 , chosen at the receiver,
+is observed at the transmitter before transmission of Xt . In addition we assume that feedback channel is of infinite
+capacity thus Zt−1 includes all of the observation of the receiver at time t − 1, i.e.5 Zt−1 = (Yt−1 , At−1 ). The random
+variables A0 , A1 , . . . , An are there to enable randomized encoding and decoding schemes as we will see shortly. It is
+assumed that the choice A’s does not affect the forward channels behavior, i.e. in addition to (1) we have6
+
+
+P Yt | Xt , Zt−1 = W (Yt |Xt )
+∀t.
+(2)
+The message M is drawn from the message set M with a uniform probability distribution and is given to the transmitter
+at time zero. At each time t ∈ [1, n] the input symbol X t (M, Zt−1 ) is sent. The sequence of functions Xt (·) : M×Z t−1
+3
+
+As Kim et. al. [19] calls it.
+This constraint can be an expected or almost sure constraint.
+5
+For t = 1 we have Z0 = A0
+6
+We make a slight abuse of notation and denote Zt0 by Zt .
+
+4
+
+3
+
+which assigns an input symbol for each m ∈ M and z t−1 ∈ Z t−1 is called the encoding function. Note that the
+random variables A0 , A1 , . . . , An−1 enable randomized encoding schemes. After receiving Yn the receiver draws the
+final A, i.e. An , and decodes to the message M̂(Zn ) ∈ {x} ∪ M where x is the erasure symbol. The random variable
+An does not have any effect on the encoding; it is used only to enable randomized decoding schemes.
+The conditional error and erasure probabilities Pe|M and Px|M and unconditional error and erasure probabilities,
+Pe and Px are defined as,
+ i
+ i
+h
+h
+
+
+Pe|M , P M̂ 6= M M − Px|M
+Px|M , P M̂ = x M
+h
+i
+h
+i
+Pe , P M̂ 6= M − Px
+Px , P M̂ = x
+Since all the messages are equally likely we have,
+X
+1
+Pe|m
+Pe = |M|
+
+Px =
+
+m
+
+1
+|M|
+
+X
+
+m
+
+Px|m .
+
+We use a somewhat abstract but rigorous approach in defining the rate and achievable exponent pairs. A reliable
+sequence Q, is a sequence of codes indexed by their block lengths such that
+lim (Pe (n) + Px (n) +
+
+n→∞
+
+1
+|M(n) | )
+
+= 0.
+
+In other words reliable sequences are sequences of codes whose overall error probability, detected and undetected,
+vanishes and whose size of message set grows to infinity with block length n.
+Definition 1: The rate, erasure exponent, and error exponent of a reliable sequence Q are given by
+ln |M(n) |
+n
+n→∞
+
+RQ , lim inf
+
+− ln Px (n)
+n
+n→∞
+
+ExQ , lim inf
+
+− ln Pe (n)
+.
+n
+n→∞
+
+EeQ , lim inf
+
+Haroutunian, [17, Theorem 2], has already established a strong converse for erasure free block codes with feedback
+which in our setting implies that limn→∞ (Pe (n) + Px (n) ) = 1 for all codes whose rates are strictly above the capacity,
+i.e. R > C . Thus we consider only rates that are less than or equal to the capacity, R ≤ C . For all rates R below
+capacity and for all non-negative erasure exponents Ex , we define the (true) error exponent Ee (R, Ex ) of fixed length
+block codes with feedback to be the best error exponent of the reliable sequences7 whose rate is at least R and whose
+erasure exponent is at least Ex .
+Definition 2: ∀R ≤ C and ∀Ex ≥ 0 the error exponent, Ee (R, Ex ) is,
+Ee (R, Ex ) ,
+
+sup
+
+EeQ .
+
+(3)
+
+Q:RQ ≥R,ExQ ≥Ex
+
+Note that
+Ee (R, Ex ) = E(R)
+
+∀Ex > E(R)
+
+(4)
+
+where E(R) is the (true) error exponent of erasure-free block codes on DMCs with feedback.8 Thus benefit of the
+errors-and-erasures decoding is the possible increase in the error exponent as the erasure exponent goes below E(R).
+Determining E(R) for all R’s and for all channels is still an open problem; only upper and lower bounds to E(R)
+are known. Our investigation focuses on quantifying the gains of errors-and-erasures decoding instead of finding E(R).
+Consequently, we restrict ourselves to the region where the erasure exponent is lower than the error exponent for the
+encoding scheme.
+For future reference let us recall the expressions for the random coding exponent and the sphere packing exponent,
+Er (R, P ) = min D ( V k W |P ) + |I (P, V ) − R|+
+V
+
+Esp (R, P ) =
+
+min
+
+V :I(P,V )≤R
+
+D ( V k W |P )
+
+Er (R) = max Er (R, P )
+
+(5)
+
+Esp (R) = max Esp (R, P )
+
+(6)
+
+P
+
+P
+
+7
+
+We restrict ourselves to the reliable sequences in order to ensure finite error exponent at zero erasure exponent. Note that a decoder which
+always declares erasures has zero erasure exponent and infinite error exponent.
+8
+In order to see this consider a reliable sequence with erasures Q and replace its decoding algorithm by an erasure free decoding algorithm
+(n)
+(n)
+(n)
+such that M̂′ (z n ) = M̂(z n ) if M̂(z n ) 6= x, to obtain a new reliable sequence Q′ . Then Pe Q′ ≤ Px Q + Pe Q ; thus EeQ′ = min{ExQ , EeQ }
+and RQ′ = RQ . This together with the definition of E (R) leads to equation (4).
+
+4
+
+where D ( V k W |P ) stands for conditional Kullback Leibler divergence of V and W under P , and I (P, V ) stands for
+mutual information for input distribution P and channel V .
+We denote the y marginal of a distribution like P (x )V (y|x ) by (P V )Y . The support of a probability distribution
+P is denoted by suppP .
+III. A N ACHIEVABLE E RROR E XPONENT - E RASURE E XPONENT T RADE O FF
+In this section we establish a lower bound to the achievable error exponent as a function of erasure exponent
+and rate. We use a two phase encoding scheme similar to the one described by Yamamoto and Ito in [34] together
+with a decoding rule similar to the one described by Telatar in [32]. In the first phase, the transmitter uses a fixedcomposition code of length αn and rate R
+α . At the end of the first phase, the receiver makes a maximum mutual
+information decoding to obtain a tentative decision M̃. The transmitter knows M̃ because of the feedback link. In the
+remaining (n − n1 ) time units, i.e. the second phase, the transmitter confirms the tentative decision by sending the
+accept codeword, if M̃ = M, and rejects it by sending the reject codeword otherwise. At the end of the second phase
+the receiver either declares an erasure or declares the tentative decision as the decoded message. Receiver declares the
+tentative decision as the decoded message only when the tentative decision “dominates” all other messages. The word
+“dominate” will be made precise later in Section III-B. Our scheme is inspired by [34] and [32]. However, unlike [34]
+our decoding rule makes use of outputs of both of the phases instead of output of just second phase while deciding
+between declaring an erasure or declaring the tentative decision as the final one, and unlike [32] our encoding scheme
+is a feedback encoding scheme with two phases.
+In the rest of this section, we analyze the performance of this coding architecture and derive an achievable error
+exponent expression in terms of a given rate R, erasure exponent Ex , time sharing constant α, communication phase
+type P , control phase type (joint empirical type of the accept codeword and reject codeword) Π and domination rule
+≻. Then we optimize over ≻, Π, P and α, to obtain an achievable error exponent expression as a function of rate R
+and erasure exponent Ex .
+A. Fixed-Composition Codes and The Packing Lemma
+We start with a very brief overview of certain properties of types. Those readers who are not familiar with method
+types can use [9] for a concise introduction or [10] for a thorough study. The empirical distribution of an x n ∈ X n
+is called the type of x n and the empirical distribution of transitions from a x n ∈ X n to a y n ∈ Y n is called the
+conditional type:9
+Px n (x̃ ), n1
+
+n
+X
+t=1
+
+1{xt =x̃ }
+
+Vy n |x n (ỹ|x̃ ), nPx1n (x̃ )
+
+n
+X
+t=1
+
+1{xt =x̃ } 1{yt =ỹ}
+
+x̃ ∈ X .
+
+(7)
+
+∀ỹ ∈ Y, ∀x̃ s.t. Px n (x̃ ) > 0.
+
+(8)
+
+For any probability transition matrix W : suppPx n → Y we have10
+n
+Y
+t=1
+
+W (yt |xt ) = e−n(D( Vyn |xn kW |Pxn )+H(Vyn |xn |Pxn ))
+
+(9)
+
+The set of all y n ’s with the same conditional type V with respect to x n is called the V -shell of x n and denoted by
+TV (x n ):
+TV (x n ) = {y n : Vy n |x n = V }.
+(10)
+Note that for any transition probability matrix from X to Y total probability of TV (x n ) has to be less than one. Thus
+by assuming that transition probabilities are V and using equation (9) we can conclude that,
+|TV (x n ) | ≤ eH(Vy n |x n |Px n )
+9
+
+(11)
+
+Note that Px n corresponds to a distribution on X for all x n ∈ X n , where as Vy n |x n determines a channel from the support of Px n to Y.
+Note that for any W : X → Y there is unique consistent W ′ : suppPx n → Y.
+
+10
+
+5
+
+Codes whose codewords all have the same empirical distribution, Px n (m) = P ∀m ∈ M are called fixed-composition
+codes. In Section III-D we will describe the error and erasure events
+in terms of the intersections of V −shells of
+
+different codewords. For doing that let us define F (n) V, V̂ , m as the intersection of V -shell of x n (m) and the
+V̂ -shells of other codewords:
+
+
+
+\
+F (n) V, V̂ , m , TV (x n (m)) ∪m̃6=m TV̂ (x n (m̃)) .
+
+(12)
+
+The following packing lemma, proved by Csiszár
+[10, Lemma 2.5.1], claims the existence of a code with
+ and Körner
+
+a guaranteed upper bound on the size of F (n) V, V̂ , m .
+
+Lemma 1: For every block length n ≥ 1, rate R > 0 and type P satisfying H(P ) > R, there exist at least ⌊en(R−δn ) ⌋
+distinct type P sequences in X n such that for every pair of stochastic matrices V : suppP → Y , V̂ : suppP → Y
+and ∀m ∈ M
+
+
+
++
+ (n)
+
+V, V̂ , m  ≤ |TV (x n (m))|e−n|I(P,V̂ )−R|
+F
+
+||Y|) ln(n+1)
+where δn = ln 4+(4|X |+6|X
+.
+n
+Above lemma is stated in a slightly different way by the authors of [10], for a fixed δ and large enough n. However,
+this form follows immediately from their proof.
+If we use
+ Lemma1 together with equations (9) and (11) we can bound the conditional probability of observing a
+n
+(n)
+V, V̂ , m when M = m as follows.
+y ∈F
+Corollary 1: In a code satisfying Lemma 1, when message m ∈ M is sent, the probability of receiving a y n ∈
+TV (x n (m)) which is also in TV̂ (x n (m̃)), for some m̃ ∈ M such that m̃ 6= m is bounded as follows,
+
+ i
+h
+
+(13)
+P F (n) V, V̂ , M  M ≤ e−nη(R,P,V,V̂ )
+
+where
+
+B. Coding Algorithm
+
+
+
+
+
+η R, P, V, V̂ ,D ( V k W |P ) + |I P, V̂ − R|+
+
+(14)
+
+In the first phase, the communication phase, we use a length n1 = ⌈αn⌉ type P fixed-composition code with
+⌊e
+⌋ codewords which satisfies the property described in Lemma 1. At the end of the first phase the receiver
+makes a tentative decision by choosing the codeword that has the maximum empirical mutual information with the
+output sequence Yn1 . If there is a tie, i.e. if there are more than one codewords which have the maximum empirical
+mutual information, the receiver chooses the codeword which has the lowest index.
+
+
+
+
+I P, VYn1 |x n (m)  > I P, VYn1 |x n (m̃)  ∀m̃ < m
+M̃ = m :
+(15)
+I P, VYn1 |x n (m) ≥ I P, VYn1 |x n (m̃)
+∀m̃ > m
+n1 ( R
+−δn1 )
+α
+
+In the remaining (n − n1 ) time units, the transmitter sends the accept codeword xnn1 +1 (a) if M̃ = M and sends the
+reject codeword xnn1 +1 (r) otherwise.
+Note that our encoding scheme uses the feedback link actively for the encoding neither within the first phase nor
+within the second phase. It does not even change the codewords it uses for accepting or rejecting the tentative decision
+depending on the observation in the first phase. Feedback is only used to reveal the tentative decision to the transmitter.
+Accept and reject codewords have joint type Π(x̃ , x̃˜ ), i.e. the ratio of the number of time instances in which accept
+codeword has an x̃ ∈ X and reject codeword has a x̃˜ ∈ X to the length of the codewords, (n − n1 ), is Π(x̃ , x̃˜ ). The
+joint conditional type of the output sequence in the second phase, Uynn1 +1 , is the empirical conditional distribution of
+ynn1 +1 . We call set of all output sequences ynn1 +1 whose joint conditional type is U , the U -shell and denote it by TU .
+Like we did in the Corollary 1, we can upper bound the probability of U -shells. Note that if Ynn1 +1 ∈ TU then,
+
+
+
+P Ynn1 +1  Xnn1 +1 = xnn1 +1 (a) = e−(n−n1 )(D( U kWa |Π)+H(U |Π))
+
+
+
+P Ynn +1  Xnn +1 = xnn +1 (r) = e−(n−n1 )(D( U kWr |Π)+H(U |Π))
+1
+
+1
+
+1
+
+6
+
+˜ = W (y|x̃) and Wr (y|x̃, x̃)
+˜ =
+where xnn1 +1 (a) is the accept codeword, xnn1 +1 (r) is the reject codeword, Wa (y|x̃, x̃)
+(n−n
+)H(U
+|Π)
+1
+˜ . Noting that |TU | ≤ e
+W (y|x̃)
+, we get:
+
+
+P TU | Xnn1 +1 = xnn1 +1 (a) ≤ e−(n−n1 )D( U kWa |Π)
+(16a)
+
+
+P TU | Xnn1 +1 = xnn1 +1 (r) ≤ e−(n−n1 )D( U kWr |Π) .
+(16b)
+
+C. Decoding Rule
+
+For an encoder like the one in Section III-B, a decoder that depends only on the conditional type of Yn1 for different
+codewords in the communication phase, i.e. VYn1 |x n1 (m) ’s for m ∈ M, the conditional type of the channel output
+in the control phase, i.e. UYnn1 +1 , and the indices of the codewords can achieve the minimum error probability for a
+given erasure probability. However finding that decoder becomes analytically intractable. Instead, we restrict ourselves
+to the decoders that can be written in terms of pair wise comparisons between messages given Yn . Furthermore we
+assume that these pairwise comparisons depend only on the conditional type of Yn1 for the messages compared, the
+conditional output type in the control phase and the indices of the messages. Thus if the triplet corresponding to the
+tentative decision (VYn1 |x n1 (M̃) , UYnn1 +1 , M̃) dominates all other triplets of the form (VYn1 |x n1 (m) , UYnn1 +1 , m) for m 6= M̃,
+the tentative decision becomes final; else an erasure is declared.11
+)
+(
+M̃ if ∀m 6= M̃
+(VYn1 |M̃ , UYnn1 +1 , M̃) ≻ (VYn1 |m , UYnn1 +1 , m)
+(17)
+M̂ =
+x if ∃m 6= M̃ s.t. (VYn1 |M̃ , UYnn1 +1 , M̃) ⊁ (VYn1 |m , UYnn1 +1 , m)
+The binary relation ≻ is such that if (V, U, m) dominates (V̂ , U, m̃) then (V̂ , U, m̃) does not dominate (V, U, m):
+(V, U, m) ≻ (V̂ , U, m̃) ⇒ (V̂ , U, m̃) ⊁ (V, U, m).
+
+This property is a necessary and sufficient condition for a binary relation to be a domination rule. Decoder given by
+(17), however, either accepts or rejects the tentative decision M̃ given in (15). Consequently its domination rule also
+satisfies following two properties:
+(a) If the empirical mutual information of the messages in the communication phase are not equal, only the message
+with larger mutual information can dominate the other one.
+(b) If the empirical mutual information of the messages in the communication phase are equal, only the message with
+lower index can dominate the other one.
+For any such binary relation there is a corresponding decoder of the form given in equation (17). In our scheme we
+either use the trivial domination rule leading to the trivial decoder M̂ = M̃ or the domination rule given in equation
+(18), both of which satisfies these conditions.
+
+
+
+
+
+I (P, V ) > I P, V̂ and αη R , P, V, V̂ + (1 − α)D ( U k Wa |Π) ≤ Ex
+
+
+
+α
+(V, U, m) ≻ (V̂ , U, m̃) ⇔
+I (P, V ) ≥ I P, V̂ and αη R , P, V, V̂ + (1 − α)D ( U k Wa |Π) ≤ Ex
+α
+
+if m ≥ m̃
+if m < m̃
+
+(18)
+
+
+
+where η R, P, V, V̂ is given by the equation (14).
+Among the family of decoders we are considering, i.e. among the decoders that only depend on the pairwise
+comparisons between conditional types and indices of the messages compared, the decoder given in (17) and (18) is
+optimal in terms of error exponent erasure exponent trade off. Furthermore, in order to employ this decoding rule, the
+receiver needs to determine only the two messages with the highest empirical mutual information in the first phase.
+Then the receiver needs to check whether the triplet corresponding to the tentative decision dominates the triplet
+corresponding to the message with the second highest empirical mutual information. If it does then, for the rule given
+in (18), it is guaranteed to dominate the rest of the triplets too.
+Note that conditional probability, P[Yn | M = m], is only a function of corresponding VYn1 |x n (m) and UYnn +1 . Thus all decoding rules, that
+1
+P[Yn |M=M̃]
+accepts or rejects the tentative decision, M̃, based on a threshold test on likelihood ratios, P[Yn |M=m] , for m 6= M̃ are in this family of decoding
+rules.
+11
+
+7
+
+D. Error Analysis
+Using an encoder like the one described in Section III-B and a decoder like the one in (17) we achieve the
+performance given below. If Ex ≤ αEr ( R
+α , P ) then the domination rule given in equation (18) is used in the decoder;
+else a trivial domination rule that leads to a erasure-free decoding, M̂ = M̃, is used in the decoder.
+Theorem 1: For any block length n ≥ 1, rate R, erasure exponent Ex , time sharing constant α, communication
+phase type P and control phase type Π, there exists a length n block code with feedback such that
+ln |M| ≥ en(R−δn )
+
+′
+
+Px ≤ e−n(Ex −δn )
+
+′
+
+Pe ≤ e−n(Ee (R,Ex ,α,P,Π)−δn )
+
+where Ee (R, Ex , α, P, Π) is given by,
+
+R
+
+αE
+if Ex > αEr ( R
+r( α , P ) 
+
+α,P)
+
+
+
+R
+R
+αη α , P, V̂ , V + (1 − α)D ( U k Wr |Π) if Ex ≤ αEr ( α , P )
+min
+Ee =
+(V,
+V̂
+,U
+):(V,
+V̂
+,U
+)∈V
+
+
+
+
+
+ αη R
+α ,P,V,V̂ +(1−α)D( U kWa |Π)≤Ex
+V = {(V1 , V2 , U ) : I (P, V1 ) ≥ I (P, V2 ) and (P V1 )Y = (P V2 )Y }
+′
+
+δn =
+
+(|X |+1)2 |Y| log(n+1)
+n
+
+
+
+
+
+
+
+
+
+
+
+(19a)
+
+(19b)
+(19c)
+
+The optimization problem given in (19) is a convex optimization problem: it is minimization of a convex function
+over a convex set. Thus the value of the exponent, Ee (R, Ex , α, P, Π) can numerically be calculated relatively easily.
+Furthermore Ee (R, Ex , α, P, Π) can be written in terms of solutions of lower dimensional optimization problems (see
+equation (38). However problem of finding the optimal (α, P, Π) triple for a given (R, Ex ) pair is not that easy in
+general, as we will discuss in more detail in Section III-E.
+Note that for all control phase types Π and control phaseoutput types U , D ( U k Wa |Π) ≥ 0, D ( U k Wr |Π) ≥ 0.
+Using this fact together with the definitions of Er (R, P ), η R, P, V̂ , V and Ee (R, Ex , α, P, Π) given in (5), (14)
+and (19) we get:
+∀(R, Ex , α, P, Π) s.t. Ex ≤ αEr ( R
+α,P)
+
+Ee (R, Ex , α, P, Π) ≥ αEr ( R
+α,P)
+
+(20)
+
+Since we are interested in quantifying the gains of errors-and-erasures decoding over the decoding schemes without
+erasures we are ultimately interested only in the region where Ex ≤ αEr ( R
+α , P ) holds. However equation (19) gives
+us the whole achievable region for the family of codes we are considering.
+Proof: A decoder of the form given in (17) decodes correctly when M̃ = M and (Yn , M) ≻ (Yn , m) for all12
+m 6= M. Thus an error or an erasure occur only when the correct message does not dominate all other messages, i.e.
+when ∃m 6= M such that (Yn , M) ⊁ (Yn , m). Consequently, we can write the sum of conditional error and erasure
+probabilities for a message m ∈ M as,
+Pe|m + Px|m = P[{y n : ∃m̃ 6= m s.t.(y n , m) ⊁ (y n , m̃)}| M = m]
+
+(21)
+
+This can happen in two ways, either there is an error in the first phase, i.e. M̃ 6= m or first phase tentative decision
+is correct, i.e. M̃ = m , but the second phase observation ynn1 +1 leads to an erasure i.e. M̂ = x. For a decoder using a
+domination rule satisfying constraints described in Section III-C,
+X
+X
+X
+Pe|m + Px|m ≤
+P[y n1 | m]
+V V̂ :I(P,V̂ )≥I(P,V ) y n1 ∈F (n1 ) (V,V̂ ,m )
+X
+X
+X
+X
+X
+
+
+
++
+P[y n1 | m]
+P ynn1 +1  xnn1 +1 (a) .
+n
+V V̂ :I(P,V̂ )≤I(P,V ) y n1 ∈F (n1 ) (V,V̂ ,m )
+U :(V,U,m)⊁(V̂ ,U,m+1) yn1 +1 ∈TU
+12
+
+We use the short hand (Yn , M) ≻ (Yn , m) for (VYn1 |M , UYnn
+
+1 +1
+
+, M) ≻ (VYn1 |m , UYnn
+
+1 +1
+
+8
+
+, m) in the rest of this section.
+
+
+
+where13 F (n1 ) V, V̂ , m is the intersection of V -shell of message m ∈ M with the V̂ -shells of other messages,
+defined in equation (12). As a result of Corollary 1 we have
+
+
+h
+i
+X
+
+P[y n1 | m] = P F (n1 ) V, V̂ , m  M = m
+y n1 ∈F (n1 ) (V,V̂ ,m )
+R
+≤ e−n1 η( α ,P,V,V̂ ) .
+Furthermore because of equation (16a)
+X
+
+
+
+
+
+P ynn1 +1  xnn1 +1 (a) = P TU | Xnn1 +1 = xnn1 +1 (a)
+ynn1 +1 ∈TU
+
+≤ e−(n−n1 )D( U kWa |Π) .
+
+In addition the number of different non-empty V -shells in the communication phase is less than (n1 + 1)|X ||Y| and
+2
+the number of non-empty U -shells in the control phase is less than (n − n1 + 1)|X | |Y|. We denote the set of (V, V̂ , U )
+triples that corresponds to erasures with a correct tentative decision by Vx :
+n
+
+
+o
+Vx , (V, V̂ , U ) : I (P, V ) ≥ I P, V̂ and (P V )Y = (P V̂ )Y and (V, U, m) ⊁ (V̂ , U, m + 1) .
+(22)
+
+In the above definition m is a dummy variable and Vx is the same set for all m ∈ M. Thus using (22) we get
+Pe|m + Px|m ≤ (n1 + 1)2|X ||Y|
+
+max
+
+V,V̂ :I(P,V )≤I(P,V̂ )
+
++ (n1 + 1)2|X ||Y| (n − n1 + 1)|X |
+
+2
+
+e−n1 η(R/α,P,V,V̂ )
+
+|Y|
+
+e−n1 (η(R/α,P,V,V̂ ))−(n−n1 )D( U kWa |Π) .
+
+max
+(V,V̂ ,U )∈Vx
+
+Using the definition of Er ( R
+α , P ) given in (5) we get
+o
+n
+′
+Pe|m + Px|m ≤ enδn max e−nαEr (R/α,P ) , e−n min(V,V̂ ,U )∈Vx αη(R/α,P,V,V̂ )+(1−α)D( U kWa |Π) .
+
+(23)
+
+On the other hand an error occurs only when an incorrect message dominates all other messages, i.e. when ∃m̃ 6= m
+˜ for all m̃ 6= m̃
+˜:
+such that (Yn , m̃) ≻ (Yn , m̃)
+ n
+	
+
+˜
+˜ 6= m̃  M = m .
+Pe|m = P y : ∃m̃ 6= m s.t. (y n , m̃) ≻ (y n , m̃)
+∀m̃
+
+˜ 6= m̃ , it also dominates m , i.e.
+Note that when a m̃ ∈ M dominates all other m̃
+ n
+	
+˜
+˜ 6= m̃ ⊂ {y n : ∃m̃ 6= m s.t.(y n , m̃) ≻ (y n , m)} .
+∀m̃
+y : ∃m̃ 6= m s.t.(y n , m̃) ≻ (y n , m̃)
+
+Thus,
+
+Pe|m ≤ P[{y n : ∃m̃ 6= m s.t.(y n , m̃) ≻ (y n , m)}| M = m]
+X
+X
+X
+X
+X
+
+
+
+=
+P ynn1 +1  xnn1 +1 (r) .
+P[y n1 | M = m]
+n
+V V̂ :I(P,V̂ )≥I(P,V ) y n1 ∈F (n1 ) (V,V̂ ,m )
+U :(V̂ ,U,m−1)≻(V,U,m) yn1 +1 ∈TU
+
+(24)
+
+The tentative decision is not equal to m only if there is a message with a strictly higher empirical mutual information
+or if there is a messages which has equal mutual information but smaller index. This is the reason why we sum over
+(V̂ , U, m − 1) ≻ (V, U, m). Using the inequality (16b) in the inner most two sums and then applying inequality (13)
+we get,
+Pe|m ≤ (n + 1)(|X |
+′
+
+2
+
++2|X |)|Y|
+(V,V̂ ,U ):
+
+max
+I(P,V̂ )≥I(P,V )
+
+e−n(αη(R/α,P,V,V̂ )+(1−α)D( U kWr |Π))
+
+(V̂ ,U,m−1)≻(V,U,m)
+
+nδn −n min(V̂ ,V,U )∈Ve (αη(R/α,P,V,V̂ )+(1−α)D( U kWr |Π))
+
+≤e
+
+′
+
+e
+
+nδn −n min(V,V̂ ,U )∈Ve (αη(R/α,P,V̂ ,V )+(1−α)D( U kWr |Π))
+
+=e
+13
+
+e
+
+Note that for the case when m = |M|, we need to replace (V, U, m) ⊁ (V̂ , U, m + 1) with (V, U, m − 1) ⊁ (V̂ , U, m).
+
+9
+
+(25)
+
+where Ve is the complement of Vx in V given by
+n
+
+
+o
+Ve , (V, V̂ , U ) : I (P, V ) ≥ I P, V̂ and (P V )Y = (P V̂ )Y and (V, U, m) ≻ (V̂ , U, m + 1) .
+
+(26)
+
+Note that m in the definition of Ve is also a dummy variable. The domination rule ≻ divides the set V into two
+subsets: the erasure subset Vx and the error subset Ve . Choosing domination rule is equivalent to choosing the Ve .
+Depending on the value of αEr ( R
+α , P ) and Ex we chose different Ve ’s as follows:
+R
+(i) Ex > αEr ( α , P ): Ve = 
+V . Then Vx = ∅ and Theorem
+follows from equation (23). 
+ 1
+
+I (P, V ) ≥ I P, V̂ and (P V )Y = (P V̂ )Y and 
+
+
+(V,
+V̂
+,
+U
+)
+:
+,
+P
+)
+:
+V
+=
+(ii) Ex ≤ αEr ( R
+. Then all the (V, V̂ , U )
+e
+α
+
+
+αη R
+,
+P,
+V,
+V̂
++
+(1
+−
+α)D
+(
+U
+k
+W
+|Π)
+≤
+E
+a
+x
+α
+
+
+R
+triples satisfying αη α , P, V, V̂ +(1−α)D ( U k Wa |Π) ≤ Ex are in the the error subset. Thus as a result of
+′
+
+equation (23) erasure probability is bounded as Px ≤ e−n(Ex −δn ) and Theorem 1 follows from equation (25).
+
+E. Lower Bound to Ee (R, Ex ):
+
+In this section we use Theorem 1 to derive a lower bound to the optimal error exponent Ee (R, Ex ). We do that by
+optimizing the achievable performance Ee (R, Ex , α, P, Π) over α, P and Π.
+1) High Erasure Exponent Region (i.e. Ex > Er (R)): As a result of (19), ∀R ≥ 0 and ∀Ex > Er (R)
+Ee (R, Ex , α, P, Π) = αEr ( R
+α , P ) ≤ Er (R)
+
+Ee (R, Ex , α̃, P̃ , Π) = Er (R)
+
+∀α ∈ [0, 1],
+
+∀P,
+
+α̃ = 1,
+
+P̃ = arg max Er (R, P ),
+P
+
+∀Π
+
+∀Π.
+
+(27a)
+(27b)
+
+Thus for all (R, Ex ) pairs such that Ex > Er (R): optimal time sharing constant is 1, optimal input distribution is
+the optimal input distribution for random coding exponent at rate R, we use maximum mutual information decoding
+and never declare erasures. Furthermore since α = 1 we have only a single phase in our scheme.
+Ee (R, Ex ) = Ee (R, Ex , 1, Pr(R) , Π) = Er (R)
+
+∀R ≥ 0
+
+∀Ex > Er (R)
+
+(28)
+
+where Pr(R) satisfies Er (R, Pr(R) ) = Er (R) and Π can be any control phase type. Evidently benefits of errors-anderasures decoding is not observed in this region.
+2) Low Erasure Exponent Region (i.e. Ex ≤ Er (R)): We observe and quantify the benefits of errors-and-erasures
+decoding for (R, Ex ) pairs such that Ex ≤ Er (R). Since Er (R) is a non-negative non-increasing and convex function
+of R, we have
+α ∈ [α∗ (R, Ex ), 1] ⇔ Ex ≤ αEr ( R
+∀R ≥ 0
+∀0 < Ex ≤ Er (R)
+α)
+where α∗ (R, Ex ) is the unique solution of the equation αEr ( R
+α ) = Ex .
+R
+For the case Ex = 0, however, αEr ( α ) = 0 has multiple solutions and Theorem 1 holds but resulting error
+exponent, Ee (R, 0, α, P, Π), does not correspond to the error exponent of a reliable sequence. Convention introduced
+below in equation (29) addresses both issues at once, by choosing the minimum of those solutions as α∗ (R, 0). In
+addition by this convention α∗ (R, Ex ) is also continuous at Ex = 0: limEx →0 α∗ (R, Ex ) = α∗ (R, 0).
+(
+R
+Ex ∈ (0, Er (R)]
+−1
+α∗ (R, Ex ) , g (Ex /R)
+(29)
+R/C
+Ex = 0
+
+where g−1 (·) is the inverse of the function g(r) = Err(r) .
+As a result equations (19) and (29), ∀R ≥ 0 and ∀0 < Ex ≤ Er (R) we have
+Ee (R, Ex , α, P, Π) = αEr ( R
+α , P ) ≤ Er (R)
+
+Ee (R, Ex , α̃, P̃ , Π) = Er (R)
+
+∀α ∈ [0, α∗ (R, Ex )),
+α̃ = 1,
+
+∀P,
+
+P̃ = arg max Er (R, P ),
+P
+
+∀Π
+
+∀Π.
+
+(30a)
+(30b)
+
+Thus for all (R, Ex ) pairs such that Ex ≤ Er (R) optimal time sharing constant is in the interval [α∗ (R, Ex ), 1].
+For an (R, Ex , α) triple such that R ≥ 0, Ex ≤ Er (R) and α ∈ [α∗ (R, Ex ), 1] let P (R, Ex , α) be
+P (R, Ex , α) , {P : αEr ( R
+α , P ) ≥ Ex , I (P, W ) ≥
+
+10
+
+R
+α }.
+
+(31)
+
+The constraint on mutual information is there to ensure that Ee (R, 0, α, P, Π)’s are corresponding to error exponent
+of reliable sequences. The set P (R, Ex , α) is convex because Er (R, P ) and I (P, W ) are concave in P .
+Note that ∀R ≥ 0 and ∀Ex ∈ (0, Er (R)],
+∀α ∈ [α∗ (R, Ex ), 1],
+
+Ee (R, Ex , α, P, Π) = αEr ( R
+α,P)
+
+Ee (R, Ex , α, P̃ , Π) ≥
+
+∗
+
+αEr ( R
+α)
+
+∀α ∈ [α (R, Ex ), 1],
+
+∀P ∈
+/ P (R, Ex , α) ,
+P̃ =
+
+∀Π
+
+arg max Er ( R
+α , P ),
+P
+
+∀Π.
+
+(32a)
+(32b)
+
+As a result of (32) we can restrict the optimization over P to P (R, Ex , α) when R ≥ 0 and Ex ∈ (0, Er (R)]. For
+Ex = 0 case if we require the expression Ee (R, 0, α, P, Π) to correspond to the error exponent of a reliable sequence,
+we get the restriction given in equation (32). Thus using Theorem 1 we conclude that Ee (R, Ex ) given below is an
+achievable error exponent at rate R and erasure exponent Ex .
+Ee (R, Ex ) =
+
+max
+
+max
+
+α∈[α∗ (R,Ex ),1] P ∈P(R,Ex ,α)
+
+max Ee (R, Ex , α, P, Π)
+Π
+
+∀R ≥ 0
+
+∀Ex ≤ Er (R)
+
+(33)
+
+where α∗ (R, Ex ), P (R, Ex , α) and Ee (R, Ex , α, P, Π) are given in equations (29), (31) and (19).
+Note that unlike Ee (R, Ex , α, P, Π) itself, Ee (R, Ex ) as defined in (33) corresponds to error exponent of reliable
+code sequences even at Ex = 0.
+If the maximizing P for the inner maximization in equation (33) is same for all α ∈ [α∗ (R, Ex ), 1], the optimal
+value of α is α∗ (R, Ex ). In order to see that, we first observe that any fixed (R, Ex , P, Π) such that Er (R, P ) ≥ Ex ,
+function Ee (R, Ex , α, P, Π) is convex in α for all α ∈ [α∗ (R, Ex , P ), 1] where α∗ (R, Ex , P ) is the unique solution
+of the equation14 αEr ( R
+α , P ) = Ex as it is shown Lemma 10 in Appendix B. Since the maximization preserves the
+convexity, maxΠ Ee (R, Ex , α, P, Π) is also convex in α for all α ∈ [α∗ (R, Ex , P ), 1]. Thus for any (R, Ex , P ) triple,
+maxΠ Ee (R, Ex , α, P, Π), takes its maximum value either at the minimum possible value of α, i.e. α∗ (R, Ex , P ) =
+α∗ (R, Ex ), or at the maximum possible value of α, i.e. 1. It is shown in Appendix C maxΠ Ee (R, Ex , α, P, Π) takes
+its maximum value at α = α∗ (R, Ex ).
+Furthermore if the maximizing P is not only the same for all α ∈ [α∗ (R, Ex ), 1] for a given (R, Ex ) pair but also
+for all (R, Ex ) pairs such that Ex ≤ Er (R) then we can find the optimal Ee (R, Ex ) by simply maximizing over Π’s.
+In symmetric channels, for example, uniform distribution is the optimal distribution for all (R, Ex ) pairs. Thus
+
+
+Ee (R, Ex , 1, P ∗ , Π)
+if Ex > Er (R, P ∗ )
+(34)
+Ee (R, Ex ) =
+maxΠ Ee (R, Ex , α∗ (R, Ex ), P ∗ , Π) if Ex ≤ Er (R, P ∗ )
+where P ∗ is the uniform distribution.
+
+F. Alternative Expression for Exponent:
+The minimization given in (19) for Ee (R, Ex , α, P, Π) is over transition probability matrices and control phase
+output types. In order to get a better grasp of the resulting expression, we simplify the analytical expression in this
+section. We do that by expressing the minimization in (19) in terms of solutions of lower dimensional optimization
+problems.
+Let ζ(R, P, Q) be the minimum Kullback-Leibler divergence under P with respect to W among the transition
+probability matrices whose mutual information under P is less than R and whose output distribution under P is Q.
+It is shown in Appendix B that for a given P , ζ(R, P, Q) is convex in (R, Q) pair. Evidently for a given (P, Q) pair
+ζ(R, P, Q) is a non-increasing in R. Thus for a given (P, Q) pair ζ(R, P, Q) is strictly decreasing on a closed interval
+and is an extended real valued function of the form:
+
+
+∞
+R < Rl∗ (P, Q)
+
+
+
+∗ (P, Q), R∗ (P, Q)] 
+D
+(
+V
+k
+W
+|P
+)
+R
+∈
+[R
+min
+I(P,V
+)≤R
+h
+l
+ζ(R, P, Q) =
+(35a)
+V:
+(P V )Y =Q
+
+
+
+
+∗
+minV :(P V )Y =Q D ( V k W |P ) R > Rh (P, Q)
+Rl∗ (P, Q) = min
+
+P V ≫P W I (P, V
+V :(P
+V )Y =Q
+
+Rh∗ (P, Q) = minR
+
+(
+
+R : min
+
+V:
+
+)
+
+(35b)
+
+I(P,V )≤R D ( V
+(P V )Y =Q
+
+)
+
+k W |P ) = minV :(P V )Y =Q D ( V k W |P )
+
+(35c)
+
+14
+Evidently we need to make a minor modification for Ex = 0 case as before to ensure that we consider only the Ẽe (R, Ex , α, P, Π)’s that
+R
+correspond to the reliable sequences: α∗ (R, 0, P ) = I(P,W
+.
+)
+
+11
+
+where P V ≫ P W iff for all (x , y) pairs such that P (x )W (y|x ) is zero, P (x )V (y|x ) is also zero.
+Let Γ (T, Π) be the minimum Kullback-Leibler divergence with respect to Wr under Π, among the U ’s whose
+Kullback-Leibler divergence with respect to Wa under Π is less than or equal to T .
+Γ (T, Π) ,
+
+For a given Π, Γ (T, Π) is non-increasing and
+interval. An equivalent expressions for Γ (T, Π)
+
+∞
+
+D ( Us k Wr |Π)
+Γ (T, Π) =
+
+D ( U1 k Wr |Π)
+
+where
+
+Us (y|x1 , x2 ) =
+
+For a (R, Ex , α, P, Π) such that Ex ≤
+the equations (14), (35) and (37) we get
+Ee(R, Ex , α, P, Π) =
+
+
+
+
+
+
+
+
+
+min
+
+U :D( U kWa |Π)≤T
+
+(36)
+
+convex in T , thus Γ (T, Π) is strictly decreasing in T on a closed
+and boundaries of this closed interval is derived in Appendix A,
+
+if T < D ( U0 k Wa |Π)
+
+if T = D ( Us k Wa |Π) for some s ∈ [0, 1]
+(37)
+
+if T > D ( U1 k Wa |Π)
+
+1{W (y|x2 )>0}
+W (y|x1 )
+ỹ:W (ỹ|x2 )>0 W (ỹ|x1 )
+1−s
+s
+W
+(y|x
+)
+W
+(y|x
+)
+1
+2
+P
+1−s W (ỹ|x )s
+2
+ỹ W (ỹ|x1 )
+1{W (y|x1 )>0}
+P
+W (y|x2 )
+ỹ:W (ỹ|x )>0 W (ỹ|x2 )
+P
+
+if
+
+s=0
+
+if
+
+s ∈ (0, 1)
+
+if
+
+s=1
+
+1
+
+αEr ( R
+α , P ),
+min
+
+αζ( Rα1
+
+D ( U k Wr |Π)
+
+
+
+
+
+
+
+
+
+using the definition of Ee (R, Ex , α, P, Π) in (19) together with
+
+Q,T,R1 ,R2 :
+R1 ≥R2 ≥0, T ≥0
+,P,Q)+|R2 −R|+ +T ≤Ex
+
+αζ( Rα2 , P, Q) + |R1 − R|+ + (1 − α)Γ
+
+
+
+
+
+T
+1−α , Π
+
+For any (R, Ex , α, P, Π) above minimum is also achieved at a (Q, R1 , R2 , T ) such that R1 ≥ R2 ≥ R. In order to
+see this take any minimizing (Q∗ , R1∗ , R2∗ , T ∗ ), then there are three possibilities:
+(a) R1∗ ≥ R2∗ ≥ R claim holds trivially.
+(b) R1∗ ≥ R > R2∗ , since ζ( Rα2 , P, Q) is non-increasing function (Q∗ , R1∗ , R, T ∗ ), is also minimizing, thus claim holds.
+∗
+∗
+(c) R > R1∗ > R2∗ , since ζ( R
+α , P, Q) is non-increasing function (Q , R, R, T ), is also minimizing, thus claim holds.
+Thus we obtain the following expression for Ee (R, Ex , α, P, Π),
+
+
+if Ex > αEr ( R
+αEr ( R
+
+α,P)
+α,P) 
+
+
+
+
+
+
+R2
+R
+T
+,
+P,
+Q)
++
+R
+−
+R
++
+(1
+−
+α)Γ
+,
+Π
+if
+E
+≤
+αE
+(
+,
+P
+)
+min
+αζ(
+1
+x
+r
+α
+1−α
+α
+(38)
+Ee(R, Ex , α, P, Π) = Q,T,R1 ,R2 :
+
+
+
+
+R
+≥R
+≥R,
+T
+≥0
+1
+2
+
+
+R1
+αζ(
+
+α
+
+,P,Q)+R2 −R+T ≤Ex
+
+Equation (38) is simplified further for symmetric channels. For symmetric channels,
+Esp (R) = ζ(R, P ∗ , Q∗ ) = min ζ(R, P ∗ , Q)
+Q
+
+(39)
+
+where P ∗ is the uniform input distribution and Q∗ is the corresponding output distribution under W .
+Using alternative expression for Ee (R, Ex , α, P, Π) given in (38) together with equations (34) and (39) for symmetric
+channels we get,
+
+
+Er (R)
+if Ex > Er (R) 
+
+
+
+
+
+
+
+
+
+
+′′
+∗
+∗
+T
+R′
+max
+min
+,
+Π
+if
+E
+≤
+E
+(R)
++
+R
+−
+R
++
+(1
+−
+α
+)Γ
+α
+E
+∗
+x
+r
+sp α∗
+1−α
+′′
+′
+(40)
+Ee (R, Ex ) =
+Π
+R ,R ,T :
+
+
+R′′ ≥R′ ≥R T ≥0
+
+
+
+
+′′
+ α∗ E ( R )+R′ −R+T ≤E
+
+sp
+
+α∗
+
+x
+
+where α∗ (R, Ex ) is given in equation (29).
+Although (39) does not hold in general using definition of ζ(R, P, Q) and Esp (R, P ) we can assert that
+ζ(R, P, Q) ≥ min ζ(R, P, Q̃) = Esp (R, P )
+Q̃
+
+12
+
+(41)
+
+Note that (41) can be used to bound the minimized expression in (38) from below. In addition recall that if the set
+that a minimization is done over is enlarged resulting minimum can not increase. We can use (38) also to enlarge
+the set that minimization is done over in (41). Thus we get an exponent Ẽe (R, Ex , α, P, Π) which is smaller than or
+equal to Ee (R, Ex , α, P, Π) in all channels and for all Ẽe (R, Ex , α, P, Π)’s:
+
+
+R
+
+,P)
+if
+E
+>
+αE
+(
+,
+P
+)
+
+αEr ( R
+x
+r
+
+
+α
+α
+
+
+
+
+
+′
+
+
+′′
+R
+T
+R
+,
+P
++
+R
+−
+R
++
+(1
+−
+α)Γ
+,
+Π
+if
+E
+≤
+αE
+(
+,
+P
+)
+αE
+min
+x
+r
+sp
+α
+1−α
+α
+Ẽe (R, Ex , α, P, Π) =
+(42)
+R′′ ,R′ ,T :
+
+
+R′′ ≥R′ ≥R T ≥0
+
+
+
+
+
+
+R′′
+αE (
+,P )+R′ −R+T ≤E
+sp
+
+x
+
+α
+
+After an investigation very similar to the one we have already done for Ee (R, Ex , α, P, Π) in Section III-E, we obtain
+the below expression for the optimal error exponent for reliable sequences emerging from (42):
+)
+(
+Er (R)
+∀R ≥ 0 ∀Ex > Er (R)
+(43)
+Ẽe (R, Ex ) =
+max
+max
+max Ẽe (R, Ex , α, P, Π) ∀R ≥ 0 ∀Ex ≤ Er (R)
+α∈[α∗ (R,Ex ),1] P ∈P(R,Ex ,α)
+
+Π
+
+where α∗ (R, Ex ), P (R, Ex , α) and Ẽe (R, Ex , α, P, Π) are given in equations (29), (31) and (42), respectively.
+G. Special Cases
+1) Zero Erasure Exponent Case, Ee (R, 0): Using a simple repetition-at-erasures scheme, fixed length errors-anderasures codes, can be converted into variable length block codes, with the same error exponent. Thus the error
+exponents of variable length block codes given by Burnashev in [3] is an upper bound to the error exponent of fixed
+length block codes with erasures:
+
+Ee (R, Ex ) ≤ 1 − R
+∀R ≥ 0, Ex ≥ 0
+C D
+P
+(y|x )
+where D = maxx ,x̃ y W (y|x ) log W
+W (y|x̃ ) .
+We show below that, Ẽe (R, 0) ≥ (1 − R
+C )D . This implies that our coding scheme is optimal for Ex = 0 for all
+R
+rates i.e. Ẽe (R, 0) = Ee (R, 0) = (1 − C )D .
+R
+Recall that for all R less than capacity α∗ (R, 0) = R
+C . Furthermore for any α ≥ C
+P (R, 0, α) = {P : I (P, W ) ≥
+
+R
+α}
+
+′′
+
+Thus for any (R, 0, α, P ) such that P ∈ P (R, 0, α), R′′ ≥ R′ ≥ R, T ≥ 0 and αEsp ( Rα , P ) + R′ − R + T ≤ 0,
+imply that R′ = R, R′′ = αI (P, W ), T = 0. Consequently
+
+
+
+R
+Ẽe (R, 0, α, P, Π) = α Esp R
+(44)
+α , P + I (P, W ) − α + (1 − α)D ( Wr k Wa |Π)
+When we maximize over Π and P ∈ P (R, 0, α) we get:
+
+Ẽe (R, 0, α) = max αEsp R
+α , P + αI (P, W ) − R + (1 − α)D
+P ∈P(R,0,α)
+
+Simply inserting the minimum possible value of α i.e. α∗ (R, 0) =
+Ẽe (R, 0, R
+C)=
+
+max
+
+P ∈P (R,0, R
+C)
+
+= (1 −
+
+R
+C Esp (C, P )
+
+R
+C )D.
+
++
+
+R
+C:
+
+R
+C I (P, W ) −
+
+R + (1 −
+
+∀α ∈ [ R
+C , 1].
+
+(45)
+
+R
+C )D
+
+Thus Ẽe (R, 0) ≥ (1 − R
+C )D .
+Indeed one need not to rely on the converse on variable length block codes in order to establish the fact that
+Ẽe (R, 0) = (1 − R
+C )D . The lower bound to probability of error presented in the next section, not only recovers this
+particular optimality result but also upper bounds the optimal error exponent, Ee (R, Ex ), as a function of rate R and
+erasure exponents Ex .
+2) Channels with non-zero Zero Error Capacity: For channels with a non-zero zero-error capacity, as a result of
+equation (19) Ee (R, Ex ) = ∞ for any Ex < Er (R). This implies that we can get error-free block codes with this
+two phase coding scheme for any rate R < C and any erasure exponent Ex ≤ Er (R). As we discuss in Section V in
+more detail, this is the best erasure exponent for rates over the critical rate, at least for symmetric channels.
+13
+
+IV. A N O UTER B OUND
+
+FOR
+
+E RROR E XPONENT E RASURE E XPONENT T RADE O FF
+
+In this section we derive an upper bound on Ee (R, Ex ) using previously known results on erasure free block codes
+with feedback and a generalization of the straight line bound of Shannon, Gallager and Berlekamp [31]. We first
+present a lower bound on the minimum error probability of block codes with feedback and erasures, in terms of that
+of shorter codes in Section IV-A. Then in Section IV-B we make a brief overview of the outer bounds on the error
+exponents of erasure free block codes with feedback. Finally in Section IV-C, we use the relation we have derived in
+Section IV-A to tie the previously known results we have summarized in Section IV-B to bound Ee (R, Ex ).
+A. A Trait of Minimum Error Probability of block codes with Erasures
+Shannon, Gallager and Berlekamp in [31] considered fixed length block codes, with list decoding and established
+a family of lower bounds on the minimum error probability in terms of the product of minimum error probabilities
+of certain shorter codes. They have shown, [31, Theorem 1], that for fixed length block codes with list decoding and
+without feedback
+P˜e (M, n, L) ≥ P˜e (M, n1 , L1 )P˜e (L1 + 1, n − n1 , L)
+(46)
+
+where P˜e (M, n, L) denotes the minimum error probability of erasure free block codes of length n with M equally
+probable messages and with decoding list size L. As they have already pointed out in [31] this theorem continues to
+hold in the case when a feedback link is available from receiver to the transmitter; although P˜e ’s are different when
+feedback is available, the relation given in equation (46) still holds. They were interested in erasure free codes. We,
+on the other hand, are interested in block codes which might have non-zero erasure probability. Accordingly we need
+to incorporate erasure probability as one of the parameters of the optimal error probability. This is what this section
+is dedicated to.
+In a size L list decoder with erasures, decoded set M̂ is either a subset15 of M whose size is at most L, like the
+erasure-free case, or a set which only includes the erasure symbol, i.e. either M̂ ⊂ M such that |M̂| ≤ L or M̂ = {x}.
+An erasure occurs whenever M̂ = {x} and an error occurs whenever M̂ 6= {x} and M ∈
+/ M̂. We will denote the
+minimum error probability of length n block codes, with M equally probable messages, decoding list size L and
+erasure probability Px by Pe (M, n, L, Px ).
+Theorem 2 below bounds the error probability of block codes with erasures and list decoding using the error
+probabilities of shorter codes with erasures and list decoding, like [31, Theorem 1] does in the erasure free case. Like
+its counter part in erasure free case Theorem 2 is later used to establish outer bounds to error exponents.
+Theorem 2: For any n, M , L, Px , n1 ≤ n, L1 , and 0 ≤ s ≤ 1 the minimum error probability of fixed length block
+codes with feedback satisfy
+
+
+(1−s)Px
+(1 − s)Pe (M, n, L, Px ) ≥ Pe (M, n1 , L1 , s)Pe L1 + 1, n − n1 , L, Pe (M,n
+(47)
+1 ,L1 ,s)
+
+Note that given a (M, n, L) triple if the error probability erasure probability pairs (Pe1 , Px1 ) and (Pe2 , Px2 ) are
+achievable, then for any γ ∈ [0, 1] using the initial symbol A0 of the feedback link we can construct a code that uses
+the code achieving (Pe1 , Px1 ) with probability γ , the code achieving (Pe2 , Px2 ) with probability (1 − γ ). This new
+code achieves error probability erasure probability pair (γPea + (1 − γ)Peb , γPxa + (1 − γ)Pxb ). As a result for any
+(M, n, L) triple the set of achievable error probability erasure probability pairs is convex. We use this fact twice in
+order to prove Theorem 2.
+Let us first consider the following lemma which bounds the achievable error probability erasure probability, pairs
+for block codes with nonuniform a priori probability distribution, in terms of block codes with a uniform a priori
+probability distribution but fewer messages.
+Lemma 2: For any length n block code with message set M, a priori probability distribution ϕ(·) on M, erasure
+probability Px , decoding list size L, and integer K
+
+
+Px
+Pe ≥ Ω (ϕ, K) Pe K + 1, n, L, Ω(ϕ,K)
+where
+Ω (ϕ, K) =
+min
+ϕ(S c ), S c = M/S.
+(48)
+S⊂M,|S|≤K
+
+15
+
+Note that if M̂ ⊂ M then x ∈
+/ M̂ because x ∈
+/ M.
+
+14
+
+Recall that Pe (K + 1, n, L, Px ) is the minimum error probability of length n codes with (K + 1) equally probable
+messages and decoding list size L, with feedback if the original code does have feedback and without feedback if the
+original code does not.
+Note that Ω (ϕ, K) is the error probability of a decoder which decodes to the set of K most likely messages under
+ϕ. In other words Ω (ϕ, K) is the minimum error probability for a size K list decoder when the posterior probability
+distribution is ϕ.
+Proof: If Ω (ϕ, K) = 0, the lemma holds trivially. Thus we assume Ω (ϕ, K) > 0 henceforth. For any size
+(K + 1) subset M′ of M, one can use the encoding scheme and the decoding rule of the original code for M, to
+construct the following block code for M′ :
+• Encoder:∀m ∈ M′ use the encoding scheme for message m in the original code, i.e.
+Xt′ (m, z t−1 ) = Xt (m, z t−1 )
+
+•
+
+∀m ∈ M′ , t ∈ [1, n], z t−1 ∈ Z t−1
+
+Decoder: For all z n ∈ Z n if the original decoding rule declares erasure, declare erasure, else the decode to the
+intersection of the original decoded list and M′ .
+(
+x
+if M̂ = x
+′
+M̂ =
+′
+M̂ ∩ M else
+
+This is a length n code with (K + 1) messages and decoding list size L. Furthermore for all m in M′ the conditional
+′
+′
+error probability Pe|m
+and the conditional erasure probability Px|m
+are equal to the conditional error probability Pe|m
+and the conditional erasure probability Px|m in the original code, respectively.
+Note that
+X
+
+1
+Pe|m , Px|m ∈ Ψ(K + 1, n, L)
+∀M′ ⊂ M such that |M′ | = K + 1
+(49)
+K+1
+′
+m∈M
+
+where Ψ(K + 1, n, L) is the set of achievable error probability, erasure probability pairs for length n block codes with
+(K + 1) equally probable messages and with decoding list size L.
+Let the smallest non-zero element of {ϕ(1), ϕ(2), . . . ϕ(|M|)} be ϕ(ξ1 ). For any size (K + 1) subset of M which
+includes ξ1 and all whose elements have non-zero probabilities, say M1 , we have,
+X
+(Pe , Px ) =
+ϕ(m)(Pe|m , Px|m )
+Xm∈M
+X
+=
+[ϕ(m) − ϕ(ξ1 )1{m∈M1 } ](Pe|m , Px|m ) + ϕ(ξ1 )
+(Pe|m , Px|m )
+m∈M
+
+m∈M1
+
+Equation (49) and the definition of Ψ(K + 1, n, L), implies that ∃ψ1 ∈ Ψ(K + 1, n, L) such that
+X
+(Pe , Px ) =
+ϕ(1) (m)(Pe|m , Px|m ) + ϕ(ψ1 )ψ1
+m∈M
+X
+1 = ϕ(ψ1 ) +
+ϕ(1) (m)
+m∈M
+
+(50)
+(51)
+
+where ϕ(ψ1 ) = (K + 1)ϕ(ξ1 ) and ϕ(1) (m) = ϕ(m) − ϕ(ξ1 )1{m∈M1 } . Furthermore the number of non-zero ϕ(1) (m)’s
+is at least one less than that of non-zero ϕ(m)’s. The remaining probabilities, ϕ(1) (m), have a minimum, ϕ(1) (ξ2 )
+among its non-zero elements. One can repeat the same argument once more using that element and reduce the number
+of non-zero elements at least one more. After at most |M| − K such iterations one reaches to a ϕ(ℓ) which is non-zero
+for K or fewer messages:
+Xℓ
+X
+(Pe , Px ) =
+ϕ(ℓ) (m)(Pe|m , Px|m )
+(52)
+ϕ(ψj )ψj +
+j=1
+
+m∈M
+
+where ϕ(ℓ) (m) ≤ ϕ(m) for all m in M and m∈M 1{ϕ(ℓ) (m)>0} ≤ K .
+P
+In equation (52), the first sum is equal to a convex combination of ψj ’s multiplied by ℓj=1 ϕ(ψj ); the second sum
+is equal to a pair with non-negative entries. As a result of definition of Ω (ϕ, K) given in equation (48),
+Xℓ
+Ω (ϕ, K) ≤
+ϕ(ψj ).
+(53)
+P
+
+j=1
+
+15
+
+Then as a result of convexity of Ψ(K + 1, n, L) we can conclude that there exists a ψ ∈ Ψ(K + 1, n, L) such that
+(Pe , Px ) = aΩ (ϕ, K) ψ̃ + (b1 , b2 ) for some a ≥ 1, b1 ≥ 0 and b2 ≥ 0. Thus
+Px
+Pe
+, Ω(ϕ,K)
+) = ψ + (b3 , b4 ) for some b3 ≥ 0, b4 ≥ 0.
+∃ψ ∈ Ψ(K + 1, n, L) such that ( Ω(ϕ,K)
+
+(54)
+
+Then the lemma follows from equation (54), the fact that Pe (M, n, L, Px ) is decreasing in Px and the fact that
+Pe (M, n, L, Px ) is uniquely determined by Ψ(M, n, L) for sx ∈ [0, 1] as follows
+Pe (M, n, L, Px ) =
+
+min
+
+ψx :(ψe ,ψx )∈Ψ(M,n,L)
+
+ψe
+
+∀(M, n, L, ψx ).
+
+(55)
+
+For proving Theorem 2, we express the error and erasure probabilities, as a convex combination of error and erasure
+probabilities of (n−n1 ) long block codes with a priori probability distribution ϕz n1 (m) = P[m| z n1 ] over the messages
+and apply Lemma 2 together with convexity arguments similar to the ones above.
+Proof [Theorem 2]:
+For all m in M, let Υ(m) be the decoding region of m , Υ(x) be the decoding region of the erasure symbol x and
+Υ̃(m) the error region of m :
+Υ(m),{z n : m ∈ M̂}
+
+Υ̃(m),Υ(m)c ∩ Υ(x)c
+
+Υ(x),{z n : x ∈ M̂}
+
+Then for all m ∈ M,
+
+where Υc = Z n /Υ.
+
+ i
+ h
+
+
+(Pe|m , Px|m ) = P Υ̃(m) m , P[Υ(x)| m] .
+
+Note that16
+Px|m =
+=
+
+Then the erasure probability is
+X
+Px =
+
+X
+
+X
+
+1
+m∈M |M|
+
+=
+
+=
+
+X
+
+X
+
+z n1
+z n1
+
+n1
+
+P[z ]
+
+P[z n | m]
+X
+P[z n1 | m]
+n
+
+z n :z n ∈Υ(x)
+z n1
+
+X
+
+zn1 +1 :(z n1 ,znn1 +1 )∈Υ(x)
+
+z n1
+
+X
+
+P[z n1 | m]
+
+X
+n1
+
+m∈M
+
+P[z n1 ] Px (z n1 ).
+
+P[m| z ]
+
+(57)
+
+
+
+
+P znn1 +1  m, z n1 .
+
+znn1 +1 :(z n1 ,znn1 +1 )∈Υ(x)
+
+X
+
+(56)
+
+
+
+
+P znn1 +1  m, z n1
+
+znn1 +1 :(z n1 ,znn1 +1 )∈Υ(x)
+
+
+
+
+P znn1 +1  m, z n1
+
+
+
+Note that for every z n1 , Px (z n1 ) is the erasure probability of a code of length (n − n1 ) with a priori probability
+distribution ϕz n1 (m) = P[m| z n1 ]. Furthermore one can write the error probability, Pe as
+!
+X
+X
+X
+
+
+
+Pe =
+P[z n1 ]
+P[m| z n1 ]
+P z n  m, z n1
+z n1
+
+=
+
+(z n1 )
+
+X
+
+z n1
+
+m∈M
+n1
+P[z ] Pe (z n1 )
+
+znn1 +1 :(z n1 ,znn1 +1 )∈Υ̃(m)
+
+n1 +1
+
+is the error probability of the very same length (n − n1 ) code. As a result of Lemma 2, the pair
+where Pe
+(Pe (z n1 ), Px (z n1 )) satisfies
+
+
+Px (z n1 )
+.
+(58)
+Pe (z n1 ) ≥ Ω (ϕz n1 , L1 ) Pe L1 + 1, (n − n1 ), L, Ω(ϕ
+z n1 ,L1 )
+16
+
+There is a slight abuse of notation here, if A’s include real valued random variables with densities, we should integrate, rather than sum,
+over them. Since it is clear from the context what needs to be done we omit that subtlety in below calculations.
+
+16
+
+Then for any s ∈ [0, 1].
+
+
+X
+Px (z n1 )
+n1
+n
+L
++
+1,
+(n
+−
+n
+),
+L,
+(1 − s)Pe ≥
+P[z
+,
+L
+)
+P
+]
+(1
+−
+s)Ω
+(ϕ
+1
+1
+1
+e
+z 1
+Ω(ϕz n1 ,L1 )
+z n1
+X
+ 
+
+P
+n1
+](1−s)Px (z n1 )
+n1
+z n1 P[z
+P
+n
+L
++
+1,
+(n
+−
+n
+),
+L,
+≥
+,
+L
+)
+P
+]
+(1
+−
+s)Ω
+(ϕ
+P[z
+1
+n1 ](1−s)Ω(ϕ n ,L )
+1
+1
+1
+e
+z
+n
+1
+z 1
+z n1 P[z
+
+Xz 1
+ 
+x
+=
+P[z n1 ](1−s)Ω (ϕz n1 , L1 ) Pe L1 +1, (n−n1), L, P n P[z n1(1−s)P
+](1−s)Ω(ϕz n1 ,L1 )
+n
+z
+
+z 1
+
+1
+
+(59)
+
+where the second inequality follows from the convexity of Pe (M, n, L, Px ) in Px . Note that Pe (M, n, L, Px ) is
+convex in Px because of the equation (55) and the convexity of the region Ψ(M, n, L).
+Now consider a code which uses the first n1 time units of the original encoding scheme as its encoding scheme.
+Decoder of this new code draws a real number from [0, 1] uniformly at random, independently of Zn1 of the original
+code (and the message evidently). If this number is less than s it declares erasure else it makes a maximum
+likelihood decoding with list of size L1 . Then the sum on the left hand side of the below expression (60) is its error
+probability. But that probability is lower bounded by Pe (M, n1 , L1 , s) which is minimum error probability over all
+length n1 block codes with M messages and decoding list size L1 , i.e.
+X
+P[z n1 ] (1 − s)Ω (ϕz n1 , L1 ) ≥ Pe (M, n1 , L1 , s) .
+(60)
+n
+z
+
+1
+
+Then the theorem follows from the fact that Pe (M, n, L1 , Px ) is decreasing function of Px and the equations (59)
+and (60).
+QED
+Like the result of Shannon, Gallager and Berlekamp in [31, Theorem 1], Theorem 2 is correct both with and without
+feedback. Although Pe ’s are different in each case, the relationship between them given in equation (47) holds in
+both cases.
+B. Classical Results on Error Exponent of Erasure-free Block Codes with Feedback:
+
+In this section we give a very brief overview of the previously known results on the error probability of erasure
+free block codes with feedback. These result are used in Section IV-C together with Theorem 2 to bound Ee (R, Ex )
+from above. Note that Theorem 2 only relates the error probability of longer codes to that of the shorter ones. It does
+not in and of itself bound the error probability. It is in a sense a tool to glue together various bounds on the error
+probability.
+First bound we consider is on the error exponent of erasure free block codes with feedback. Haroutunian proved
+in [17] that, for any (Mn , n, Ln ) sequence of triples, such that limn→∞ ln Mn n−ln Ln = R,
+lim
+
+n→∞
+
+− ln Pe (Mn ,n,Ln ,0)
+n
+
+≤ EH (R)
+
+(61)
+
+where
+EH (R) =
+
+min
+
+V :C(V )≤R
+
+max D ( V k W |P )
+
+and
+
+P
+
+C(V ) = max I (P, V ) .
+P
+
+(62)
+
+Second bound we consider is on the trade off between the error exponents of two messages in a two message
+erasure free block code with feedback. Berlekamp mentions this result in passing in [1] and attributes it to Gallager
+and Shannon.
+Lemma 3: For any feedback encoding scheme with two messages and erasure free decision rule and for all T ≥ T0 :
+either
+
+Pe1 ≥ 41 e−nT +
+
+√
+
+n4 ln Pmin
+
+or
+
+Pe2 > 41 e−nΓ(T )+
+
+√
+
+n4 ln Pmin
+
+(63)
+
+where Pmin = minx ,y:W (y|x )>0 W (y|x ).
+T0 , maxx ,x̃ − ln
+
+X
+
+Γ (T ) , maxΠ Γ (T, Π) .
+
+y:W (y|x̃)>0
+
+W (y|x )
+
+(64)
+(65)
+
+Result is old and somewhat intuitive to those who are familiar with the calculations in the non-feedback case. Thus
+probably it has been proven a number of times. But we are not aware of a published proof, hence we have included
+one in Appendix A.
+17
+
+Although Lemma 3 establishes only the converse part (T, Γ (T )) is indeed the optimal trade off for the error
+exponents of two messages in an erasure free block code, both with and without feedback. Achievablity of this
+trade off has already been established in [31, Theorem 5] for the case without feedback; evidently this implies the
+achievablity with feedback. Furthermore T0 does have an operational meaning, it is the maximum error exponent first
+message can have, while the second message has zero error probability. This fact is also proved in Appendix A.
+For some channels Lemma 3 gives us a bound on the error exponent of erasure free-codes at zero rate, which is
+tighter than Haroutunian’s bound at zero rate. In order to see this let us first define T ∗ to be
+T ∗ = max min{T, Γ (T )}.
+
+(66)
+
+T
+
+P
+Note that T ∗ is finite iff y W (y|x )W (y|x̃ ) > 0 for all x , x̃ pairs. Recall that this is also the necessary and sufficient
+condition of zero-error capacity, C0 , to be zero. EH (R) on the other hand is infinite for all R ≤ R∞ like Esp (R)
+where R∞ is given by,
+X
+R∞ = − minP (·) maxy ln
+P (x )
+(67)
+x :W (y|x )>0
+
+T ∗.
+
+Even in the cases where EH (0) is finite, EH (0) ≥
+We can use this fact, Lemma 3, and Theorem 2, or [31,
+Theorem 1] for that matter, to strengthen Haroutunian bound at low rates, as follows.
+Lemma 4: For all channels with zero zero-error capacity, C0 = 0 and any sequence of Mn , such that limn→∞ ln nMn =
+R,
+n ,n,1,0)
+≤ ẼH (R)
+(68)
+lim − ln Pe (M
+n
+n→∞
+
+where
+ẼH (R) =
+
+(
+
+EH (R)
+if R ≥ Rht
+EH (Rht )−T ∗
+∗
+R if R ∈ [0, Rht )
+T +
+Rht
+
+)
+
+′ (R) if it exists, R = C otherwise.
+and Rht is the unique solution of the equation T ∗ = EH (R) − REH
+ht
+Before going into the proof let us note that ẼH (R) is obtained simply by drawing the tangent line to the curve
+(R, EH (R)) from the point (0, T ∗ ). The curve (R, ẼH (R)) is same as the tangent line, for the rates between 0 and
+Rht , and it is same as the curve (R, EH (R)) from then on where Rht is the rate of the point at which the tangent
+from (0, T ∗ ) meets the curve (R, EH (R)).
+Proof: For R ≥ Rht this Lemma immediately follows from Haroutunian’s result in [17] for L1 = 1. If R < Rht
+then we apply Theorem 2.
+
+
+x
+(1 − s)Pe (M, n, L1 , Px ) ≥ Pe (M, ñ, L1 , s)Pe L1 + 1, n − ñ, L̃, Pe(1−s)P
+(69)
+(M,n,L1 ,s)
+
+with17 s = 0, Px = 0, L1 = 1 and ñ = ⌊ RRht ⌋. Furthermore, by Lemma 3 and the definition of T ∗ given in (66) we
+have,
+√
+−(n−ñ)T ∗ + n−ñ ln Pmin
+Pe (2, n − ñ, L, 0) ≥ e
+(70)
+8
+Using equations (69) and (70) we get,
+− ln Pe (M,n,1,0)
+n
+
+where
+17
+
+ln Mn
+ñ
+
+≤
+
+− ln Pe (M,ñ,1,0) R
+Rht
+ñ
+
+h
++ 1−
+
+R
+Rht
+
++
+
+1
+ñ
+
+i
+
+∗
+
+T +
+
+q  q
+1
+ñ
+
+Rht −R
+Rht
+
+
+
+ln Pmin
+8
+
+= Rht . Lemma follows by simply applying Haroutunian’s result to the first terms on the right hand side.
+
+Or [31, Theorem 1] with L1 = 1 and n1 = ⌊ RR ⌋.
+ht
+
+18
+
+C. Generalized Straight Line Bound for Error-Erasure Exponents
+Theorem 2 bounds the minimum error probability length n block codes from below in terms of the minimum error
+probability of length n1 and length (n−n1 ) block codes. The rate and erasure probability of the longer code constraints
+the rates and erasure probabilities of the shorter ones, but does not specify them completely. We use this fact together
+with the improved Haroutunian’s bound on the error exponents of erasure free block codes with feedback, i.e. Lemma
+4, and the error exponent trade off of the erasure free feedback block codes with two messages, i.e. Lemma 3, to
+obtain a family of upper bounds on the error exponents of feedback block codes with erasure.
+Theorem 3: For any DMC with C0 = 0 rate R ∈ [0, C] and Ex ∈ [0, EH (R)] and for any r ∈ [rh (R, Ex ), C]
+
+
+Ex − R
+ẼH (r)
+R
+R
+r
+Ee (R, Ex ) ≤ r ẼH (r) + (1 − r )Γ
+1− R
+r
+
+where rh (R, Ex ), is the unique solution of RẼH (r) − rEx = 0.
+Theorem 3 simply states that any line connecting any two points of the curves (R, Ex , Ee ) = (R, ẼH (R), ẼH (R))
+and (R, Ex , Ee ) = (0, Ex , Γ (Ex )) lies above the surface (R, Ex , Ee ) = (R, Ex , Ee (R, Ex )). The condition C0 = 0
+is not merely a technical condition due to the proof technique; as we will see in Section V for channels with C0 > 0,
+there are zero-error codes with erasure exponent as high as Esp (R) for any rate R ≤ C .
+Proof: We will consider the cases r ∈ (rh (R, Ex ), C] and r = rh (R, Ex ) separately.
+• r ∈ (rh (R, Ex ), C]: Apply Theorem 2 with s = 0, L = 1, L1 = 1, take the logarithm of both sides of equation
+(47) and divide by n,
+− ln Pe (M,n,1,Px )
+n
+
+≤
+
+
+n1 − ln Pe (M,n1 ,1,0)
+n
+
+n1
+
++ 1−
+
+
+n1 − ln Pe
+n
+
+For any (M, n, Px ) sequence such that lim inf n→∞ lnnM = R, lim inf n→∞
+since r > rh (R, Ex ) we have,
+Px
+−1
+> 0.
+lim inf n−n
+ln Pe (M,n
+1
+1 ,1,0)
+
+
+
+Px
+e (M,n1 ,1,0)
+
+2,n−n1 ,1, P
+n−n1
+
+− ln Px
+n
+
+
+
+.
+
+(71)
+
+= Ex , if we choose n1 = ⌊ Rr n⌋
+
+n→∞
+
+Furthermore as a result of Lemma 4 and the convexity of ẼH (R) we have
+−1
+n→∞ n−n1
+
+lim inf
+
+Px
+ln Pe (M,n
+≤ T ∗.
+1 ,1,0)
+
+Assume for the moment that for any T ∈ (0, T ∗ ] and for any sequence of Px (n) such that lim inf n→∞
+we have
+(n)
+)
+x
+lim inf − ln Pe (2,n,1,P
+≤ Γ (T ) .
+n
+
+− ln Px (n)
+n
+
+n→∞
+
+Using equation (71) and taking the limit as n goes to infinity we get
+
+
+e (r)
+.
+Ee (R, Ex ) ≤ Rr Ee (r) + (1 − Rr )Γ rEx −RE
+r−R
+
+=T
+
+(72)
+
+Then Theorem 3 follows from Lemma 4 and the fact that Γ (T ) is nondecreasing function of T ,
+In order to establish equation (72); note that if T0 > 0 and T ≤ T0 then Γ (T ) = ∞. Thus equation (72) holds
+trivially. For T > T0 case we prove equation (72) by contradiction. Assume that (72) is wrong. Then there exists
+a block code with erasures that satisfies
+ i
+h
+˜  m̃ ≤ e−n(Γ(T )+o(1))
+P Υ̃(m̃)
+P[Υ(x)| m̃] ≤ e−n(T +o(1))
+
+h
+i
+
+
+˜
+˜ ≤ e−n(T +o(1))
+P Υ̃(m̃) m̃
+≤ e−n(Γ(T )+o(1))
+P Υ(x)| m̃
+
+Enlarge the decoding region of m̃ by taking its union with the erasure region:
+˜ = Υ(m̃)
+˜
+Υ′ (m̃)
+
+Υ′ (m̃) = Υ(m̃) ∪ Υ(x)
+
+The resulting code is an erasure free code with
+ 
+
+˜  m̃ ≤ e−n(Γ(T )+o(1))
+P Υ′ (m̃)
+
+and
+
+Υ′ (x) = ∅.
+
+ 
+
+˜ ≤ e−n(min{Γ(T ),T }+o(1))
+P Υ′ (m̃) m̃
+
+Since T0 < T ≤ T ∗ , Γ (T ) ≥ T , this contradicts with Lemma 3 thus equation (72) holds.
+19
+
+•
+
+r = rh (R, Ex ): Apply Theorem 2 with s = 0, L = 1, L1 = 1 and n1 = max{ℓ : Pe (M, ℓ, 1, 0) > Px ln P1x },
+Px
+)
+Pe (M, n, 1, Px ) ≥ Pe (M, n1 , 1, 0)Pe (2, n − n1 , 1, Pe (M,n
+1 ,1,0)
+
+≥ Px ln P1x Pe (2, n − n1 , 1, − ln1 Px )
+
+(73)
+
+Note that for n1 = max{ℓ : Pe (M, ℓ, 1, 0) > Px ln P1x },
+lim inf
+n→∞
+
+Rn
+n1
+n E( n1 )
+
+= Ex
+
+Then as a result of Lemma 4 we have,
+lim inf
+n→∞
+
+Rn
+n1
+n ẼH ( n1 )
+
+≥ Ex
+
+Then
+lim inf
+n→∞
+
+n1
+n
+
+≥
+
+R
+rh (R,Ex )
+
+(74)
+
+Assume for the moment that for any ǫn such that lim inf n→∞ ǫn = 0
+lim inf
+n→∞
+
+− ln Pe (2,n,1,ǫn )
+n
+
+≤ Γ (0)
+
+(75)
+
+Then taking the logarithm of both sides of the equation (73), dividing both sides by n, taking the limit as n tends
+to infinity and substituting equations (74) and (75) we get,
+Ee (R, Ex ) ≤ Ex + (1 −
+
+Ex
+)Γ (0)
+ẼH (rh (R,Ex ))
+
+(76)
+
+Note that, Theorem 3 for r = rh (R, Ex ) case is equivalent to (76). Identity given in (75) follows from an analysis
+similar to the one used for establishing (72), in which but instead of Lemma 3, we use a simple typicality argument
+like [10, Corollary 1.2].
+We have set L1 = 1 in the proof. If instead of L1 = 1 we had chosen L1 to be a subexponential function of n
+which grew to infinity with n, the logic and the mechanics of the proof would still work but we would have replaced
+Γ (T ) with Ee (0, Ex ), while keeping the term including ẼH (R) the same. Since the best known upper bound for
+Ee (0, Ex ) is Γ (Ex ) for Ex ≤ T ∗ final result is same for case with feedback.18 On the other hand for the case without
+feedback, which is not the main focus of this paper, this does make a difference. By choosing L1 to be a function
+of block length that goes to infinity subexponentially with block length one can use Telatar’s converse result [32,
+Theorem 4.4] on the error exponent at zero rate and zero erasure exponent without feedback.
+In Figure 1, the upper and lower bounds we have derived for error exponent are plotted as a function of erasure
+exponent for a binary symmetric channel with cross over probability ǫ = 0.25 at rate R = 8.62 × 10−2 nats per
+channel use. Solid lines are lower bounds to the error exponent for block codes with feedback, which have been
+established in Section III, and without feedback, which was established previously, [14], [10], [32]. Dashed lines are
+the upper bounds obtained using Theorem 3.
+Note that all four curves meet at a point on bottom right, this is the point that corresponds to the error exponent
+of block codes at rate R = 8.62 × 10−2 nats per channel use and its values are the same with and without feedback
+since we are on a symmetric channel and our rate is over the critical rate. Any point to the lower right of this point
+is achievable both with and without feedback.
+The proximity of the inner and the outer bound demonstrated in Figure 1 is not particular to the channel we have
+chosen. A discussion of the closeness of the inner and outer bounds are given in Section VI.
+18
+In binary symmetric channels these result can be strengthened using the value of E (0), [36]. However those changes will improve the upper
+bound on error exponent only at low rates and high erasure exponents.
+
+20
+
+at R=0.0862 nats for a BSC with ε=0.25
+
+Error Exponent vs Erasure Exponent
+0.2
+
+0.18
+
+0.16
+
+Erorr Exponent
+
+0.14
+
+0.12
+
+0.1
+
+0.08
+
+0.06
+
+0.04
+
+0.02
+
+0
+0
+
+1
+
+2
+
+3
+
+4
+
+5
+
+Erasure Exponent
+Fig. 1.
+
+6
+−3
+
+x 10
+
+Error Exponent vs Erasure Exponent
+
+V. E RASURE E XPONENT
+
+OF
+
+E RROR -F REE C ODES :Ex (R)
+
+For all DMCs which have one or more zero probability transitions, for all rates below capacity, R ≤ C and for
+small enough Ex ’s, Ee (R, Ex ) = ∞. For such (R, Ex ) pairs, coding scheme we have described in Section III gives
+us an error free code. The connection between the erasure exponent of error free block codes, and error exponent of
+block codes with erasures is not confined to this particular encoding scheme. In order to explain those connections
+in more detail let us first define the error-free codes more formally.
+Definition 3: A sequences Q0 of block codes with feedback is an error-free reliable sequence iff
+Pe (n) = 0
+
+∀n,
+
+lim supn→∞ (Px (n) +
+
+and
+
+1
+|M(n) | )
+
+= 0.
+
+The highest rate achievable for error-free reliable codes is the zero-error capacity with feedback and erasures, Cx,0 .
+P[z n |m]
+δ n
+for all m, m̃ ∈ M
+If all the transition probabilities are positive i.e. minx ,y W (y|x ) = δ > 0, then P[z
+n |m̃] ≥ ( 1−δ )
+and z n ∈ Z n . Thus we have
+δ n
+P[m| z n ] ≥ ( 1−δ
+) P[m̃| z n ]
+nR
+
+∀m, m̃ ∈ M, ∀z n ∈ Z n
+
+(77)
+
+n
+
+−1)δ
+Consequently we have Pe ≥ (enR (e
+−1)δn +(1−δ)n and Cx,0 is zero. On the other hand as an immediate consequence of
+the encoding scheme suggested by Yamamoto and Itoh in [34], if there is one or more zero probability transitions,
+Cx,0 is equal to channel capacity C .
+Definition 4: For all DMCs with at least one (x , y) pair such that W (y|x ) = 0, ∀R ≤ C erasure exponent of error
+free block codes with feedback is defined as
+
+Ex (R) ,
+
+sup
+
+Ex (Q0 ).
+
+(78)
+
+Q0 :R(Q0 )≥R
+
+For any erasure exponent, Ex less than Ex (R), there is an error-free reliable sequence, i.e. there is a reliable sequence
+with infinite error exponent:
+Ex ≤ Ex (R) ⇒ Ee (R, Ex ) = ∞.
+(79)
+21
+
+More interestingly if Ex > Ex (R) then Ee (R, Ex ) < ∞. In order to see this let δ be the minimum non-zero transition
+probability.h Then for any
+z n ] P[m̃| z n ] > 0 we have P[z n | m] ≥ δn P[z n | m̃].
+ that
+ m,
+i P[m|
+i m̃ ∈ M and
+h z ∈ Z such
+n
+ n
+ n
+δ
+Thus if P M̂ ∈
+/ {M, x} Z ≥ 1+δ
+/ {M, x} Z 6= 0 then P M̂ ∈
+n . Using this we get,
+ ii
+h
+h
+i
+h
+
+1+δn
+/ {M, x} Zn
+E 1{P[M̂∈{M,x}
+/
+/
+|Zn ]6=0} P M̂ ∈
+|Zn ]6=0} ≤ δn E 1{P[M̂∈{M,x}
+h
+i
+= (1 + δ−n )P M̂ ∈
+/ {M, x}
+(80)
+
+Equation (80) reveals that the total probability of z n ’s at which receiver chooses to decode to a message rather than
+declaring an erasure despite the fact that it is not certain about the message is upper bounded by (1 + δ−n ) times the
+undetected error probability. Thus if we replace the decoder with a new decoder which declares an erasure unless it
+is sure about the transmitted message, i.e. unless there is a message with posterior probability one, resulting erasure
+probability Px ′ will be bounded in terms of original error and erasure probabilities as follows,
+Px ′ ≤ Px + (1 + δ−n )Pe .
+
+(81)
+
+Thus by changing the decoding rule, any length n code with error probability Pe and erasure probability Px can
+be transformed into error free code with erasure probability Px ′ , where Px ′ satisfies equation (81). Using this
+transformation we can change any code with errors-and-erasure decoding into a error free block code with erasures.
+Evidently we can use the very same transformation to convert reliable sequences into error-free reliable sequences.
+Considering error and erasure exponents of the original reliable sequences and erasure exponents of resulting error
+free reliable sequences we get,
+Ex (R) ≥ min{Ex , Ee (R, Ex ) + ln δ}
+
+∀R, Ex .
+
+(82)
+
+Ex > Ex (R) ⇒ Ee (R, Ex ) ≤ Ex (R) − ln δ < ∞.
+
+(83)
+
+Consequently,
+As a result of equations (79) and (83) we can conclude that Ee (R, Ex ) = ∞ if and only if Ex ≤ Ex (R). In a sense
+like the error exponent of erasure free block codes, E(R), erasure exponent of the error free bock codes, Ex (R),
+gives a partial description of E(R, Ex ). E(R) gives the value of error exponents below which erasure exponent can
+be pushed to infinity and Ex (R) gives the value of erasure exponent below which error exponent can be pushed to
+infinity.
+Below the erasure exponent of zero-error codes, Ex (R), is investigated separately for two families of channels:
+Channels which have a positive zero error capacity, i.e. C0 > 0 and Channels which have zero zero-error capacity,
+i.e. C0 = 0.
+A. Case 1: C0 > 0
+
+Theorem 4: For a DMC if C0 > 0 then,
+EH (R) ≥ Ex (R) ≥ Esp (R).
+
+Proof: If zero-error capacity is strictly greater then zero, i.e. C0 > 0, then one can achieve the sphere packing
+exponent, with zero error probability using a two phase scheme. In
+first phase transmitter uses a length n1 = ⌈en1 R ⌉
+ the
+∂
+block code without feedback with a list decoder of size L = ∂R Esp (R, PR∗ ) where PR∗ is the input distribution
+satisfying Esp (R) = Esp (R, PR∗ ). Note that with this list size the sphere packing exponent19 is achievable at rate R.
+Thus correct message is in the list with at least probability (1 − e−n1 Esp (R) ), see [10, Page 196]. In the second phase
+transmitter uses a zero error code, of length20 n2 = ⌈ ln(L+1)
+⌉ with L + 1 messages, to tell the receiver whether the
+C0
+correct message is in that list or not, and the correct message itself if it is in the list. Clearly such a feedback code
+with two phases is error free, and it has erasures only when there exists an error in the first phase. Thus the erasure
+probability of the over all code is upper bounded by e−n1 Esp (R) . Note that n2 is fixed for a given R. Consequently as
+19
+
+Indeed this upper bound on error probability is tight exponentially for block codes without feedback.
+⌉ time units to convey one of the (L + 1) messages
+For some DMCs with C0 > 0 and for some L one may need more than ⌈ ln(L+1)
+C0
+without any errors, because C0 itself is defined as a limit. But even in those cases we are guaranteed to have a fixed amount of time for that
+transmissions, which does not change with n1 . Thus above argument holds as is even in those cases.
+20
+
+22
+
+the length of the first phase, n1 , grows to infinity the rate and erasure exponent of (n1 + n2 ) long block code converges
+to the rate and error exponent of n1 long code of the first phase, i.e. to R and Esp (R). Thus
+Ex (R) ≥ Esp (R).
+
+Any error free block code with erasures can be forced to decode, at erasures. The resulting fixed length code has
+an error probability no larger than the erasure probability of the original code. However we know that, [17], error
+probability of the erasure free block codes with feedback decreases with an exponent no larger than EH (R). Thus,
+Ex (R) ≤ EH (R).
+
+This upper bound on the erasure exponent also follows from the converse result we present in the next section,
+Theorem 6.
+For symmetric channels EH (R) = Esp (R) and Theorem 4 determines the erasure exponent of error-free codes on
+symmetric channels with non-zero zero-error-capacity completely.
+B. Case 2: C0 = 0
+
+This case is more involved than the previous one. We first establish an upper bound on Ex (R) in terms of the
+improved version of Haroutunian’s bound, i.e. Lemma 4, and the erasure exponent of error-free codes at zero rate,
+Ex (0). Then we show that Ex (0) is equal to the erasure exponent error-free block codes with two messages, Ex,2 , and
+bound Ex,2 from below.
+For any M , n and L, Pe (M, n, L, Px ) = 0 for large enough Px . We denote the minimum of such Px ’s by
+P0,x (M, n, L). Thus we can write Ex,2 as
+Ex,2 = lim inf P0,x (2, n, 1) .
+n→∞
+
+Theorem 5: For any n, M , L, n1 ≤ n and L1 , minimum erasure probability of fixed length error-free block codes
+with feedback, P0,x (M, n, L), satisfies
+P0,x (M, n, L) ≥ Pe (M, n1 , L1 , 0)P0,x (L1 + 1, n − n1 , L) .
+
+(84)
+
+Like Theorem 2, Theorem 5 is correct both with and without feedback. Although P0,x ’s and Pe will be different in
+each case, the relationship between them given in equation (84) holds in both cases.
+Proof: If Pe (M, n1 , L1 , 0) = 0 theorem holds trivially. Thus we assume henceforth that Pe (M, n1 , L1 , 0) > 0.
+Using Theorem 2 with Px = P0,x (M, n, L) we get
+
+
+0,x (M,n,L)
+Pe (M, n, L, P0,x (M, n, L)) ≥ Pe (M, n1 , L1 , 0)Pe L1 + 1, (n − n1 ), L, PPe (M,n
+.
+1 ,L1 ,0)
+Since Pe (M, n, L, P0,x (M, n, L)) = 0 and Pe (M, n1 , L1 , 0) > 0 we have,
+
+
+(M,n,L)
+Pe L1 + 1, (n − n1 ), L, PPe 0,x
+(M,n1 ,L1 ,0) = 0.
+
+Thus
+
+P0,x (M,n,L)
+Pe (M,n1 ,L1 ,0)
+
+≥ P0,x (L1 + 1, (n − n1 ), L) .
+
+As we have done in the errors-and-erasures case we can convert this into a bound on exponents. If we use the
+improved version of Haroutunian’s bound, i.e. Lemma 4, as an upper bound on the error exponent of erasure free
+block codes we get the following.
+
+
+Theorem 6: For any rate R ≥ 0 for any α ∈ R
+C ,1
+
+Ex (R) ≤ αẼH R
+α + (1 − α̃)Ex (0)
+
+Now let us focus on the value of erasure exponent at zero rate:
+Lemma 5: For the channels which has zero zero-error capacity, i.e. C0 = 0, erasure exponent of error free block
+codes at zero rate Ex (0) is equal to the erasure exponent of error free block codes with two messages Ex,2 .
+Note that unlike the two message case, Ex,2 , in the zero rate case Ex (0) the number of messages are increasing with
+block length to infinity, thus we can not claim Ex,2 = Ex (0) just as a result of their definitions.
+23
+
+Proof: If we write Theorem 5 for L = 1, n1 = 0 and L1 = 1
+P0,x (M, n, 1) ≥ Pe (M, 0, 1)P0,x (2, n, 1)
+=
+
+M −1
+M P0,x (2, n, 1)
+
+∀M, n
+
+Thus as an immediate result of the definitions of Ex (0) and Ex,2, we have Ex (0) ≤ Ex,2 .
+In order to prove the equality one needs to prove Ex (0) ≥ Ex,2 . For doing that let us assume that it is possible to
+send one bit with erasure probability ǫ with a block code of length ℓ(ǫ):
+ǫ ≥ P0,x (2, ℓ(ǫ), 1)
+
+(85)
+
+One can use this code to send r bits, by repeating each bit whenever there exists an erasure. If the block length is
+n = kℓ(ǫ) then a message erasure occurs only when the number of bit erasures in k trials is more then k − r . Let #e
+denote the number of erasures out of k trials then
+Xk
+k!
+(1 − ǫ)k−l ǫl
+and
+Px =
+P[#e = l] = (k−l)!l!
+P[#e = l] .
+l=k−r+1
+
+Thus
+
+Px =
+=
+=
+
+Xk
+
+k!
+(1 − ǫ)k−l ǫl
+l=k−r+1 l!(k−l)!
+Xk
+
+
+l l
+k!
+l k−l −[l ln
+1
+−
+e
+k
+l=k−r+1 l!(k−l)! k
+
+Xk
+
+k!
+l=k−r+1 l!(k−l)!
+
+Then for any ǫ ≤ 1 − kr , we have
+
+
+l l
+k
+
+1−
+
+l/k
++(k−l) ln 1−l/k
+]
+ǫ
+1−ǫ
+
+
+l k−l −kD( kl kǫ)
+.
+e
+k
+
+Px ≤ e−kD( 1− k kǫ) .
+r
+
+Evidently Px ≥ P0,x (2r , n, 1) for n = kℓ(ǫ). Thus,
+
+− ln P0,x (2r ,n,1)
+n
+
+≥
+
+D( 1− kr kǫ)
+.
+ℓ(ǫ)
+
+ln ǫ
+is an achievable erasure exponent for any sequence of (r, k)’s such that limk→∞ kr = 0, i.e. Ex (0) ≥
+Then −ℓ(ǫ)
+Thus any exponent achievable for two message case is achievable for zero rate case: Ex (0) ≥ Ex,2.
+As a result of Lemma 6 which is presented in the next section we know that
+X
+P0,x (2, n, 1) ≥ ( sup β(s))n where β(s) = minx ,x̃
+W (y|x )(1−s) W (y|x̃ )s .
+
+− ln ǫ
+ℓ(ǫ) .
+
+y
+
+s∈(0,.5)
+
+Thus as a result of Lemma 5 we have
+
+Ex (0) = Ex,2 ≤ − ln sup β(s).
+s∈(0,0.5)
+
+C. Lower Bounds on P0,x (2, n, 1)
+
+Suppose at time t the correct message, M, is assigned to the input letter x and the other message
+P is assigned to the
+input letter x̃ , then the receiver can not to rule out the incorrect message at time t with probability y:W (y|x̃ )>0 W (y|x ).
+Using this fact one can prove that,
+
+n
+X
+(86)
+P0,x (2, n, 1) ≥ minx ,x̃
+W (y|x ) .
+y:W (y|x̃)>0
+
+Now let us consider channels whose transition probability matrix W is of the form
+
+
+1−q q
+.
+W =
+0
+1
+
+(87)
+
+We denote the output letter that can be reached from both of the input letters by ỹ . For the moment we consider only
+the deterministic encoding schemes, i.e. Zt = Yt . Note that in the optimal encoding scheme,
+Xt (1, y t−1 ) 6= Xt (2, y t−1 )
+
+24
+
+∀t, ∀y t−1 ∈ Y t−1
+
+Then
+
+ 
+
+P Yt = ỹ| M = 1, y t−1 P Yt = ỹ| M = 2, y t−1 = q
+
+∀t, ∀y t−1 ∈ Y t−1
+
+(88)
+
+Furthermore if Yn = ỹ n then the receiver can not decode without errors, i.e. it has to declare an erasure. Then,
+P0,x (2, n, 1) ≥ 12 (P[Yn = ỹ ỹ . . . ỹ| M = 1] + P[Yn = ỹ ỹ . . . ỹ| M = 2])
+(a) p
+≥ P[Yn = ỹ ỹ . . . ỹ| M = 1] P[Yn = ỹ ỹ . . . ỹ| M = 2]
+(b)
+
+n
+
+= q2
+
+(89)
+
+where (a) hods because arithmetic mean is larger than the geometric mean and (b) follows from the equation (88).
+For the W given in (87) the bound given in (89) is very tight. If the encoder assigns the first message to the input
+letter that always leads to ỹ and the second message to the other input letter in first ⌊ n2 ⌋ time instances, and does
+n
+
+the flipped assignment in the last ⌈ n2 ⌉ time instances, then an erasure happens with a probability less than q ⌊ 2 ⌋ , i.e.
+n
+
+P0,x (2, n, 1) ≤ q ⌊ 2 ⌋ .
+On the other hand for the W given in (87), bound given in equation (86) ensures only P0,x (2, n, 1) ≥ q n , rather
+n
+than P0,x (2, n, 1) ≥ q ⌊ 2 ⌋ . Thus for the channel given (87) the bound given in equation (89) is tighter than the one in
+equation (86).
+The idea used in deriving the bound given in equation (89) for this particular W can be applied to a general DMC
+to prove the following lower bound,
+
+n
+X p
+P0,x (2, n, 1) ≥ minx ,x̃
+W (y|x )W (y|x̃ ) .
+(90)
+y
+
+The bound given in equation (90) is decaying exponentially in n, even when all entries of the W are positive, however
+for those channels the bound given in (86) implies P0,x (2, n, 1) ≥ 1. Thus the bound given in (90) can not be superior
+to the bound given in equation (86) in general. The following bound implies bounds given in both equation (86) and
+equation (90). Furthermore for certain channels it is strictly better than both.
+Lemma 6: Erasure probability of all error free block codes with two messages is lower bounded as
+X
+W (y|x )(1−s) W (y|x̃ )s
+(91)
+P0,x (2, n, 1) ≥ ( sup β(s))n where β(s) = minx ,x̃
+y
+
+s∈(0,.5)
+
+Note that bounds given in equation (86) and (90) are implied by lims→0+ β(s) and lims→0.5− β(s) respectively.
+P
+Although y W (y|x )s W (y|x̃ )1−s is convex in s on (0, 0.5) for all (x , x̃ ) pairs, β(s) is not convex in s because of the
+minimization in its definition. Thus the supremum over s does not necessarily occur on the boundaries. Indeed there
+are channels for which bound given in Lemma 6 is strictly better than the bounds given in (86) and (90). Following
+is the transition probability matrix of one such channel.
+
+0.1600 0.0200 0.2200 0.3000 0.3000
+W = 0.0900 0.4000 0.2700 0.0002 0.2398
+0.1800 0.2000 0.3000 0.3200
+0
+
+
+Proof: Let µt and µ̃t
+
+(z t−1 )
+
+lim β(s) = 0.7000
+
+s→0
+
+lim β(s) = 0.7027
+
+s→0.5
+
+β(0.18) = 0.7299.
+
+be,
+
+
+ 
+
+µt = {z t : P M = 1| z t P M = 2| z t > 0}
+
+ 
+
+µ̃t (z t−1 ) = {yt : P yt | M = 1, z t−1 P yt | M = 2, z t−1 > 0}
+Then for any error free code and for any s ∈ (0, 0.5) we have
+
+
+Px = E 1{µn }
+
+
+= E 1{µn } (P[M = 1| Zn ] + P[M = 2| Zn ])
+
+
+
+
+= E 1{µn } ((1 − s)P[M = 1| Zn ] + sP[M = 2| Zn ]) + E 1{µn } (sP[M = 1| Zn ] + (1 − s)P[M = 2| Zn ])
+i
+i
+h
+h
+(92)
+≥ E 1{µn } P[M = 1| Zn ]1−s P[M = 2| Zn ]s + E 1{µn } P[M = 1| Zn ]s P[M = 2| Zn ]1−s
+25
+
+where the last inequality follows from the fact that arithmetic mean is lower bounded by the geometric mean.
+Furthermore,
+i
+h
+E 1{µn } P[M = 1| Zn ]1−s P[M = 2| Zn ]s
+
+
+ 
+1−s 
+s 
+
+
+
+
+
+P[M=2|Zn ]
+P[M=1|Zn ]
+n−1
+n−1 1−s
+n−1 s
+
+1{µ(n−1) } P M = 1| Z
+P M = 2| Z
+. (93)
+= E E 1{µ̃n (Zn−1 )} P[M=1|Zn−1 ]
+Z
+P[M=2|Zn−1 ]
+Note that,
+
+P[M=1|Zn ]
+P[M=1|Zn−1 ]
+
+=
+=
+
+P[M=1|Zn−1 ,Yn ]
+P[M=1|Zn−1 ]
+P[Yn |M=1,Zn−1 ]
+P[Yn |Zn−1 ] .
+
+(94)
+
+Similarly,
+P[M=2|Zn ]
+P[M=2|Zn−1 ]
+
+=
+
+P[Yn |M=2,Zn−1 ]
+P[Yn |Zn−1 ] .
+
+Thus using equations (94) and (95) we have
+
+
+
+
+i
+1−s 
+s 
+h
+P[M=1|Zn ]
+P[M=2|Zn ]
+P[Yn |M=1,Zn−1 ]1−s P[Yn |M=2,Zn−1 ]s  n−1
+n−1
+
+E 1{µ̃n (Zn−1 )} P[M=1|Zn−1 ]
+Z
+Z
+=
+E
+
+n−1
+n−1
+
+P[M=2|Z
+]
+P[Yn |Z
+]
+X 
+1−s 
+s
+P yn | M = 1, Zn−1
+P yn | M = 2, Zn−1
+=
+
+(95)
+
+yn
+
+≥ β(s)
+
+(96)
+
+where the last inequality follows from the definition of β(s) given in equation (91).
+Using equations (93) and (96) we get
+i
+h 
+h
+1−s 
+s i
+E 1{µn } P[M = 1| Zn ]1−s P[M = 2| Zn ]s ≥ E P M = 1| Z0
+P M = 2| Z0
+β(s)n
+
+(97)
+
+If we follow a similar line of reasoning for the second term in (92) we get
+i
+h
+E 1{µn } P[M = 1| Zn ]s P[M = 2| Zn ]1−s ≥ 12 β(1 − s)n
+
+(98)
+
+≥ 12 β(s)n .
+
+= 12 β(s)n .
+
+Lemma follows from equations (92), (97) and (98) by taking the supremum over s ∈ (0, 0.5).
+VI. D ISCUSSION
+The value of error exponent is not known for erasure free fixed length block codes with feedback on a general
+DMC. We do not even know if it is still upper bounded by sphere packing exponent for non-symmetric DMCs.
+Yet the value of error exponent for fixed length block codes with feedback and errors-and-erasures decoding can be
+deduced, for the zero-erasure exponent case, from the results on the variable length block codes [3], [34]. Our main
+aim in this paper was establishing upper and lower bounds that extend the bounds at the zero erasure exponent case
+gracefully and non-trivially to the positive erasure exponents values. Our results are best understood in this framework
+and should be interpreted accordingly.
+By finding the optimal error exponent erasure exponent trade off, one solves the open problem of finding the optimal
+error exponent of erasure free fixed length block codes with feedback. This is an important and difficult problem on
+its own right. We did not attempted to solve that problem, yet the inner and outer bounds we have derived for the
+case with erasure quantify how much we loose from the optimal performance by using the encoding schemes inspired
+by the optimal encoding schemes for variable length block codes.
+We derived inner bounds using two phase encoding schemes, which are known to be optimal at zero-erasure
+exponent case. We have improved the performance of these two phase schemes at positive erasure exponent values by
+choosing relative durations of the phases considering the desired values of rate and erasure exponent, and by using a
+decoder that takes into account the outputs of both phases while deciding between decoding to a message and declaring
+26
+
+an erasure. However within each phase the assignment of messages to input letters is fixed. In a general feedback
+encoder, on the other hand, assignment of the messages to input symbols at each time can depend on the previous
+channel outputs and such encoding schemes have proven to improve the error exponent at low rates, [35], [13], [6],
+[25], [23] for some DMCs. Using such an encoding in the communication phase will improve the performance at low
+rates. In addition instead of committing to a fixed duration for the communication phase one might consider using
+a stopping time to switch from communication phase to the control phase. However in order to apply those ideas
+effectively for a general DMC, it seems one first needs to solve the problem for the erasure free block codes for a
+general DMC.
+We derived the outer bounds without making any assumption about the feedback encoding scheme. Thus they are
+valid for any fixed length block code with feedback and erasures. The principal idea of the straight line bound is
+making use of the bounds derived for different rate, erasure exponent pairs by taking their convex combinations. This
+approach can be interpreted as a generalization of the outer bounds used for variable length block codes, [3], [2].
+As it was the case for the inner bounds, it seems in order to improve the outer bounds one needs establish outer
+bounds on two related problems, i.e. on the error exponents of erasure free block codes with feedback and on the
+error exponent erasure exponent trade off at zero rate.
+The inner and outer bounds we have derived do not coincide for arbitrary values of erasure exponent. But they do
+coincide for all channels at all rates at zero erasure exponent.
+• If the channel does not have a zero probability transition, both the inner bound and the outer bound are equal to
+(1 − R
+C )D .
+• If the channel does have a zero probability transition, the inner bound is equal to infinity and there are fixed
+length block codes with zero error probability for all large enough block lengths.
+Furthermore on the plane where erasure exponent is equal to the error exponent, the outer bound we have derived
+is loose only as much as the best outer bound we know for the error exponent of the erasure free block codes with
+feedback is loose. Thus the proximity we have observed between inner and outer bounds in Figure 1 is not peculiar
+to the particular channel we have chosen for Figure 1. For all channels inner and outer bounds we have derived
+coincide on the upper left corner like they do in Figure 1. If the channel is symmetric and if we are considering a
+rate over critical rate they will also coincide in lower right corner. Furthermore if the sphere packing exponent is
+shown to be an upper bound for the error exponent of erasure free fixed length block codes this behavior will extend
+to non-symmetric channels.
+ACKNOWLEDGMENT
+Authors are grateful to Emre Telatar for his encouragement on the problem and for numerous discussions on errorfree codes. In particular the observations presented about z -channels are his and Lemma 5 was proved in 2006 summer
+at Ecole Polytechnique Federale de Lausanne (EPFL). Authors are thankful to Tsachy Weissman and Amos Lapidoth
+for bringing the Shannon-Gallager result mentioned in Elwyn Berlekamp’s thesis to their attention, to Anant Sahai
+for various discussions on communication problems with feedback and to Robert G. Gallager for various discussions
+on the encoding scheme presented in Section III and the two message error exponent trade off. Authors would like
+to acknowledge the thorough review provided by the anonymous Reviewer B, which has helped them to improve the
+presentation of the paper in general. In addition the (1 − s) factor on the left hand side of Theorem 2 was pointed
+out to the authors by Reviewer B.
+A PPENDIX
+A. The Error Exponent Trade Off for Feedback Encoding Schemes with Two Message and Erasure Free Decoders :
+In this section we will first establish an alternative expression for the Γ (T, Π) function defined in equation (36)
+in Lemma 7. After that we will prove that in a two message code with feedback on a DMC, if the error exponent
+of one of the messages is greater than some T ≥ T0 then the error exponent of the other message cannot be greater
+than Γ (T ), where T0 and Γ (T ) are defined in (64) and (65) respectively. Furthermore we will prove that if the
+error probability of the one of the message is zero than the error probability of the other message cannot be lower
+than e−nT0 ; we will also prove that it can be as low as e−nT0 , see Lemma 8. These results will imply that the error
+performance of a two message code, does not improve with feedback. This result is attributed to Shannon and Gallager
+by Berlekamp in [1].
+27
+
+Lemma 7: Γ (T, Π) defined in equation (36) is equal to
+
+∞
+if T < D ( U0 k Wa |Π)
+
+D ( Us k Wr |Π) if T = D ( Us k Wa |Π)
+Γ (T, Π) =
+
+D ( U1 k Wr |Π) if T > D ( U1 k Wa |Π)
+
+where
+
+Us (y|x , x̃ ) =
+
+
+
+
+
+
+
+
+
+Proof:
+Γ (T, Π) =
+
+min
+
+U :D( U kWa |Π)≤T
+
+P 1{W (y |x̃ )>0}
+W (y|x )
+ỹ:W (ỹ |x̃ )>0 W (ỹ|x )
+1−s
+s
+W
+(y|x
+)
+W
+(y|x̃
+)
+P
+1−s W (ỹ|x̃ )s
+W
+(ỹ|x
+)
+ỹ
+P 1{W (y |x )>0}
+W (y|x̃ )
+ỹ:W (ỹ |x )>0 W (ỹ|x̃ )
+
+for some s ∈ [0, 1]
+
+if
+
+s=0
+
+if
+
+s ∈ (0, 1)
+
+if
+
+s=1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+D ( U k Wr |Π)
+
+= min sup D ( U k Wr |Π) + λ(D ( U k Wa |Π) − T )
+U
+
+λ>0
+
+(a)
+
+= sup min D ( U k Wr |Π) + λ(D ( U k Wa |Π) − T )
+λ>0 U
+X
+= sup min −λT + (1 + λ)
+Π(x , x̃ )U (y|x , x̃ ) ln
+λ>0
+
+x ,x̃ ,y
+
+U
+
+(b)
+
+= sup −λT − (1 + λ)
+λ>0
+
+X
+
+x ,x̃
+
+Π(x , x̃ ) ln
+
+X
+
+λ
+
+U (y|x ,x̃ )
+1
+
+λ
+
+W (y|x ) 1+λ W (y|x̃ ) 1+λ
+1
+
+W (y|x ) 1+λ W (y|x̃ ) 1+λ
+
+(99)
+
+y
+
+where (a) follows from convexity of D ( U k Wr |Π) + λ(D ( U k Wa |Π) − T ) in U and linearity (concavity) of it in λ;
+1
+(b) holds because minimizing U is Us for s = 
+1+λ . The
+ function
+ on the right hand side of (99) is maximized at a
+
+positive and finite λ iff there is a λ such that D U 1  Wa |Π = T . Thus by substituting λ = 1−s
+s we get
+1+λ
+
+
++ D ( Us k Wa |Π)
+∞
+if
+T
+<
+lim
+
+
+s→0
+
+
+
+
+
+
+
+ lims→0+ D ( Us k Wr |Π) if T = lims→0+ D ( Us k Wa |Π)
+D ( Us k Wr |Π)
+if T = D ( Us k Wa |Π) for some s ∈ (0, 1)
+(100)
+Γ (T, Π) =
+
+
+
+
+
+
+
+ lims→1− D ( Us k Wr |Π) if T = lims→1− D ( Us k Wa |Π)
+
+
+lims→1− D ( Us k Wr |Π) if T > lims→1− D ( Us k Wa |Π)
+
+Lemma follows from the definition Us at s = 0, 1 and equation (100).
+Now we are ready to present the proof of Lemma 3
+
+Proof [Lemma 3]:
+Our proof is very much like the one for the converse part of [31, Theorem 5], except few modifications that allow
+us to handle the fact that encoding schemes we are considering are feedback encoding schemes. Like [31, Theorem
+5] we construct a probability measure PT [·] on Z n as a function of T and the encoding scheme. Then we bound the
+error probability of each message from below using the probability of the decoding region of the other message
+under PT [·]. We consider probability measures on Z n rather than Yn to include the possible randomization in the
+encoding and decoding schemes.
+For any T ≥ T0 and Π, let ST,Π be
+
+
+
+ 0 if T < D ( U0 k Wa |Π)
+s if ∃s ∈ [0, 1]s.t. D ( Us k Wa |Π) = T
+ST,Π =
+.
+(101)
+
+
+1 if T > D ( U1 k Wa |Π)
+
+Recall that
+
+T0 = max − ln
+x ,x̃
+
+X
+
+y:W (y|x̃)>0
+
+W (y|x )
+
+and
+
+D ( U0 k Wa |Π) = −
+
+Then for all Π we have
+T0 ≥ D ( U0 k Wa |Π) .
+
+28
+
+X
+
+x ,x̃
+
+Π(x , x̃ ) ln
+
+X
+
+y:W (y|x̃)>0
+
+W (y|x ).
+
+(102)
+
+Thus as a result of definition of ST,Π and equation (102) we have
+
+
+D UST ,Π  Wa |Π ≤ T
+∀T ≥ T0 .
+
+(103)
+
+Using Lemma 7, definition of ST,Π and equation (102) we can also conclude that
+
+
+∀T ≥ T0 .
+D UST ,Π  Wr |Π = Γ (T, Π) ≤ Γ (T )
+
+(104)
+
+Note that given Zt−1 = z t−1 channel input letters assigned to each message at time t, Xt (m1 , z t−1 ) and
+Xt (m2 , z t−1 ), are fixed for any feedback encoding schemes, Xt (·) : {m1 , m2 } × Z t−1 . Thus the corresponding Π is
+given by:
+
+
+0 if (x , x̃ ) 6= (Xt (m1 , z t−1 ), Xt (m2 , z t−1 ))
+.
+(105)
+Π(x , x̃ ) =
+1 if (x , x̃ ) = (Xt (m1 , z t−1 ), Xt (m2 , z t−1 ))
+
+
+Then for any T ≥ T0 let PT yt | z t−1 be
+
+
+(106)
+PT yt | z t−1 = UST ,Π (yt |Xt (m1 , z t−1 ), Xt (m2 , z t−1 )).
+
+Furthermore let us assume that the conditional distribution of At given (M, Zt−1 , Yt ) under PT [·] be identical to the
+conditional distribution of At given (M, Zt−1 , Yt ) under P[·], i.e. the original conditional distribution.
+Note that as a result of equation (103) and equation (104) we have
+
+
+"
+"
+#
+#
+
+
+
+
+
+
+PT Yt | Zt−1
+PT Yt | Zt−1
+ t−1
+ t−1
+ET ln
+≤T
+and
+ET ln
+≤ Γ (T )
+w.p.1
+Z
+Z
+P[Yt | M = m1 , Zt−1 ] 
+P[Yt | M = m2 , Zt−1 ] 
+Now we make a standard measure change argument,
+
+t−1
+
+P [Yt |Z
+]
+
+
+
+
+− ln P Y T|M=m
+t−1 ]
+[ t
+1 ,Z
+PT Yt | Zt−1
+P Yt | M = m1 , Zt−1 = e
+
+
+−ET ln
+
+
+
+t−1
+
+eχt,m1 (Yt |Z
+
+
+t−1
+≥ e−T eχt,m1 (Yt |Z ) PT Yt | Zt−1
+
+=e
+
+where
+
+
+
+ t−1
+PT [Yt |Zt−1 ]
+Z
+P[Yt |M=m1 ,Zt−1 ] 
+
+)
+
+
+
+PT Yt | Zt−1
+
+
+h
+i
+[Yt |Zt−1 ]  t−1
+[Yt |Zt−1 ]
+χt,m1 (Yt |Zt−1 ) = ET ln P[YPt T|M=m
+− ln P[YPt T|M=m
+Z
+
+t−1
+t−1 ]
+]
+1 ,Z
+1 ,Z
+
+(107)
+(108)
+
+For m = m1 , m2 let χ(m) be
+
+n
+Xn
+χ(m) = z n : |
+
+t=1
+
+o
+√
+1
+χt,m (Yt |Zt−1 )| ≤ 4 n ln Pmin
+
+(109)
+
+For any event B measurable in the sigma field generated by Zn as a result of equation equations (107) we have
+
+
+P[B] ≥ E 1{B} 1{χ(m1 )}
+√
+1
+
+
+−4 n ln P
+min E
+≥ e−nT e
+T 1{B} 1{χ(m1 )}
+√
+1
+−4 n ln P
+min P
+T
+
+≥ e−nT e
+
+[{B and χ(m1 )}]
+
+Following a similar line of reasoning we get,
+
+
+
+
+t−1
+P Yt | M = m2 , Zt−1 ≥ e−nΓ(T ) eχt,m2 (Yt |Z ) PT Yt | Zt−1
+where
+
+
+i
+h
+t−1
+[Yt |Zt−1 ]
+]  t−1
+T [Yt |Z
+− ln P[YPt T|M=m
+Z
+χt,m2 (Yt |Zt−1 ) = ET ln P[YPt |M=m
+
+t−1 ]
+t−1 ]
+2 ,Z
+2 ,Z
+
+(110)
+
+(111)
+(112)
+
+and for any event B measurable in the sigma field generated by Zn we have
+√
+1
+−4 n ln P
+min P
+T
+
+P[B] ≥ e−nΓ(T ) e
+
+29
+
+[{B and χ(m2 )}] .
+
+(113)
+
+Note that for m = {m1 , m2 } and t ∈ {1, 2, . . . , n},
+
+
+
+ET χt,m (Yt |Zt−1 ) Zt−1 = 0
+
+
+
+ET (χt,m (Yt |Zt−1 ))2  Zt−1 ≤ 4(ln Pmin )2
+
+i
+h
+
+ET χt,m (Yt |Zt−1 )χt−k,m (Yt−k |Zt−k−1 ) Zt−1 = 0
+
+∀z t−1 ∈ Z t−1
+t
+
+∀z ∈ Z
+
+(114a)
+
+t
+
+∀z t−1 ∈ Z t−1
+
+Thus as a result of equation (114), for m ∈ {m1 , m2 }
+" n
+#
+X
+χt,m (Yt |Zt−1 ) = 0
+ET
+
+(114b)
+∀k{1, 2, . . . , t − 1}
+
+(114c)
+
+(115a)
+
+t=1
+
+
+
+ET 
+
+n
+X
+t=1
+
+!2 
+
+χt,m (Yt |Zt−1 )
+
+ ≤ 4n(ln Pmin )2 .
+
+(115b)
+
+Using equation (115) and Chebychev’s inequality we conclude that,
+PT [χ(m)] ≥ 3/4
+
+m = m1 , m2
+
+Hence,
+PT [χ(m1 ) ∩ χ(m2 )] ≥ 1/2
+
+Thus either the total probability of intersection of χ(m1 ) ∩ χ(m2 ) with the decoding region of the second message
+is equal to or larger than 1/4 or the total probability of intersection of χ(m1 ) ∩ χ(m2 ) with the decoding region of
+the first message is strictly larger than 1/4. Then the lemma follows from equations (110) and (113).
+QED
+As we have noted previously T0 does have an operational meaning it is the maximum error exponent first message
+can have, when the error probability of the second message is zero.
+Lemma 8: For any feedback encoding scheme with two messages, if Pe|m2 = 0 then Pe|m1 ≥ e−nT0 . Furthermore
+there does exist an encoding scheme such that Pe|m2 = 0 then Pe|m1 = e−nT0 .
+Proof: Let us use a construction similar to the one used in the proof of Lemma 3
+
+
+PT Yt | Zt−1 = U0 (Yt |Xt (m1 , Zt−1 ), Xt (m2 , Zt−1 )).
+
+Recall that
+
+U0 (yt |x , x̃ ) =
+
+Thus
+
+P 1{W (y |x̃ )>0}
+W (y|x )
+ỹ:W (ỹ |x̃ )>0 W (ỹ|x )
+
+
+
+
+
+PT Yt | Zt−1 ≤ eT0 P Yt | M = m1 , Zt−1
+
+
+PT Yt | Zt−1 ≤ 1{P[Yt |M=m2 ,Zt−1 ]>0}
+
+As we did in the proof of Lemma 3 we will assume that conditional distribution of At given (M, Zt−1 , Yt ) under
+PT [·] is identical to the conditional distribution of At given (M, Zt−1 , Yt ) under P[·], i.e. the original conditional
+distribution.
+Then for any event B measurable in the sigma field generated by Zn we have
+P[B| M = m1 ] ≥ e−nT0 PT [B]
+n ln Pmin
+
+P[B| M = m2 ] ≥ e
+
+PT [B]
+
+(116)
+(117)
+
+where Pmin is the minimum non-zero element of hW .
+h
+i
+i
+Since Pe|m2 = 0 equation (117) implies that PT M̂ 6= m2 = 0 and PT M̂ 6= m1 = 1. Using this fact together with
+equation (116) we conclude that
+Pe|m1 ≥ e−nT0 .
+(118)
+P
+Let us assume that maximizing x-pair in (64) is (x1∗ , x2∗ ) i.e. T0 = − ln y:W (y|x2∗)>0 W (y|x1∗ ). If the the encoding
+scheme sends x1∗ for the first message and x2∗ for the second message, and the decoder decodes to second message unless
+Yt = y ∗ for some t ∈ {1, 2, . . . , n} and for some y ∗ such that W (y ∗ |x2∗ ) = 0. Then Pem2 = 0 and Pem1 = e−nT0 .
+30
+
+B. Convexity of Ee (R, Ex , α, P, Π) in α:
+Lemma 9: For any probability distribution P on input alphabet X , ζ(P, Q, R) is convex in (Q, R) pair.
+Proof: Note that
+γζ(Ra , P, Qa ) + (1 − γ)ζ(Rb , P, Qb ) =
+
+min
+
+I(P,Va )≤Ra
+Va ,Vb :
+(P Va )Y =Qa
+
+I(P,Vb )≤Rb
+(P Vb )Y =Qb
+
+γD ( Va k W |P ) + (1 − γ)D ( Vb k W |P )
+
+Using the convexity of D ( V k W |P ) in V and Jensen’s inequality we get,
+γζ(Ra , P, Qa ) + (1 − γ)ζ(Rb , P, Qb ) ≥
+
+min
+
+I(P,Va )≤Ra
+Va ,Vb :
+(P Va )Y =Qa
+
+I(P,Vb )≤Rb
+(P Vb )Y =Qb
+
+D ( Vγ k W |P )
+
+where Vγ = γVa + (1 − γ)Vb .
+If the set that a minimization is done over is enlarged, then the resulting minimum does not increase. Using this
+fact together with the convexity of I (P, V ) in V and Jensen’s inequality we get,
+γζ(Ra , P, Qa ) + (1 − γ)ζ(Rb , P, Qb ) ≥
+
+min
+
+Vγ :
+
+I(P,Vγ )≤Rγ
+(P Vγ )Y =Qγ
+
+D ( Vγ k W |P )
+
+= ζ(Rγ , P, Qγ )
+
+where Rγ = γRa + (1 − γ)Rb , Qγ = γQa + (1 − γ)Qb .
+Lemma 10: For all (R, Ex , P, Π) quadruples such that Er (R, P ) ≥ Ex , Ee (R, Ex , α, P, Π) is a convex function
+of α on the interval [α∗ (R, Ex , P ), 1] where α∗ (R, Ex , P ) is the unique solution21 of αEr ( R
+α , P ) = Ex .
+Proof: For any P such that Er (R, P ) is non-negative, convex and decreasing function of R in the interval
+R
+R
+[0, I (P, W )]. Thus αEr ( R
+α , P ) is strictly increasing continuous function of α ∈ [ I(P,W ) , 1]. Furthermore for α = I(P,W ) ,
+R
+R
+αEr ( R
+α , P ) = 0 and for α = 1, αEr ( α , P ) ≥ Ex . Thus αEr ( α , P ) = Ex has a unique solution.
+Note that for any γ ∈ [0, 1]
+γEe (R, Ex , αa , P, Π) + (1 − γ)Ee (R, Ex , αb , P, Π)
+=
+
+
+i
+h
+Ta
+,
+P,
+Q
+)
++
+R
+−
+R
++
+(1
+−
+α
+)Γ
+,
+Π
+γ αa ζ( Rα2a
+a
+1a
+a
+1−αa
+a
+
+i
+h
+min
+R
+Tb
+2b
+Qa ,R1a ,R2a ,Ta ,Qb ,R1b ,R2b ,Tb :
+,
+Π
++(1 − γ) αb ζ( αb , P, Qb ) + R1b − R + (1 − αb )Γ 1−α
+b
+
+R1a ≥R2a ≥R Ta ≥0
+R1b ≥R2b ≥R Tb ≥0
+αa ζ( Rα1a ,P,Qa )+R2a −R+Ta ≤Ex
+αb ζ(
+
+≥
+
+a
+R1b
+αb
+
+,P,Qb )+R2b −R+Tb ≤Ex
+
+αγ ζ( Rα2γ
+, P, Qγ ) + R1γ − R + (1 − αγ )Γ
+γ
+
+min
+
+Qγ ,R1γ ,R2γ Tγ :
+R1γ ≥R2γ ≥R Tγ ≥0
+R
+αγ ζ( α1γ ,P,Qγ )+R2γ −R+Tγ ≤Ex
+
+
+
+
+
+T
+1−αγ , Π
+
+γ
+
+= Ee (R, Ex , αγ , P, Π).
+
+where αγ , Tγ , Qγ , R1γ and R2γ are given by,
+αγ = γαa + (1 − γ)αb
+
+R1γ = γR1a + (1 − γ)R1b
+
+Tγ = γTa + (1 − γ)Tb
+
+Qγ =
+
+γαa
+αγ Qa
+
++
+
+(1−γ)αb
+Qb
+αγ
+
+R2γ = γR2a + (1 − γ)R2b
+
+The inequality follows from convexity arguments analogous to the ones used in the proof of Lemma 9.
+21
+
+The equation αEr ( R
+, P ) = 0 has multiple solutions; we choose the minimum of those to be the α∗ i.e., α∗ (R, 0, P ) =
+α
+
+31
+
+R
+.
+I(P,W )
+
+∀P ∈ P (R, Ex , α)
+
+C. maxΠ Ee (R, Ex , α, P, Π) > maxΠ Ee (R, Ex , 1, P, Π),
+Let us first consider a control phase type ΠP (x1 , x2 ) =
+
+P (x1 )P
+(x )1
+P 2 {x1 6=x2 }
+1− x (P (x ))2
+
+Ee (R, Ex , α, P, ΠP ) > Ee (R, Ex , 1, P, ΠP )
+
+and establish,
+
+∀P ∈ P (R, Ex , α)
+
+(119)
+
+First consider
+D ( U k Wa |ΠP ) =
+
+P 1
+1− x (P (x ))2
+
+=
+
+P 1
+1− x (P (x ))2
+
+≥
+
+P 1
+1− x (P (x ))2
+
+X
+
+P (x1 )P (x2 )
+
+x1 ,x2 :x1 6=x2
+
+X
+
+P (x1 )P (x2 )
+
+x1 ,x2 :x1 6=x2
+
+X
+X
+
+y
+
+y
+
+U (y|x1 , x2 ) log
+
+U (y|x1 ,x2 )
+W (y|x1 )
+
+h
+U (y|x1 , x2 ) log
+
+U (y|x1 ,x2 )
+VU (y|x1 )
+
+(y|x1 )
+− log VWU (y|x
+1)
+
+
+i
+h 
+I P, V̂U + D ( VU k W |P )
+
+i
+(120)
+
+where the last step follows from the log sum inequality and transition probability matrices VU and V̂U are given by
+X
+VU (y|x1 ) = W (y|x1 )P (x1 ) +
+U (y|x1 , x2 )P (x2 )
+x :x 6=x
+X2 2 1
+V̂U (y|x2 ) = W (y|x2 )P (x2 ) +
+U (y|x1 , x2 )P (x1 ).
+x1 :x1 6=x2
+
+Using a similar line of reasoning we get,
+
+D ( U k Wr |ΠP ) ≥
+
+P 1
+1− x (P (x ))2
+
+h  
+
+i
+
+D V̂U  W |P + I (P, VU )
+
+(121)
+
+Note that for all P ∈ P (R, Ex , α) if use the inequalities (120) and (121) together the definition of Ee given in
+equation (14) and (19) we get,
+Ee (R, Ex , α(R, Ex ), P, ΠP ) ≥ Ee (R, Ex , 1, P, ΠP ) + δP
+
+for some δP > 0. Consequently for all P ∈ P (R, Ex , α), equation (119) holds.
+Note that for all Π and for all P ∈ P (R, Ex , α)
+Ee (R, Ex , 1, P, ΠP ) = Ee (R, Ex , 1, P, Π).
+
+Thus we have:
+max Ee (R, Ex , α, P, Π) > max Ee (R, Ex , 1, P, Π)
+Π
+
+Π
+
+∀P ∈ P (R, Ex , α) .
+
+(122)
+
+R EFERENCES
+[1] E. R. Berlekamp. Block Coding with Noiseless Feedback. Ph.d. thesis, Massachusetts Institute of Technology, Department of Electrical
+Engineering, 1964. http://dspace.mit.edu/handle/1721.1/14783.
+[2] P. Berlin, B. Nakiboğlu, B. Rimoldi, and E. Telatar. A simple converse of Burnashev’s reliability function. Information Theory, IEEE
+Transactions on, 55(7):3074–3080, Jul. 2009.
+[3] M. V. Burnashev. Data transmission over a discrete channel with feedback, random transmission time. Problems of Information
+Transmission, 12(4):10–30, 1976.
+[4] M. V. Burnashev. Note: On the article “Data transmission over a discrete channel with feedback, random transmission time”. Problems
+of Information Transmission, 13(1):108, 1977.
+[5] M. V. Burnashev. Sequential discrimination of hypotheses with control of observations. Math. USSR Izvestija, 15(3):419–440, 1980.
+[6] M. V. Burnashev. On the reliability function of a binary symmetrical channel with feedback. Problems of Information Transmission,
+24(1):3–10, 1988.
+[7] M. V. Burnashev and H. Yamamoto. On the zero-rate error exponent for a BSC with noisy feedback. Problems of Information Transmission,
+44(3):198–213, 2008.
+[8] M. V. Burnashev and H. Yamamoto. Noisy feedback improves the bsc reliability function. pages 1501–1505, 28 2009-July 3 2009.
+[9] I. Csiszár. The method of types. Information Theory, IEEE Transactions on, 44(6):2502–2523, 1998.
+[10] Imre Csiszár and János Körner. Information Theory: Coding Theorems for Discrete Memoryless Systems. Academic Press, Inc., Orlando,
+FL, USA, 1982.
+[11] R. L. Dobrushin. An asymptotic bound for the probability error of information transmission through a channel without memory using the
+feedback. Problemy Kibernetiki, 8:161–168, 1962.
+[12] S. Draper and A. Sahai. Variable-length coding with noisy feedback. European Transactions on Telecommunications, 19(4):355–370, May
+2008.
+[13] A. G. D’yachkov. Upper bounds on the error probability for discrete memoryless channels with feedback. Problems of Information
+Transmission, 11(4):13–28, 1975.
+
+32
+
+[14] G. Jr. Forney. Exponential error bounds for erasure, list, and decision feedback schemes. Information Theory, IEEE Transactions on,
+14(2):206–220, Mar. 1968.
+[15] R. G. Gallager and B. Nakiboğlu. Variations on a theme by Schalkwijk and Kailath. Information Theory, IEEE Transactions on, 56(1):6–17,
+Jan. 2010.
+[16] P. K. Gopala, Y-H. Nam, and H. El Gamal. On the error exponents of ARQ channels with deadlines. Information Theory, IEEE Transactions
+on, 53(11):4265–4273, Nov. 2007.
+[17] E. A. Haroutunian. A lower bound on the probability of error for channels with feedback. Problems of Information Transmission,
+13(2):36–44, 1977.
+[18] E. Hof, I. Sason, and S. Shamai. Performance bounds for erasure, list, and decision feedback schemes with linear block codes. Information
+Theory, IEEE Transactions on, 56(8):3754–3778, Aug. 2010.
+[19] Y-H. Kim, A. Lapidoth, and T. Weissman. Error exponents for the gaussian channel with active noisy feedback. Information Theory,
+IEEE Transactions on, 57(3):1223 – 1236, 2011.
+[20] N. Merhav. Error exponents of erasure/list decoding revisited via moments of distance enumerators. Information Theory, IEEE Transactions
+on, 54(10):4439–4447, Oct. 2008.
+[21] N. Merhav and M. Feder. Minimax universal decoding with an erasure option. Information Theory, IEEE Transactions on, 53(5):1664–1675,
+May 2007.
+[22] P. Moulin. A Neyman–Pearson approach to universal erasure and list decoding. Information Theory, IEEE Transactions on, 55(10):4462–
+4478, Oct 2009.
+[23] B. Nakiboğlu. Exponential Bounds on Error Probability with Feedback. Ph.d. thesis, Massachusetts Institute of Technology, Department
+of Electrical Engineering and Computer Science, February 2011. http://dspace.mit.edu/handle/1721.1/64485.
+[24] B. Nakiboğlu and R. G. Gallager. Error exponents for variable-length block codes with feedback and cost constraints. IEEE Transactions
+on Information Theory, 54(3):945–963, Mar. 2008.
+[25] B. Nakiboğlu and L. Zheng. Upper bounds to error probability with feedback. In Information Theory and Applications Workshop, 2010.,
+Jan. 2010.
+[26] M. S. Pinsker. The probability of error in block transmission in a memoryless Gaussian channel with feedback. Problems of Information
+Transmission, 4(4):1–4, 1968.
+[27] E. Sabbag and N. Merhav. Achievable error exponents for channels with side informationerasure and list decoding. Information Theory,
+IEEE Transactions on, 56(11):5424–5431, Nov. 2010.
+[28] J. P. M. Schalkwijk. A coding scheme for additive noise channels with feedback–II: Band-limited signals. Information Theory, IEEE
+Transactions on, 12(2):183–189, Apr. 1966.
+[29] J. P. M. Schalkwijk and T. Kailath. A coding scheme for additive noise channels with feedback–I: No bandwidth constraint. IEEE
+Transactions on Information Theory, 12(2):172–182, Apr. 1966.
+[30] C. E. Shannon. The zero error capacity of a noisy channel. Information Theory, IEEE Transactions on, 2(3):8–19, Sep. 1956.
+[31] C. E. Shannon, R. G. Gallager, and E. R. Berlekamp. Lower bounds to error probability for coding on discrete memoryless channels.
+Information and Control, 10(1):65–103, Jan. 1967.
+[32] İ. E. Telatar. Multi-Access Communications with Decision Feedback Decoding. Ph.d. thesis, Massachusetts Institute of Technology,
+Department of Electrical Engineering and Computer Science, May 1992. http://dspace.mit.edu/handle/1721.1/13237.
+[33] İ. E. Telatar and R. G. Gallager. New exponential upper bounds to error and erasure probabilities. In Information Theory, 1994. IEEE
+International Symposium on, June 27- July 1 1994.
+[34] H. Yamamoto and K. Itoh. Asymptotic performance of a modified Schalkwijk-Barron scheme for channels with noiseless feedback.
+Information Theory, IEEE Transactions on, 25(6):729–733, Nov. 1979.
+[35] K. Sh. Zigangirov. Upper bounds for the error probability for channels with feedback. Problems of Information Transmission, 6(2):87–92,
+1970.
+[36] K. Sh. Zigangirov. Optimum zero rate date transmission through binary symmetric channel with feedback. Problems of Control and
+Information Theory, 7(3):21–35, 1978.
+
+33
+
+

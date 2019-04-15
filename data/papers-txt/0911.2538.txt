@@ -1,0 +1,1316 @@
+arXiv:0911.2538v1 [cs.NI] 13 Nov 2009
+
+Euclidean versus hyperbolic congestion in
+idealized versus experimental networks
+Edmond Jonckheere and Mingji Lou & Francis Bonahon
+Department of Electrical Engineering & Department of Mathematics
+University of Southern California
+Los Angeles, CA 90089
+jonckhee@usc.edu and mingjilou@gmail.com & fbonahon@math.usc.edu
+Yuliy Baryshnikov
+Room MH 2C-361
+Bell Laboratories
+600 Mountain Ave
+Murray Hill, NJ 07974-0636
+ymb@research.bell-labs.com
+September 20, 2018
+Abstract: This paper proposes a mathematical justification of the phenomenon
+of extreme congestion at a very limited number of nodes in very large networks.
+It is argued that this phenomenon occurs as a combination of the negative
+curvature property of the network together with minimum length routing. More
+specifically, it is shown that, in a large n-dimensional hyperbolic ball B of radius
+R viewed as a roughly similar model of a Gromov hyperbolic network, the
+proportion of traffic paths transiting through a small ball near the center
+is
+
+1
+Θ(1), whereas, in a Euclidean ball, the same proportion scales as Θ Rn−1
+. This
+discrepancy persists for the traffic load, which at the center of the hyperbolic
+1
+ball scales as vol2 (B), whereas the same traffic load scales as vol1+ n (B) in the
+Euclidean ball. This provides a theoretical justification of the experimental
+exponent discrepancy observed by Narayan and Saniee between traffic loads
+in Gromov-hyperbolic networks from the Rocketfuel data base and synthetic
+Euclidean lattice networks. It is further conjectured that for networks that do
+not enjoy the obvious symmetry of hyperbolic and Euclidean balls, the point of
+maximum traffic is near the center of mass of the network.
+
+1
+
+1
+
+Introduction
+
+One of the most important challenges in large and wide area networks is to
+overcome the traffic congestion problem. The queuing feature at routers can
+create a logic bottleneck between two users. Correspondingly, insufficient bandwidth on the physical links between routers is a contributor to congestion. The
+current congestion control technologies in communication networks are based
+on the feedback from the congested node to the source to slow down the packet
+flow rate, such as bidirectional congestion control and Random Early Detection
+(RED). However, these technologies can only be applied once the congestion
+has happened to some degree, and it is only based on the local point of view of
+some queue overflow along the source-to-target path.
+From the large scale point of view, it has been experimentally observed that,
+on the Internet and other networks, traffic seems to concentrate quite heavily
+on some very small subsets. The major result of this paper is to show that the
+deeper reason behind this congestion in the large scale is the combination of the
+least cost routing together with the negative curvature of the network.
+Roughly speaking, a network is negatively curved if its graph can be approximated by a negatively curved Riemannian manifold. In practice, however, it
+has become customary to check the Gromov Thin Triangle Condition (TTC),
+meaning that the least cost paths between three vertices “arch inside” the triangle, giving it a “thin” external appearance. The connection between negatively
+curved surfaces and the TTC can be understood on the basis that a triangle
+drawn on a negatively curved surface has the sum of its internal angles < π,
+giving it a “thin” appearance. The formalization of this equivalence is, however,
+must harder and is known under the Bonk-Schramm theorem [3].
+Over the past few years, there has been mounting evidence that many (wired
+and wireless) communication networks are negatively curved [18, 11, 13, 12]. Hierarchical networks have been found to have “hidden hyperbolic structure” [17].
+In view of the above graph-manifold identification, we can certainly argue on a
+negatively curved n-dimensional Riemannian manifold. To simplify the exposition in this Introduction, we invoke the nontrivial fact, proved in the Appendix,
+that congestion in very large hyperbolic ball models does not depend on the
+dimension. Therefore, it is legitimate to argue on a negatively curved surface,
+as we will do in the remainder of this Introduction.
+A well-known feature of least length paths on a negatively curved surface
+is the fact that two geodesics starting from points within an arbitrarily small
+disk eventually diverge exponentially. In this paper, we somehow reverse that
+argument and show that least length paths departing at remote points of a
+convex subset X of the surface “converge” to a single point where the “density
+of geodesics” is the highest. The latter is the point of maximum congestion. We
+conjecture that this congestion point is near the center of mass of the convex
+subset, and prove that the maximum congestion point and the center of mass
+coincide for very large disks embedded in the surface.
+Naturally, there might be some questions as to the relevance of this idealized
+analysis to real networks. In fact, some recent experimental results [20] have
+2
+
+confirmed the validity of our analysis. The network congestion metric adopted
+in [20] is the betweennness centrality [24]. The continuous geometry traffic
+congestion metric adopted here is the average length of the geodesics in a small
+convex subset X. We call the later load measure, Λt (X), because, if X is
+thought as a sub-network, Λt (X) is meant to be the number of packets in that
+sub-network. Consistently with the major theme of this paper, we prove that,
+if X is a disk of fixed radius, Λt (X) is maximum when the disk has its center at
+the center of mass. But more importantly, we show that, in a large disk BR (0)
+of hyperbolic surface, maxX⊆BR (0),area(X)=1 Λt (X) scales as (area(BR (0)))2 . On
+the other hand, it was shown in [20] that, for networks for the Rocketfuel data
+base [22], the maximum betweennness centrality scales as N 2 , where N is the
+number of vertices. Since N can be interpreted as the area, this confirms the
+validity of our theoretical model.
+An outline of the paper follows: In Section 2, we set the basic traffic metrics in graph models. In Section 3, a simple concept of negatively curved planar
+graphs is introduced and the general facts about congestion in negatively curved
+graphs are proposed as conjectures. Immediately thereafter, in Section 4, we
+show that our conjectures hold in selected planar graph examples. In Section 5,
+we propose the more general concept of Gromov-hyperbolic graphs and we invoke the Bonk-Schramm theorem to argue that traffic in Gromov-hyperbolic
+graphs can be analyzed on negatively curved Riemannian manifold models. In
+Section 6, we formulate our major results dealing with traffic in subsets of Hn .
+Probably the most significant results are Theorems 3 and 2, proving that traffic in a small subset X of large hyperbolic and Euclidean balls BR (0) scale
+as vol(BR (0))2 and vol(BR (0))1.5 , respectively. (The proofs are relegated to
+the Appendix, though.) Theorem 4 and 5 formulate the basic minimum inertia versus maximum traffic issues, proving the conjectures for hyperbolic balls
+X. Finally, in Section 7, we show that no matter how theoretical our models
+are, they turn out to be surprisingly accurate at predicting asymptotic traffic
+distribution in realistic networks.
+
+2
+
+Traffic metrics
+
+Let G = (V, E) be a (connected) graph specified by its vertex set V and its edge
+set E and endowed with a (symmetric) distance function d : G × G → R+ . A
+path p(s, t) from s to t is a continuous map [0, l] → G such that p(s, t)(0) = s
+and p(s, t)(l) = t. The weight of an edge e = xy
+P is defined as w(e) = d(x, y).
+The length of the path is defined as ℓ(p(s, t)) = e⊆p(s,t) w(e). A geodesic [s, t]
+is a path such that ℓ ([s, t]) ≤ ℓ (p (s, t)), for all paths p(s, t) joining s to t.
+The traffic on the graph is driven by a demand measure Λd : V × V → R+ ,
+where the demand Λd (s, t) is the traffic rate (e.g., number of packets per second)
+to be transmitted from the source s to the destination target t. Assume that
+the routing protocol sends the packets from the source s to the target t along
+the geodesic [s, t] with probability π ([s, t]). It is indeed customary as a load
+balancing strategy to randomize the Dijkstra algorithm so as to distribute the
+3
+
+traffic more evenly [19, 5]. Under this scheme, the geodesic [s, t] inherits a
+traffic rate measure τ ([s, t]) = Λd (s, t)π ([s, t]). An edge e laying on the path
+[s, t] inherits from that path a traffic τ ([s, t]). Aggregating this traffic over all
+source-target pairs and all geodesics traversing the edge e yields the traffic rate
+sustained by the edge e,
+X
+X
+X
+X
+Λd (s, t)π ([s, t]) .
+τ ([s, t]) =
+τ (e) =
+(s,t)∈V ×V [s,t]⊇e
+
+(s,t)∈V ×V [s,t]⊇e
+
+Observe that τ (e)ℓ(e) can be interpreted as the traffic load, that is the number
+of packets in the edge e.
+This paper is essentially concerned with existence of a sub-network that has
+extremely high traffic load. Formally, given a connected subgraph X ⊆ G,
+containing some edges, we define its traffic load to be representative of the
+number of packets in it:
+P
+ℓ(e)τ (e)
+Λt (X) =
+
+Pe∈X P
+=
+(1)
+s,t∈V
+e∈[s,t]∩X w(e) Λd (s, t)π ([s, t])
+P
+=
+s,t∈V ℓ ([s, t] ∩ X) Λd (s, t)π ([s, t])
+The above definition does not allow X to be reduced to a vertex, but we
+can identify the smallest Λt -measurable neighbor of a vertex. Define the star of
+a vertex, star(x), to be the smallest subgraph of G containing x; let ℓ(star(x))
+be the sum of the lengths of set of edges abutting to x; the latter vertex set is
+denoted as Ex = {xy : y ∈ V, xy ∈ E}. Then consider
+P
+X Λt (e)
+X
+Λt (e)
+Λt (star(x))
+≤
+= Pe∈Ex
+=
+τ (e) =: τ (x)
+ℓ (star(x))
+ℓ(e)
+e∈Ex ℓ(e)
+e∈Ex
+
+e∈Ex
+
+The inequality is a well known fact, and equality is achieved for the number of
+hops metric, that is, w(e) = 1, ∀e ∈ E. Since the traffic in any edge connected
+to x must be “serviced” by the “hub” x, the interpretation of τ (x) is the traffic
+rate sustained by x. Therefore, the fundamental question addressed by this
+paper can be reformulated, from a very local point of view, as that of existence
+of vertices with very high traffic rate. The above string indicates that such
+vertices with very high traffic rates can be sought via the load measure Λt . The
+latter aspect will play a crucial role in Section 6.
+The traffic τ (x) can be computed by counting the number of geodesics [s, t]
+having x as a vertex. One should consider two classes of such geodesics, though:
+those that traverse x, that is, x 6= s, x 6= t, and those that either start at x,
+[x, t], or terminate at x, [s, x]. The first ones have to be serviced twice, once
+in the input queue, once in the output queue; the others have to be serviced
+just once. There are 2(N − 1) geodesics starting or terminating at x. The
+betweenness centrality βc of a vertex v is defined, for a uniquely geodesic
+graph, as the number of geodesics that have v as a vertex (this includes those
+geodesics starting at v or terminating at v). For uniformly defined demand,
+4
+
+that is, Λd (x, y) = 1, ∀x 6= y, the connection between the traffic rate and the
+betweenness is easily seen to be
+τ (v) = 2(βc (v) − 2(N − 1)) + 2(N − 1) = 2βc (v) − 2(N − 1)
+
+3
+
+Basic conjectures
+
+For the sake of simplicity, we introduce a network curvature concept restricted
+to planar communication graphs and based on Alexandrov angles [4].
+Let (ab1 = abdeg(a)+1 , ab2 , ..., abdeg(a) ) be a cyclic ordering of the set of edges
+attached to the vertex a. A geodesic triangle is defined as ∆abc = [a, b] ∪ [b, c] ∪
+[c, a]. The Alexandrov angle αk at the vertex a of the geodesic triangle ∆abk bk+1
+is
+αk = cos−1
+
+d(a, bk )2 + d(a, bk+1 )2 − d(bk , bk+1 )2
+.
+2d(a, bk )d(a, bk+1 )
+
+Then the (Gauss) curvature at the vertex a is defined as
+2π −
+
+κ(a) = Pdeg(a)
+k=1
+
+Pdeg(a)
+i=1
+
+αk
+
+area(∆abk bk+1 )
+
+where area(∆abk bk+1 ) denotes the area of the geodesic triangle ∆abk bk+1 , easily
+computable from the distances via Heron’s formula. It is easily seen that, for
+the number of hops metric (w(e) = 1), we have αk = π/6; therefore, κ(a) < 0,
+κ(a) = 0, or κ(a) > 0 depending on whether deg(a) > 6, deg(a) = 6, or
+deg(a) < 6, respectively.
+This simple definition is introduced to construct some easily understood
+illustrative examples. In the main body of the paper, though, we will use the
+Gromov definition of negative curvature for graphs (see Sec. 5.)
+Definition 1 ([14]) The moment of inertia of a connected weighted graph
+P
+(2)
+G with respect to a vertex v is defined as φG (v) = vi ∈V d2 (v, v i ).
+
+Since the edges are treated as massless, this concept refers more to the underlying metric space structure (V, d) than to the weighted graph structure (V, E, d).
+Observe that this inertia may be infinite.
+Definition 2 ([14]) A center of mass or centroid of the weighted graph G
+(2)
+is defined as a vertex that achieves the infimum of the inertia: φG (cm(G)) =
+(2)
+inf v∈V φG (v) < ∞.
+If the graph is infinite (|V | = ∞) , this definition requires existence of a vertex v
+(2)
+such that φG (v) < ∞. If we relax the minimum to be anywhere on the graph,
+it will in general be achieved on an edge, but restricting it to vertices makes it
+easier to relate it to the traffic.
+We can now pose our conjectures.
+5
+
+Conjecture 1 (Negative curvature) Consider a large but finite (|V | < ∞)
+negatively curved graph G, subject to uniformly distributed demand. Then
+1. There are a very few nodes v that have very high traffic rate τ (v) as measured by βc (v); furthermore, the vertices of highest traffic rate are in a
+small neighborhood of the vertices of minimum inertia.
+2. If the graph has a symmetry group that fixes some point 0, this point
+achieves the unique minimum of the inertia and the maximum of the traffic
+rate.
+The first part of this conjecture is illustrated on planar graphs in Section 4. As
+a model of a large negatively curved graph, it is tempting to take the full hyperbolic space Hn . The latter is (globally) affine symmetric [8, Chap. IV], [15,
+Sec. 6.2], [16, Chap. XI, Example 10.2], and the transitivity of the symmetry
+group [16, XI, Th. 1.4] would make the traffic uniformly distributed, if it weren’t
+for the lack of convergence of the traffic function for uniformly distributed demand on infinite space. Restricting the network model to finite subsets of Hn
+breaks enough of the symmetry to create traffic spikes, even asymptotically as
+the size increases to infinity. An estimate of how close the center of mass and
+the point of maximum traffic is seems to be beyond our reach for general network models, at least at this stage. However, for hyperbolic balls, we prove that
+the two coincide and, as major result, that the sharpest traffic spike scales as
+vol(G)2 .
+Conjecture 2 (Nonnegative curvature) Consider a large but finite (|V | <
+∞) nonnegatively curved graph G subject to uniformly distributed demand. Then
+1. Both the traffic and inertia functions τ and βc are more evenly distributed
+than in the case of a negatively curved graph.
+2. If the graph has a vertex transitive symmetry group, then both the traffic
+and the inertia are uniform.
+Even though this conjecture asserts that for both zero curvature graphs (e.g.,
+Euclidean lattices) and positively curved graphs, the traffic is more smoothly
+distributed than in the case of negatively curved graphs, there is a significant
+difference between the two cases. A Euclidean lattice graph could be infinite,
+while positively curved (cubic) graphs are finite by Higuchi’s theorem [9, 23,
+21, 6]. Positively curved graphs need not be truncated and hence enjoy more
+symmetry than truncated Euclidean or hyperbolic graphs. This point is easy to
+illustrate on the 1-skeleta of the boundaries of the Platonic solids, all of which
+are positively curved. (For those Platonic solids that have triangular faces, the
+above curvature formula applies; for the other Platonic solids, the more general
+Higuchi-Mohar-DeVos formula [6] should be applied.) The transitivity of the
+symmetry groups of the Platonic solids, together with the uniform distribution
+of the demand, implies the uniform distribution of the traffic on the boundary
+graphs. For more general positively curved graphs, this conjecture is proved
+6
+
+using a Riemannian manifold model with its curvature bounded as 0 < k12 ≤
+κ(x) ≤ k22 . Here the symmetry is broken by the nonisotropic curvature
+Truncating En to secure convergence results in symmetry breaking, creating
+traffic “bumps,” not as sharp as those of the negatively curved case, but sharper
+than those in the positively curved spaces. This statement is quantified by
+1
+showing that the maximum traffic scales as vol(G)1+ n .
+
+4
+
+Some examples
+
+We consider two simple examples: The first one (symmetric graph) highlights
+the worsening of the congestion as the curvature decreases. The second one
+(asymmetric graph) highlights the relationship between the curvature and the
+inertia.
+
+4.1
+
+Almost symmetric graph: congestion versus curvature
+
+We construct a graph from a single vertex (#1) followed by the addition of seven
+neighbors (#2-#8) in a counterclockwise sense, as shown in Figure 1, top. We
+then proceed from vertex #2 and add vertices #9, #10, #11, #12, so that
+vertex #2 has valence 7. We then add neighbors to vertex #3, and proceed
+recursively, until we obtain the graph shown in Figure 1, top. With 7 neighbors
+for each
+P7vertex, except the boundary ones, the graph is negatively curved, because i=1 αi = 7 × π3 > 2π. The same construction can be done to generate
+graphs of valence 6 (vanishing curvature) and 8 (negative curvature). The plots
+of Figure 1, bottom, clearly demonstrate that the maximum congestion worsens
+as the curvature becomes more negative.
+
+4.2
+
+Asymmetric graph: congestion versus inertia
+
+Here we consider a graph of valence 7, constructed the same way as in the
+preceding case, except that some “appendices” have been deliberately added
+to make the graph asymmetric. The results are shown in Figure 2. Because
+the graph is negatively curved, and as conjectured, the traffic has its maximum
+precisely at the point where the inertia is minimum. Observe that the traffic
+and the inertia are “in opposite phase.”
+
+5
+
+From graphs to Riemannian manifolds
+
+As said in the Introduction, it has become standard routine in complex networks
+to check their Gromov negatively curved property as a way to validate arguments based on such models as the Poincaré disk. For the sake of mathematical
+accuracy, we formulate the basic definition and result.
+
+7
+
+Figure 1: Top: Almost symmetric negatively curved network of valence 7. Bottom: Traffic function τ versus vertex number; clearly, congestion at centroid
+increases as curvature becomes more negative. Also shown is the traffic function after curvature-based load balancing (see [19] for details).
+Definition 3 A geodesic metric space (G, dG ), for example a graph, is said to
+be Gromov hyperbolic if there exists a δ < ∞ such that every geodesic triangles △abc has an inscribed triangle △xyz, x ∈ [b, c], y ∈ [a, c], z ∈ [a, b], of a
+perimeter not exceeding δ, that is, d(x, y) + d(y, z) + d(z, x) ≤ δ.
+This definition makes sense only for infinite graphs. Even though there exists a
+Gromov concept for finite graphs [11], we really do not need the latter here, as
+our congestion analysis is asymptotic for very large graphs (or manifolds).
+Theorem 1 (Bonk-Schramm [3]) Let (G, dG ) be a Gromov hyperbolic metric geodesic space with bounded growth at some scale. There exist an integer n,
+a convex subset D ⊆ Hn , constants λ, k, and a map f : G → D such that
+|λdG (u, v) − dD (f (u), f (v))| ≤ k,
+and supx∈D dD (x, f (G)) ≤ k.
+8
+
+∀u, v ∈ G
+
+Figure 2: Traffic and inertia versus vertex number on a planar graph of valence
+7; the graph has been made asymmetric so that the conjecture could be verified
+on cases where the centroid does not coincide with the obvious symmetry center.
+The centroid occurs at vertex #14. Also observe the heavy traffic at vertex #4,
+because it is the gateway between the top appendix and the right side of the
+network. Observe the “opposite phase” phenomenon between the inertia and
+the traffic, clearly seen for vertex #86.
+This theorem makes precise the somewhat loose statement made in the introduction regarding graph-manifold identification. Clearly, G, after a scaling λ,
+can be identified with D via f and subject to a bounded error k. The condition
+of bounded growth at some scale is satisfied, for example, when G is a finite
+valence graph.
+Since this graph-manifold identification entails a bounded error, large scale
+problems on graphs can be mapped to more manageable continuous geometry
+problems on manifolds.
+
+9
+
+6
+
+Differential geometry proof of conjectures
+
+To justify our numerical results related to congestion on planar graphs of uniform valence of 7, 8, 9, we could develop a Poincaré disk model (see Fig. 3,
+right panel). The latter is a faithful model in the sense that the graphs of valence 7, 8, 9 are quasi-isometric to the Poincaré disk. Recall that the Poincaré
+disk D = {z = x + jy ∈ C : |z| < 1} inherits its hyperbolic structure through the
+metric ds2 = 4dzdz̄2 2 . The latter leads to the area element darea = 4dxdy2 2 .
+(1−|z| )
+(1−|z| )
+In the spirit of generalization, we develop models in the hyperbolic space Hn ,
+even in a Riemannian manifold M with arbitrary Riemannian metric ds2 and
+volume form dvol, provided its sectional curvature bounded as −k22 ≤ κ(x) ≤
+−k12 < 0. To emphasize the role of the curvature, we also look at the Euclidean
+space E2 as a model of graphs of valence 6 and further generalize the results to
+En .
+
+6.1
+
+Hyperbolic versus Euclidean traffic load
+
+Consider, in a Riemannian manifold M , a large ball BR (0) of radius R with
+its center at the origin together with a convex subset X ⊂ BR (0). The traffic
+load in X is defined as (compare with (1))
+ZZ
+Λt (X) =
+ℓ (X ∩ [s, t]) dΛd (s, t)
+(s,t)∈BR (0)×BR (0)
+
+As for the graph model, in this Riemannian context, the demand is uniformly
+distributed in the sense that dΛd (s, t) is the product volume dvol(s)dvol(t). The
+normalized traffic load in X is defined as follows:
+λt (X) :=
+=
+
+Λt (X)
+vol(BR (0))2
+1
+vol(BR (0))2
+
+RR
+
+(s,t)∈BR (0)×BR (0)
+
+ℓ (X ∩ [s, t]) dΛd (s, t)
+
+(2)
+
+We take the hyperbolic plane H2 as a roughly similar model of an infinite
+negatively curved planar graph [9] and carry over the analysis to n dimensions.
+In order to secure convergence of the traffic load, we restrict ourselves to the
+finite domain BR (0) ⊂ Hn , representative of a large but finite negatively curved
+graph G, and then we do the asymptotic analysis as R → ∞.
+We now state our two major results. The proofs are in the Appendix:
+Theorem 2 If BR (0) and X = Br (0), r ≪ R, are concentric balls in Hn and
+if dΛd (s, t) is the product volume measure, we have
+λt (Br (0)) ≍ c1 (n)rn
+where ck (n) > 0. Furthermore, in a Riemannian manifold of curvature bounded
+as −k22 ≤ κ(x) ≤ −k12 < 0, ∀x ∈ M , the asymptotic traffic load is bounded as
+ck1 (n)rn ≤ λt (X) ≤ ck2 (n)rn .
+
+10
+
+r
+e(v )
+s
+
+s
+p
+
+s’
+u
+
+O
+
+r
+e( − v )
+
+R
+
+x
+t
+
+O
+
+r
+
+s’
+
+t
+
+D = BR (0)
+
+R
+
+r
+
+X = Br (0)
+
+q
+
+Poincaré disk
+
+1
+
+r
+v
+
+s∞’
+
+t’
+
+t’∞
+t’
+
+X = Br (0)
+
+D = BR (0)
+
+ℜ2
+
+C = ℜ× ℑ
+
+Figure 3: Traffic load in Euclidean space and Poincaré disk, the latter taken as
+a model of H2 . The radii of the balls in the complex plane model are written
+r̄, R̄ and the corresponding hyperbolic measurements are r = tanh−1 (r̄), R =
+tanh−1 (R̄).
+Theorem 3 If BR (0) and X = Br (0), r ≪ R, are n-dimensional Euclidean
+balls (vanishing curvature) and if dΛd (s, t) is the product volume measure, we
+have
+rn
+λt (Br (0)) ≍ c0 (n) n−1
+R
+for some constant c0 (n) > 0, independent of r, R.
+Probably the most important conclusion to be drawn from the preceding
+two theorems is that the normalized traffic load in the small hyperbolic ball
+Br (0) remains bounded from below as R → ∞, whereas the same normalized
+traffic but in the small Euclidean ball goes to zero as R → ∞. Figure 3 provides an intuitive explanation as to why this discrepancy happens. Because the
+hyperbolic geodesics are “arched” towards the center where the small ball lies,
+their average length in the small hyperbolic ball is much larger than in the small
+Euclidean ball.
+Figure 3 gives a clue about elementary proofs of Theorems 3-2 in 2 dimensions. Clearly, the natural parameterization of the s(x, y), t(x′ , y ′ ) points in
+the traffic load integral is via polar coordinates; the difficulty is to compute the
+′
+dy ′
+Jacobian from dxdydx′ dy ′ , (1−(x2 +ydxdydx
+2 ))2 (1−(x′2 +y ′2 ))2 , resp., to the area squared
+element in polar coordinates of Euclidean, hyperbolic, resp., spaces. The details are available in [19]; this elementary but more explicit proof yields a specific
+value for c0 (2) = 1/π. The proof in the appendix is much more conceptual.
+Observe that, besides its definition as the traffic load, λt could be interpreted
+
+11
+
+in another way. Instead of (2), consider the following:
+ZZ
+1
+IX∩[s,t] (s, t)dΛd (s, t)
+vol(BR (0))2
+BR (0)×BR (0)
+where IX∩[s,t] (s, t) = 1 if X ∩ [s, t] 6= ∅ and 0 otherwise. The above is clearly
+the proportion of communication paths transiting through X. If X is between
+two balls, that is, Br1 (0) ⊆ X ⊆ Br2 (0), the above is of the order of λt (X)/ri .
+Thus λt (X) can be interpreted as the percentage of traffic passing through X.
+
+6.2
+
+Minimum inertia
+
+Let D ⊂ M be a convex domain of finite volume in a Riemannian manifold with
+distance d(·, ·). For x ∈ D, define (compare with Def. 1)
+Z
+(p)
+d(x, x′ )p dvol(x′ )
+φ (x) =
+D
+
+For p = 2, the above is called moment of inertia of D relative to x. Next,
+assume there exists a point cm(D) ∈ D such that (compare with Def. 2)
+φ(p) (cm(D)) = inf φ(p) (x) < ∞
+x∈D
+
+For p = 2, cm(D) is called a center of mass or centroid of D (see [14, Def.
+3.2.1]). This concept was apparently introduced by Elie Cartan [2, p. 47].
+Arguments related to existence and uniqueness of the center of mass rely on
+strict convexity of x 7→ d(x, y)p and x 7→ φ(p) (x). In negatively curved spaces,
+p ≥ 1 suffices, whereas in nonpositively curved spaces (e.g., Euclidean spaces)
+the stricter condition p > 1 is required. If φ(p) is strictly convex, uniqueness is
+guaranteed [14, Lemma 3.1.1].
+Theorem 4 Let M be a complete Riemannian manifold with its curvature
+bounded as −k22 ≤ κ(x) ≤ −k12 < 0. Then the inertia of BR (0) ⊂ M relative to the point x,
+Z
+(2)
+d(x, x′ )2 dvol(x′ )
+φ (x) =
+BR (0)
+
+has a unique minimum; furthermore, for k1 = k2 , this minimum is x = 0.
+Proof. Obviously, M is a complete Riemannian manifold of nonpositive curvature, and hence it is a Busemann Non Positively Curved (NPC) space [14,
+page 45]. Define the measure µ(·) = vol(·)IBR (0) (·), where IBR (0) denotes the
+indicator of BR (0) ⊂ M . Obviously, the measure µ has finite support and
+µ(BR (0)) < ∞. Therefore, by [14, Th. 3.2.1],
+Z
+Z
+′ 2
+′
+d(x, x′ )2 dvol(x′ )
+d(x, x ) µ(dx ) =
+M
+
+BR (0)
+
+12
+
+is finite and has a unique infimum. Furthermore, if k1 = k2 = 1, M has
+orientation preserving isometry group SO+ (n, 1). Under the subgroup that fixes
+0, BR (0) is invariant, and therefore φ(2) has the same symmetries. Therefore,
+the only way to secure uniqueness of the infimum is x∗ = 0.
+
+
+6.3
+
+Maximum load
+
+Theorem 5 Restricted to convex subsets X of BR (0) ⊂ Hn with the same
+hyperbolic area, λt (X) reaches its maximum for a ball centered at the origin of
+BR (0).
+Proof. The proof is a corollary of the proof of the Appendix. First, observe
+that µk (x) is spherically invariant, that is, µk (x) = µk (Sx), ∀S in the subgroup
+of SO+ (n, 1) that fixes 0. Write µk (|x|) to be the common value of µ(x) when
+x ∈ ∂B|x|(0).
+Next, we want to prove that
+Z
+Z e(~v ) Z e(−~v)
+shkn−1 (x + y)dxdyd~v
+n−1
+Sx
+
+0
+
+0
+
+~
+subject to e(~v ) + e(−~v ) = E is maximum for e(~v ) = e(−v).
+This is proved using
+the augmented functional
+Z e(~v) Z e(−~v )
+Z
+shkn−1 (x + y)dxdy + L(e(~v ) + e(−~v ))
+n−1
+Sx
+
+0
+
+0
+
+where L is the Lagrange multiplier. Setting the partial derivatives relative to
+e(~v ) and e(−~v ) to zero yields
+Z e(−~v )
+Z
+shkn−1 (e(~v ) + y)dy + L = 0
+n−1
+Sx
+
+Z
+
+n−1
+Sx
+
+Z
+
+0
+e(~
+v)
+
+0
+
+shkn−1 (x + e(−~v ))dx + L
+
+= 0
+
+Clearly, the above yields e(~v ) = e(−~v ) and the maximum is monotone increasing
+with E. It follows that
+Z
+Z RZ R
+1
+µk (|x|) ≤
+shkn−1 (x + y)dxdyd~v
+vol(BR (0))2 Sxn−1 0 0
+But
+µk (0) =
+
+1
+vol(BR (0))2
+
+Z
+
+S0n−1
+
+Z
+
+0
+
+R
+
+Z
+
+0
+
+R
+
+shkn−1 (x + y)dxdyd~v
+
+Thus µk (|x|) reaches its maximum at x = 0. Furthermore, it is obviously symmetric for the subgroup of SO+ (n, 1) that fixes 0. Finally, from the Appendix,
+µk (||x||) is monotone decreasing with ||x||.
+13
+
+It remains to show that the optimal way to distribute the volume allocated
+to X is in a ball around 0. First, we show that, if inf λt (X) is achieved for
+some X ∗ that does not enjoy the symmetry under the action of the subgroup
+of SO+ (n, 1) that fixes 0, then the same λt (X ∗ ) can be achieved for another
+subset, that has the symmetry, but that cannot be optimal.
+Decompose the big ball as BR (0) = ⊔m−1
+i=0 A[ri , ri+1 ), where A[ri , ri+1 ) is the
+annulus {x : ri ≤ d(0, x) < ri+1 }. Clearly, there exists an annulus A[ρP
+i , ρi+ ) ⊆
+A[ri , ri+1 ) such that λt (X∩A[ri , ri+1 )) = λt (A[ρi , ρi+ )). Thus λt (X) = i λt (A[ρi , ρi+ ))
+and
+X Z ρi+
+µk (r)T (r)dr
+λt (X) =
+ρi
+
+i
+
+where T (r) is the transverse measure such that vol(A[r, r + dr)) = T (r)dr,
+that is, T (r) is the “area” of the sphere at 0 with radius r. Consider now the
+constrained optimization problem
+X Z ρi+
+µk (r)T (r)dr
+inf
+ρ
+
+subject to
+XZ
+i
+
+ρi
+
+i
+
+ρi+
+
+T (r)dr = vol(X)
+ρi
+
+Again, a Lagrange multiplier argument proves that optimality could not hold
+with some i such that ρi+ < ρi+1 . (The intuition is that, since the density µk
+is monotone decreasing, optimality would require ρi+1 to drop down to ρi+ .)
+Thus ρ0 = 0 and ρi+ = ρi+1 , that is, the presumed optimal annulus collapses
+to a ball. 
+
+7
+
+Differential geometry versus real network congestion
+
+It is argued that, no matter how theoretical our model Λt (Br (0)) of the traffic
+load is, it is remarkably accurate at predicting how the “load at the center,”
+here 0, scales with the number of vertices, N , in a real network.
+In [20], the traffic load at the “center” of a sample of networks from the
+Rocketfuel data base [22] has been numerically found to scale as N 2 . Using the
+scaled Gromov analysis [11], it was asserted in [20] that the networks from that
+data base are negatively curved. In [20], the “center” is somewhat loosely defined
+as the “network core,” or the “set of nodes that are at the intersection of the
+majority of geodesics.” The latter intuitive concept is unmistakably the same
+as our theoretical center of mass concept. In the same paper [20], Narayan and
+Saniee provide experimental evidence that the traffic load at the center of WattsStrogatz Small-World 2-dimensional networks scales as N 1.5 . It is commonly
+admitted, and it has been proved using the scaled Gromov δ-analysis [11], that
+those networks are not hyperbolic; they are rather Euclidean, even positively
+14
+
+curved, in a certain range of the connectivity and rewiring parameters [18, Sec.
+6.4.2].
+Fact 1 (Narayan and Saniee [20]) Let βc (v) be the betweenness centrality
+of the vertex v in a network.
+1. In the Rocketfuel data base [22] of real networks, which are scaled-Gromov
+hyperbolic by the definition of [11], the maximum traffic rate scales as
+max βc (v) = Θ(N 2 )
+v
+
+2. For synthetic 2-dimensional Euclidean lattice networks, the maximum traffic rate scales as
+max βc (v) = Θ(N 1.5 )
+v
+
+To proceed to a continuous geometry justification of the above, the graphs
+are embedded in appropriate manifolds, using the Bonk-Schramm theorem for a
+Gromov hyperbolic graph, or using the trivial Euclidean embedding for the Euclidean lattice graphs. The Bonk-Schramm embedding f : G → D ⊆ Hn maps
+the geodesic flow on the graph G to a quasi-geodesic flow on the manifold D.
+Consider a vertex v on the graph. We clearly have Λt (star(v)) ≈ Λt (Br (f (v))),
+for some r of the order of the mesh of the graph. But as argued in Section 2,
+Λt (star(v)) scales as τ (v), which scales as βc (v). The continuous geometry model
+of the traffic metric of the above Fact is therefore Λt (Br (x)) for some x ∈ D.
+Obviously, the continuous geometry equivalent of N is
+N = vol(D)
+Fact 2 (Theorems 2 and 3) Let Λt (Br (x)) be the traffic load in a small metric ball Br (x) embedded in a large metric ball BR (0), where R ≫ r.
+• In a hyperbolic ball BR (0) ⊂ Hn , we have
+max Λt (Br (x)) = Θ(vol(BR (0))2 ) = Θ(N 2 )
+x
+
+• In a Euclidean ball BR (0) ⊂ En , we have
+
+
+
+
+vol(BR (0))2
+1
+max Λt (Br (x)) = Θ
+= Θ N 1+ n
+n−1
+x
+R
+In view of the striking consistency between Fact 1 and Fact 2, our model
+correctly predicts how the maximum traffic load scales as a function of N or the
+volume of the manifold.
+By the same token, we have extended the Euclidean results of [20] to the case
+where n > 2. This generalization allows us to observe that, as the dimension
+gets higher and higher, the Euclidean congestion decreases and the gap between
+traffic loads in hyperbolic and Euclidean spaces increases.
+While there are computational methods to check the Gromov property of
+a network [11, 18, 1, 10], associating a dimension with a complex network is
+an entirely other matter. The remarkable feature is that the asymptotic traffic
+analysis in negatively curved spaces transcends the dimension.
+15
+
+8
+
+The case of positive curvature
+
+The case of a Riemannian manifold positively curved as 0 < k12 < κ < k22 is
+significantly different from that of a nonpositively curved manifold, because the
+diameter of the former is bounded as π/k1 . Furthermore, by the sphere theorem [7, Chap. 13], if k1 = k2 /2, the manifold is homeomorphic to a sphere.
+Thus, contrary to the nonpositive curvature case, we cannot take a very large
+manifold with fixed positive curvature; so, we will have to take an arbitrarily
+large manifold of positive curvature decreasing to 0. The first part of the following theorem is completely trivial; the second part is easily proved by bounding
+the integrand of (4) and taking the upper limit of the two inner integrals to be
+πR = π/k.
+Theorem 6 Let M be a connected n-dimensional Riemannian manifold with
+constant curvature κ = k 2 > 0.
+1. Both the normalized traffic λt and the inertia φ(2) over the whole manifold
+are uniform.
+
+1
+, where BπR (0) = M \ {antipodal point of 0}.
+2. λt (Br (0)) = Θ R2n−2
+
+Comparing with Theorem 3, it is clear that the normalized traffic decays with
+n even faster than in the Euclidean case.
+Finally, using the comparison formula of the Appendix, the following is easily
+derived:
+Theorem 7 Let M be a connected Riemannian manifold with curvature bounded
+as k12 < κ ≤ k22 . Then
+µ+
+k2 (x) <
+
+dλt (x)
+≤ µ+
+k1 (x)
+dx
+
+Thus, under varying but bounded curvature, the traffic density in a small neighborhood of x remains bounded between the densities in fixed curvature. (Observe that by symmetry µ+
+ki (x), i = 1, 2, are independent of x.)
+
+9
+
+Conclusion
+
+We have provided a mathematical justification of the experimentally observed
+fact that negatively curved networks—even with uniform curvature—driven by
+uniformly distributed demand have small areas of very high traffic concentration. Nonnegatively curved networks, on the other hand, do not exhibit this
+phenomenon as dramatically as negatively curved networks. In fact, uniformly
+positively curved networks have uniform traffic distribution; more generally,
+bounds on the curvature implies bounds on the maximum traffic.
+Since the root cause of congestion in a network is its negative curvature, load
+balancing could be achieved by controlling the curvature to become and remain
+positive [19], despite outages and varying demand.
+16
+
+The areas of maximum traffic have been narrowed down to areas of low inertia. It has been proved that networks with enough symmetry have colocated
+maximum traffic and minimum inertia. But as already said, for general networks, bounding the distance between the two points is a challenging problem.
+The traffic dealt with here is the one driven by a uniformly distributed demand. The extension to nonuniformly distributed demand isnot a major hurdle.
+
+P
+P
+(2)
+i j
+It suffices to redefine the inertia as φG (v) = vi d2 (v, v i )
+j Λd (v , v ) .
+Finally, the present analysis is a spatial one. The temporal component would
+bring the dynamics of packet drops and retransmission into the picture. Early
+ns-2 simulation have shown that UDP traffic has its maximum packet drop at
+the point of maximum traffic/minimum inertia [19].
+
+10
+
+Appendix: Nonpositively curved spaces
+
+Let D be a convex domain in an n–dimensional Riemannian manifold M . Here
+convex means that, for every s and t in D, there is a unique shortest geodesic,
+or shortest path, [s, t] going from s to t and contained in D.
+For a subset X of D, we are interested in
+Z
+1
+λt (X) =
+ℓ(X ∩ [s, t]) ds dt
+vol(D)2 D×D
+where the integral is with respect to the square power of the n–dimensional
+volume of D.
+From a dynamical point of view, assuming uniform traffic between pairs of
+points of D, and assuming that this traffic travels at unit speed along geodesics,
+λt (X) measures the average of the amount of time spent in X.
+We provide an estimate for λt (X) when M has non-positive curvature, and
+an exact computation when the curvature is constant.
+Consider a point s in D. For every unit vector ~v based at s, draw the
+geodesic g~v emanating from s in the direction of ~v , and let e(~v ) be the distance
+from s to the point where the geodesic exits D. (This exit point is unique by
+convexity of D.) We can similarly consider the geodesic g−~v emanating from s
+in the opposite direction −~v , and the corresponding distance e(−~v ).
+For k > 0, define
+Z
+Z e(~v ) Z e(−~v)
+1
+n−1
+1
+(kx + ky) dx dy d~v
+(3)
+µk (s) =
+kn−1 sinh
+vol(D)2 Ssn−1 0
+0
+where the outer integral is with respect to the (n−1)–dimensional volume of the
+unit sphere Ssn−1 consisting of all unit vectors ~v based at s. The inner double
+integral can of course be computed by elementary calculus.
+For k = 0, let
+Z e(~v ) Z e(−~v )
+Z
+1
+µ0 (s) =
+(x + y)n−1 dx dy d~v
+vol(D)2 Ssn−1 0
+0
+17
+
+Theorem 8 If the curvature of M is constant and equal to −k 2 , then
+Z
+λt (X) =
+µk (x) dx
+X
+
+More generally, if the curvature of M is everywhere bounded between two nonpositive constants −k12 and −k22 with 0 ≤ k1 ≤ k2 ,
+Z
+Z
+µk2 (x) dx.
+µk1 (x) dx ≤ λt (X) ≤
+X
+
+X
+
+In other words, the quantity λt (X) is estimated by the integral of the density
+functions µk .
+Proof. Let T be the set of triples (s, t, x) where s, t, x are points of D such
+that x is located on the geodesic [s, t] and inside of X. There are two natural
+measures that can be put on T .
+The first one is the product ds dt dℓ of the volume in s, the volume in t,
+and the arc length parameter ℓ along the geodesic [s, t]. The reason why we are
+considering T with this measure is that
+Z
+Z
+ℓ(X ∩ [s, t]) ds dt =
+ds dt dℓ.
+T
+
+D×D
+
+The second one requires a different description of T . If we consider the unit
+vector ~v based at x and pointing in the direction of s (so that −~v points in the
+direction of t), the distance s from x to s, and the distance t from x to t, then
+the three points (s, t, x) are completely determined by the x-based vector ~v and
+by the numbers s and t ≥ 0.
+Recall that the unit tangent bundle T 1 X consists of all unit vectors ~v based
+at points of X. This is a (2n − 1)–dimensional manifold (n dimensions for the
+base point, n − 1 for the direction), and the metric of X naturally lifts to a
+Riemannian metric on T 1 X by using the Levi-Civita connection.
+The above construction identifies the set T of triples (s, t, x) with x ∈ X ∩
+[s, t] to the subset of T 1 X × R × R consisting of those (v, s, t) where v is a
+point of T 1 X, and where 0 ≤ s ≤ e(~v ) and 0 ≤ t ≤ e(−~v), with e(~v ) the
+distance between x and the point e(~v ) where the geodesic starting at x along
+the direction ~v exits D (see Fig. 3, right panel). Considering the volume form
+dv on T 1 X now provides another measure dv ds dt on T .
+When the curvature of M is bounded between −k12 and −k22 , the two measures ds dt dℓ and dv ds dt on T can be compared by the standard Riemannian
+arguments on the variation of geodesics (using Jacobi fields):
+Lemma 1
+shkn−1
+(s + t) dv ds dt ≤ ds dt dℓ ≤ shkn−1
+(s + t) dv ds dt
+1
+2
+where shk (x) =
+
+1
+k
+
+sinh(kx) if k > 0 and s0 (x) = x.
+
+18
+
+Therefore,
+Z
+1
+ds dt dℓ
+vol(D)2 T
+Z
+1
+shn−1 (s + t) ds dt dv
+≤
+vol(D)2 T k2
+Z
+Z e(~v ) Z e(−~v )
+1
+=
+shkn−1
+(s + t) ds dt dv
+2
+vol(D)2 T 1 X 0
+0
+Z Z
+Z e(~v ) Z e(−~v)
+1
+=
+shkn−1
+(s + t) ds dt d~v dx
+2
+vol(D)2 X Sxn−1 0
+0
+Z
+=
+µk2 (x) dx
+
+λt (X) =
+
+X
+
+Observe that, on the fourth line, d~v stands for the (n−1)–dimensional volume on
+the sphere Sxn−1 of unit vectors based at x, whereas dv represents the (2n − 1)–
+dimensional volume of T 1 X in the two lines before.
+The inequality
+Z
+µk1 (x) dx
+λt (X) ≥
+X
+
+is proved by the same argument. 
+For instance, consider the case where D and X are two concentric balls in
+a n-manifold of constant curvature −k 2 ≤ 0, of respective radii R and r with
+r << R. Then, e(~v ) ≍ R for every vector ~v based at a point of X.
+Theorem 9 If D and X are two concentric balls of respective radii R and r,
+with r << R, in the Euclidean space of dimension n, then the proportion λt (X)
+of traffic in D that transits through X is approximately
+λt (X) ≍ c0 (n)
+
+rn
+.
+Rn−1
+
+where c0 (n) is an explicit constant depending on the dimension n.
+If, instead, D and X are concentric balls in the n–dimensional hyperbolic
+space (where the curvature is −1), then
+λt (X) ≍ c1 (n)rn .
+Proof. Under these hypotheses, λt (X) is of the order of µk (0)vol(X). Write
+µk (0) = Mk (0)/vol(D)2 , where Mk (0) is the triple integral. e(~v ) ≍ R for every
+vector ~v based at a point of X. Therefore, in the Euclidean case, M0 (0) is of
+the order of Rn+1 , vol(D) is of the order of Rn , and λt (X) is of the order of
+rn /Rn−1 . In the hyperbolic case, M1 (0) is of the order of e2(n−1)R , vol(D) is of
+the order of e(n−1)R , and thus λt (X) is of the order of vol(X), which is itself of
+the order of rn for r small. 
+Note the independence on R in the negatively curved case.
+Proof of Lemma: The Jacobi field equation [7] in the hyperplane orthogonal
+to the geodesic [x, e(~v )] in the n-manifold M of constant curvature −k 2 reads
+19
+
+d2 J(s)
+ds2
+
+− k 2 J(s) = 0. If dxi = J(0), i = 1, ..., n − 1, is a linear element orthogonal
+to the geodesic at x and dθi = J ′ (0) is the elementary angle on the sphere Sxn−1 ,
+the solution to the Jacobi field equation at s reads, with a similar solution for
+[x, e(−~v )] at t,
+dsi
+dti
+
+1
+sinh(ks)dθi + cosh(ks)dxi
+k
+1
+= − sinh(kt)dθi + cosh(kt)dxi
+k
+=
+
+In the above dsi , dti are the variations of the geodesic in the orthogonal hyperplane at s, t, respectively. The volume defined by the variation of s at s
+n−1
+n−1
+is ds = ∧i=1
+dsi ds. Clearly, ∧i=1
+dsi is the transverse variation and ds is
+the longitudinal variation. A similar statement holds for dt. Because of the
+skew-symmetry of exterior differential forms, it is convenient to introduce the
+σ
+notation θ = ω to denote θ = (−1)n−1 ω. With this notation, we get
+ds ∧ dt ∧ dℓ
+
+σ
+
+=
+σ
+
+=
+σ
+
+=
+=
+=
+=
+=
+
+n−1
+∧i=1
+(dsi ∧ dti ) ∧ ds ∧ dt ∧ dℓ
+
+
+1
+n−1
+∧i=1
+sinh(k(s + t))dθi ∧ dxi ∧ ds ∧ dt ∧ dℓ
+k
+
+n−1
+
+1
+n−1
+sinh(k(s + t))
+∧i=1
+dθi ∧ dxi ∧ dℓ ∧ ds ∧ dt
+k
+
+
+n−1
+n−1
+sinhkn−1 (k(s + t))(∧i=1
+dθi ) ∧ ∧i=1
+dxi ∧ dℓ ∧ ds ∧ dt
+
+n−1
+sinhkn−1 (k(s + t)) d~v ∧ ((∧i=1
+dxi ) ∧ dℓ) ∧ ds ∧ dt
+
+sinhkn−1 (k(s + t)) (d~v ∧ dx) ∧ ds ∧ dt
+sinhkn−1 (k(s + t))dv ∧ ds ∧ dt
+
+Observe that, to go from the second to the third line, we need skew-commutativity
+of ∧ along with some elementary hyperbolic trigonometry. The inequality follows from the Rauch comparison argument [16, VIII, Th. 4.1], which in this
+context refers to the monotone increasing property of the solution shk (x) to the
+Jacobi field equation with k. 
+We finish this Appendix with two corollaries, useful in the main body of the
+text. A notation needs to be made more explicit: ex (~v ) denotes the length of
+the geodesic shot from x in the direction ~v and terminating at ∂BR (0).
+Corollary 1 For fixed ~v , ex (~v ) + ex (−~v ) is strictly monotone decreasing with
+||x||.
+Proof. Let ex (~v ) be the point where the geodesic starting at x with direction
+~v exits BR (0). With a mild abuse of notation, we will let ~v denote the angle
+between the radial [0, x] and the tangent to the geodesic at x. Same definition applies to ex (−~v ). Because Hn is isotropic, the geodesic [ex (−~v ), ex (~v )]
+is contained in a plane, which itself contains x and 0. Let [0,p] be the radial
+orthogonal to that geodesic. In the right angle triangle, △0pex (~v )), we get
+20
+
+
+cosh R
+cosh 21 ||ex (~v )ex (−~v ))|| = cosh(||0p||)
+. On the other hand, in the right angle
+triangle △xp0, we have sinh ||0p|| = cosh(x) sin ~v . It follows that
+
+
+cosh R
+1
+||ex (~v )ex (−~v ))|| = p
+cosh
+2
+1 + cosh2 x sin2 ~v
+and from there the result is obvious. 
+
+Corollary 2 For k > 0, the density function µk (s) is strictly monotone decreasing with ||s||.
+Proof. It is easily seen that the double inner integral in the definition (3) of µk
+is a polynomial in the variables exp(±ki(es (~v ) + es (−~v )), where i is some power.
+From the same definition, it is also obvious that the inner double integral is
+monotone increasing with es (~v ) + es (−~v ). But, by the previous corollary, the
+latter is monotone decreasing with ||s||. Thus the double inner integral in (3) is
+monotone decreasing with ||s||, and so is the average over the sphere Ssn−1 . 
+
+11
+
+Appendix: Positively curved spaces
+
+The case of uniformly positive curvature κ = k 2 > 0 is treated in a way parallel
+to the preceding one. The difference resides in the Jacobi field equation, which
+2
+J(s)
++ k 2 J(s) = 0, with ordinary trigonometric function,
+now takes the form d ds
+2
+rather than hyperbolic trigonometric function, solution. Therefore, if for some
+bounded subset D of the space of curvature k 2 we define
+Z
+Z e(~v ) Z e(−~v)
+1
+1
++
+µk (s) =
+sinn−1 (k(x + y))dxdyd~v (4)
+2
+n−1
+n−1
+vol(D) Ss
+k
+0
+0
+the normalized traffic load in X ⊂ D is given by
+Z
+µ+
+λt (X) =
+k (x)dx
+X
+
+In a Riemannian manifold with its curvature bounded as 0 < k12 ≤ κ ≤ k22 , we
+have
+Z
+Z
++
+µ+
+µk2 (x)dx ≤ λt (X) ≤
+k1 (x)dx
+X
+
+X
+
+References
+[1] F. Ariaei, M. Lou, E. Jonckeere, B. Krishnamachari, and M. Zuniga. Curvature of sensor network: clustering coefficient. EURASIP Journal on
+Wireless Communications and Networking, 2008. to appear.
+[2] Marcel Berger. Riemannian Geometry During the Second Half of the Twentieth Century, volume 17 of University Lecture Series. American Mathematical Society, Providence, RI, 2000.
+21
+
+[3] M. Bonk and O. Schramm. Embeddings of Gromov hyperbolic spaces.
+Geom. Funct. Analysis, 10:266–306, 2000.
+[4] Martin R. Bridson and André Haefliger. Metric Spaces of Non-Positive
+Curvature, volume 319 of A Series of Comprehensive Surveys in Mathematics. Springer, New York, NY, 1999.
+[5] Cisco. How does load balancing work?, 2005. Document ID: 5212,2005.
+[6] M. DeVos and B. Mohar. An analogue of the Descartes-Euler formula
+for infinite graph and Higuchi’s conjecture. Transactions of the American
+Mathematical Society, 359:3275–3286, 2007.
+[7] M. P. do Carmo. Riemannian Geometry. Birkhauser, Boston, Basel, Berlin,
+1992.
+[8] S. Helgason. Differential Geometry and Symmetric Spaces. Chelsea Publishing, Providence, RI, 2000.
+[9] Y. Higuchi. Combinatorial curvature for planar graphs. J. of Graph Theory,
+38:220–229, 2001.
+[10] E. Jonckheere, F. Ariaei, and P. Lohsoonthorn. Upper bound on scaled
+hyperbolic gromov δ: 4-point condition. Mathematics of Networks, ?:?,
+2009. to be submitted.
+[11] E. Jonckheere, P. Lohsoonthorn, and F. Bonahon. Scaled Gromov hyperbolic graphs. Journal of Graph Theory, 57:157–180, 2008. DOI
+10.1002/jgt.20275.
+[12] E. A. Jonckheere and P. Lohsoonthorn. A hyperbolic geometry approach to
+multi-path routing. In Proceedings of the 10th Mediterranean Conference
+on Control and Automation (MED 2002), Lisbon, Portugal, July 2002.
+FA5-1.
+[13] E. A. Jonckheere and P. Lohsoonthorn. Geometry of network security. In
+Proceedings of the American Control Conference (ACC 2004), Boston, MA,
+June 2004. Paper WeM11.1, Special Session on Control and Estimation
+Methods in Network Security and Survivability.
+[14] J. Jost. Nonpositive Curvature: Geometric and Analytic Aspects. Lectures
+in Mathematics. Birkhauser, Basel-Boston-Berlin, 1997.
+[15] J. Jost. Riemannian Geometry and Geometric Analysis. Universitext.
+Springer, Berlin, Heidelberg, New York, 1998. Second Edition.
+[16] S. Kobayashi and K. Nomizu. Foundation of Differential Geometry, volume 2. Wiley, 1996.
+[17] D. Krioukov, F. Papadopoulos, A. Vahdat, and M. Boguna. Curvature and
+temperature of complex networks. Physical Review E, 80:035101(R), 2009.
+22
+
+[18] P. Lohsoonthorn.
+Hyperbolic Geometry of Networks.
+PhD
+thesis,
+Department
+of
+Electrical Engineering–Systems,
+University
+of
+Southern
+California,
+2003.
+Available
+at
+http://eudoxus.usc.edu/IW/MATTFINALTHESIS MAIN.pdf.
+[19] M. Lou. Traffic pattern analysis in negatively curved networks. PhD thesis,
+University of Southern California, Los Angeles, CA, May 2008. Available
+at http://eudoxus.usc.edu/IW/Mingji-PhD-Thesis.pdf.
+[20] O. Narayan and I. Saniee. The large scale curvature of networks.
+arXiv:0907.1478v1, [cond-mat.stat-mech] 9 July 2009, July 2009.
+[21] T. Réti, E. Bitay, and Z. Kosztolányi. On the polyhedral graphs with
+positive curvature. Acta Polytechnica Hungarica, 2(2):19–37, 2005.
+[22] N. Spring, R. Mahajan, D. Wetherall, and T. Anderson. Measuring ISP
+topologies with rocketfuel. IEEE Transactions on Networking, 12(1):2–16,
+February 2004.
+[23] Liang Sun and Xingxing Yu. Positively curved cubic plane graphs are finite.
+Journal of Graph Theory, 47(4):241–274, 2004.
+[24] L. Zhao, Y.-C. Lai, K. Park, and N. Ye. Onset of traffic congestion in
+complex networks. Physical Review E, 71:026125–1–026125–8, 2005.
+
+23
+
+

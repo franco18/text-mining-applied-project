@@ -1,0 +1,1767 @@
+1
+
+Variations on a theme by Schalkwijk and Kailath
+Robert G. Gallager
+
+Barış Nakiboğlu
+
+arXiv:0812.2709v4 [cs.IT] 20 Nov 2009
+
+Abstract
+Schalkwijk and Kailath (1966) developed a class of block codes for Gaussian channels with ideal feedback
+for which the probability of decoding error decreases as a second-order exponent in block length for rates below
+capacity. This well-known but surprising result is explained and simply derived here in terms of a result by Elias
+(1956) concerning the minimum mean-square distortion achievable in transmitting a single Gaussian random variable
+over multiple uses of the same Gaussian channel. A simple modification of the Schalkwijk-Kailath scheme is then
+shown to have an error probability that decreases with an exponential order which is linearly increasing with block
+length. In the infinite bandwidth limit, this scheme produces zero error probability using bounded expected energy
+at all rates below capacity. A lower bound on error probability for the finite bandwidth case is then derived in which
+the error probability decreases with an exponential order which is linearly increasing in block length at the same
+rate as the upper bound.
+
+I. I NTRODUCTION
+This note describes coding and decoding strategies for discrete-time additive memoryless Gaussian-noise (DAMGN)
+channels with ideal feedback. It was shown by Shannon [14] in 1961 that feedback does not increase the capacity
+of memoryless channels, and was shown by Pinsker [10] in 1968 that fixed-length block codes on Gaussiannoise channels with feedback can not exceed the sphere packing bound if the energy per codeword is bounded
+independently of the noise realization. It is clear, however, that reliable communication can be simplified by the
+use of feedback, as illustrated by standard automatic repeat strategies at the data link control layer. There is a
+substantial literature (for example [11], [3], [9]) on using variable-length strategies to substantially improve the rate
+of exponential decay of error probability with expected coding constraint length. These strategies essentially use
+the feedback to coordinate postponement of the final decision when the noise would otherwise cause errors. Thus
+small error probabilities can be achieved through the use of occasional long delays, while keeping the expected
+delay small.
+For DAMGN channels an additional mechanism for using feedback exists whereby the transmitter can transmit
+unusually large amplitude signals when it observes that the receiver is in danger of making a decoding error. The
+power (i.e., the expected squared amplitude) can be kept small because these large amplitude signals are rarely
+required. In 1966, Schalkwijk and Kailath [13] used this mechanism in a fixed-length block-coding scheme for
+infinite bandwidth Gaussian noise channels with ideal feedback. They demonstrated the surprising result that the
+resulting probability of decoding error decreases as a second order exponential1 in the code constraint length at all
+transmission rates less than capacity. Schalkwijk [12] extended this result to the finite bandwidth case, i.e., DAMGN
+channels. Later, Kramer [8] (for the infinite bandwidth case) and Zigangirov [15] (for the finite bandwidth case)
+showed that the above doubly exponential bounds could be replaced by kth order exponential bounds for any k > 2
+in the limit of arbitrarily large block lengths. Later encoding schemes inspired by the Schalkwijk and Kailath
+approach have been developed for multi-user communication with DAMGN [16], [17], [18], [19], [20], secure
+communication with DAMGN [21] and point to point communication for Gaussian noise channels with memory
+[22].
+The purpose of this paper is three-fold. First, the existing results for DAMGN channels with ideal feedback are
+made more transparent by expressing them in terms of a 1956 paper by Elias on transmitting a single signal from
+a Gaussian source via multiple uses of a DAMGN channel with feedback. Second, using an approach similar to
+that of Zigangirov in [15], we strengthen the results of [8] and [15], showing that error probability can be made
+to decrease with blocklength n at least with an exponential order an − b for given coefficients a > 0 and b > 0.
+1
+
+For integer k ≥ 1, the kth order exponent function gk (x) is defined as gk (x) = exp(exp(· · · (exp(x)) · · · )) with k repetitions of exp. A
+function f (x) ≥ 0 is said to decrease as a kth order exponential if for some constant A > 0 and all sufficiently large x, f (x) ≤ 1/gk (Ax).
+
+2
+
+Z1 , . . . , Zn
+✲
+
+U1
+
+Xi = f (U1 , Y i−1
+1 )
+
+X1 , . . . , Xn
+
+Y , . . . , Yn
+✐ 1
+✲ ❄
+
+✻
+Fig. 1.
+
+✲ Decoder
+
+✲ Û
+1
+
+❄
+
+The setup for n channel uses per source use with ideal feedback.
+
+Third, a lower bound is derived. This lower bound decreases with an exponential order in n equal to an + b′ (n)
+where a is the same as in the upper bound and b′ (n) is a sublinear function 2 of the block length n.
+Neither this paper nor the earlier results in [12], [13], [8], and [15] are intended to be practical. Indeed, these
+second and higher order exponents require unbounded amplitudes (see [10], [2], [9]). Also Kim et al [7] have
+recently shown that if the feedback is ideal except for additive Gaussian noise, then the error probability decreases
+only as a single exponential in block length, although the exponent increases with increasing signal-to-noise ratio
+in the feedback channel. Thus our purpose here is simply to provide increased understanding of the ideal conditions
+assumed.
+We first review the Elias result [4] and use it to get an almost trivial derivation of the Schalkwijk and Kailath
+results. The derivation yields an exact expression for error probability, optimized over a class of algorithms including
+those in [12], [13]. The linear processing inherent in that class of algorithms is relaxed to obtain error probabilities
+that decrease with block length n at a rate much faster than an exponential order of 2. Finally a lower bound to
+the probability of decoding error is derived. This lower bound is first derived for the case of two codewords and
+is then generalized to arbitrary rates less than capacity.
+II. T HE
+
+FEEDBACK CHANNEL AND THE
+
+E LIAS
+
+RESULT
+
+Xn1
+
+Let X1 , . . . , Xn =
+represent n > 1 successive inputs to a discrete-time additive memoryless Gaussian noise
+(DAMGN) channel with ideal feedback. That is, the channel outputs Y1 , . . . , Yn = Y1n satisfy Y1n = Xn1 + Zn1
+where Zn1 is an n-tuple of statistically independent Gaussian random variables, each with zero mean and variance
+σZ2 , denoted N (0, σZ2 ). The channel inputs are constrained to some given average power constraint S in the sense
+that the inputs must satisfy the second-moment constraint
+n
+
+1X
+Si ≤ S
+n
+
+where Si = E[Xi2 ].
+
+(1)
+
+i=1
+
+Without loss of generality, we take σZ2 = 1. Thus S is both a power constraint and a signal-to-noise ratio constraint.
+A discrete-time channel is said to have ideal feedback if each output Yi , 1 ≤ i ≤ n, is made known to the
+transmitter in time to generate input Xi+1 (see Figure 1). Let U1 be the random source symbol to be communicated
+via this n-tuple of channel uses. Then each channel input Xi is some function f (U1 , Y1i−1 ) of the source and
+previous outputs. Assume (as usual) that U1 is statistically independent of Zn1 .
+Elias [4] was interested in the situation where U1 ∼ N (0, σ12 ) is a Gaussian random variable rather than a
+discrete message. For n = 1, the rate-distortion bound (with a mean-square distortion measure) is achieved without
+coding or feedback. For n > 1, attempts to map U1 into an n dimensional channel input in the absence of feedback
+involve non-linear or twisted modulation techniques that are ugly at best. Using the ideal feedback, however, Elias
+constructed a simple and elegant procedure for using the n channel symbols to send U1 in such a way as to meet
+the rate-distortion bound with equality.
+Let Si = E[Xi2 ] be an arbitrary choice of energy, i.e., second moment, for each i, 1 ≤ i ≤ n. It will be shown
+shortly that the optimal choice for S1 , . . . , Sn , subject to (1), is Si = S for 1 ≤ i ≤ n. Elias’s strategy starts
+by choosing the first transmitted signal X1 to be a linear scaling of the source variable U1 , scaled to meet the
+second-moment constraint, i.e.,
+√
+X1 = Sσ11U1 .
+2
+
+i.e. lim
+
+n→∞
+
+b′ (n)
+n
+
+=0
+
+3
+S1 Y 1
+At the receiver, the minimum mean-square error (MMSE) estimate of X1 is E[X1 |Y1 ] = 1+S
+, and the error in
+1
+S1
+estimate is N (0, 1+S1 ). It is more convenient to keep track of the MMSE estimate of U1 and the error U2 in
+√
+estimate. Since U1 and X1 are the same except for the scale factor σ1 / S1 , these are given by
+√
+σ1 S 1 Y 1
+E[U1 |Y1 ] =
+1 + S1
+U2 = U1 − E[U1 |Y1 ]
+
+that
+that
+
+(2)
+(3)
+
+2
+
+σ1
+where U2 ∼ N (0, σ22 ) and σ22 = 1+S
+.
+1
+Using the feedback, the transmitter can calculate the error term U2 at time 2. Elias’s strategy is to use U2 as
+the source signal (without a second-moment constraint) for the second transmission. This unconstrained signal U2
+is then linearly scaled to meet the second moment constraint S2 for the second transmission. Thus the second
+transmitted signal X2 is given by
+√
+X2 = Sσ22U2 .
+
+We use this notational device throughout, referring to the unconstrained source signal to be sent at time i by Ui
+and to the linear scaling of Ui , scaled to meet the second moment
+constraint Si , as Xi .
+√
+σ2 S2 Y2
+The receiver calculates the MMSE estimate E[U2 |Y2 ] = 1+S2 and the transmitter then calculates the error in
+this estimate, U3 = U2 − E[U2 |Y2 ]. Note that
+U1 = U2 + E[U1 |Y1 ]
+
+= U3 + E[U2 |Y2 ] + E[U1 |Y1 ].
+
+Thus U3 can be viewed as the error arising from estimating U1 by E[U1 |Y1 ] + E[U2 |Y2 ]. The receiver continues
+to update its estimate of U1 on subsequent channel uses, and the transmitter continues to transmit linearly scaled
+versions of the current estimation error. Then the general expressions are as follows:
+√
+S i Ui
+Xi =
+;
+(4)
+σi
+√
+σi S i Y i
+;
+(5)
+E[Ui |Yi ] =
+1 + Si
+Ui+1 = Ui − E[Ui |Yi ].
+(6)
+2
+
+σi
+2 ) and σ 2
+where Ui+1 ∼ N (0, σi+1
+i+1 = 1+Si .
+Iterating on equation (6) from i = 1 to n yields
+
+Un+1 = U1 −
+2
+Similarly, iterating on σi+1
+= σi2 /(1 + Si ), we get
+
+n
+X
+i=1
+
+E[Ui |Yi ].
+
+(7)
+
+σ12
+.
+(8)
+i=1 (1 + Si )
+P
+2
+This says that the error arising from estimating U1 by ni=1 E[UP
+i |Yi ] is N (0, σn+1 ). This is valid for any (nonn
+negative) choice of S1 , . . . , Sn , and this is minimized, subject to i=1 Si = nS , by Si = S for 1 ≤ i ≤ n. With
+this optimal assignment, the mean square estimation error in U1 after n channel uses is
+2
+σn+1
+= Qn
+
+2
+σn+1
+=
+
+σ12
+.
+(1 + S)n
+
+(9)
+
+We now show that this is the minimum mean-square error over all ways of using the channel. The rate-distortion
+function for this Gaussian source with a squared-difference distortion measure is well known to be
+R(d) =
+
+1 σ12
+ln
+2
+d
+
+4
+
+This is the minimum mutual information, over all channels, required to achieve a mean-square error (distortion)
+equal to d. For d = σ12 /(1 + S)n , R(d) is n2 ln(1 + S), which is the capacity of this channel over n uses (it
+was shown by Shannon [14] that feedback does not increase the capacity of memoryless channels). Thus the
+Elias scheme actually meets the rate-distortion bound with equality, and no other coding system, no matter how
+complex, can achieve a smaller mean-square error. Note that (9) is also valid in the degenerate case n = 1. What
+is surprising about this result is not so much that it meets the rate-distortion bound, but rather that the mean-square
+estimation error goes down geometrically with n. It is this property that leads directly to the doubly exponential
+error probability of the Schalkwijk-Kailath scheme.
+III. T HE S CHALKWIJK -K AILATH
+
+SCHEME
+
+The Schalkwijk and Kailath (SK) scheme will now be defined in terms of the Elias scheme,3 still assuming the
+discrete-time channel model of Figure 1 and the power constraint of (1). The source is a set of M equiprobable
+symbols, denoted by {1, 2, . . . , M }. The channel uses will now be numbered from 0 to n − 1, since the use at
+time 0 will be quite distinct from the others. The source signal, U0 is a standard M -PAM modulation of the source
+symbol. That is, for each symbol m, 1 ≤ m ≤ M , from the source alphabet, m is mapped into the signal am where
+am = m − (M +1)/2. Thus the M signals in U0 are symmetric around 0 with unit spacing. Assuming equiprobable
+symbols, the second moment σ02 of U0 is (M 2 − 1)/12. The initial channel input X0 is a linear scaling of U√
+0 , scaled
+to have an energy S0 to be determined later. Thus X0 is an M -PAM encoding, with signal separation d0 = S0 /σ0 .
+s
+s
+S0
+S0
+X0 = U0
+= U0
+.
+(10)
+2
+2 − 1)
+12(M
+σ0
+The received signal Y0 = X0 + Z0 is fed back to the transmitter, which, knowing X0 , determines Z0 . In the
+following n − 1 channel uses, the Elias scheme is used to send the Gaussian random variable Z0 to the receiver,
+thus reducing the effect of the noise on the original transmission. After the n − 1 transmissions to convey Z0 , the
+receiver combines its estimate of Z0 with Y0 to get an estimate of X0 , from which the M -ary signal is detected.
+Specifically, the transmitted and received signals for times 1 ≤ i ≤ n − 1 are given by equations (4), (5) and
+(6). √At time 1, the unconstrained signal U1 is Z0 and σ12 = E[U12 ] = 1. Thus the transmitted signal X1 is given
+by S1 U1 , where the second moment S1 is to be selected later. We choose Si = S1 for 1 ≤ i ≤ n − 1 for
+optimized use of the Elias scheme, and thus the power constraint in (1) becomes S0 + (n − 1)S1 = nS . At the end
+of transmission n − 1, the receiver’s estimate of Z0 from Y1 , . . . , Yn−1 is given by (7) as
+E[Z0 |
+
+Y1n−1 ]
+
+=
+
+n−1
+X
+i=1
+
+E[Ui | Yi ].
+
+The error in this estimate, Un = Z0 − E[Z0 | Y1n−1 ], is a zero-mean Gaussian random variable with variance σn2 ,
+where σn2 is given by (9) to be
+1
+σn2 =
+.
+(11)
+(1 + S1 )n−1
+Since Y0 = X0 + Z0 and Z0 = E[Z0 | Y 1n−1 ] + Un we have
+
+Y0 − E[Z0 | Y1n−1 ] = X0 + Un
+
+(12)
+
+where Un ∼ N (0, σn2 ).
+Note that Un ∼ N (0, σn2 ) is a function of the noise vector Z0n−1 and is thus statistically independent4 of X0 .
+Thus, detecting X0 from Y0 − E[Z0 | Y1n−1] (which is known at the receiver.) is the simplest of classical detection
+problems, namely that of detecting an M -PAM signal X0 from the signal plus an independent Gaussian noise
+variable Un . Using maximum likelihood detection, an error occurs only if Un exceeds half the distance between
+3
+
+The analysis here is tutorial and was carried out in slightly simplified form in [5, p481]. A very readable further simplified analysis is
+in [23].
+4
+Furthermore, for the given feedback strategy, Gaussian estimation theory can be used to show, first, that Un is independent of E[Z0 |
+n−1
+Y1 ], and, second, that Ỹ = Y0 − E[Z0 | Y1n−1 ] is a sufficient statistic for X0 based on Y n−1
+, (i.e. Pr[X0 | Y0n−1 ] = Pr[X0 | Ỹ ]). Thus
+0
+this detection strategy is not as ad hoc as it might initially seem.
+
+5
+
+signal points, i.e., if |Un | ≥
+is given by5
+
+√
+1 S0
+2 σ0
+
+=
+
+1
+2
+
+q
+
+12S0
+M 2 −1 .
+
+Since the variance of Un is (1 + S1 )−n+1 , the probability of error
+
+Pe = 2
+
+where γn =
+
+1
+2
+
+q
+
+12S0 (1+S1 )n−1
+M 2 −1
+
+(M −1)
+Q(γn )
+M
+
+(13)
+
+and Q(x) is the complementary distribution function of N (0, 1), i.e.,
+Z ∞
+−z 2
+1
+) dz.
+exp(
+Q(x) = √
+2
+2π x
+
+(14)
+
+Choosing S0 and S1 , subject S0 +(n−1)S1 = nS , to maximize γn (and thus minimize Pe ), we get S1 = max{0, S −
+1
+n }. That is, if nS is less than 1, all the energy is used to send X0 and the feedback is unused. We assume nS > 1
+in what follows, since for any given S > 0 this holds for large enough n. In this case, S0 is one unit larger than
+S1 , leading to
+1
+S1 = S − ;
+S0 = S1 + 1.
+(15)
+n
+Substituting (15) into (13),
+(M −1)
+Pe = 2
+Q(γn )
+(16)
+M
+q
+3(1+S− n1 )n
+.
+where γn =
+M 2 −1
+This is an exact expression for error probability, optimized over energy distribution, and using M -PAM followed
+by the Elias scheme and ML detection. It can be simplified as an upper bound by replacing the coefficient MM−1 by
+1. Also, since Q(·) is a decreasing function of its argument, Pe can be further upper bounded by replacing M 2 − 1
+by M 2 . Thus,
+Pe ≤ 2Q(γn )
+(17)
+
+
+n/2 (1+S)n/2
+√
+1
+.
+where γn ≥ 3 1 − (1+S)n
+M
+For large M , which is the case of interest, the above bound is very tight and is essentially an equality, as first
+derived by Schalkwijk6 in Eq. 12 of [12]. Recalling that nS ≥ 1 we can further lower bound γn (thus upper
+bounding Pe ). Substituting C(S) = 21 ln(1 + S) and M = exp(nR) we get
+
+
+√
+1 n/2
+3(1 −
+γn ≥
+)
+exp(n(C(S) − R))
+(18)
+1+n
+The term in brackets is decreasing in n. Thus,
+(1 −
+
+1 n/2
+1+n )
+
+≥ lim (1 −
+k→∞
+−1/2
+
+1 k/2
+1+k )
+
+≥e
+
+Using this together with equations (17) and (18) we get,
+q
+
+3
+Pe ≤ 2Q
+e exp(n(C(S) − R)) ,
+
+(19)
+∀n ≥ 1
+
+(20)
+
+(21)
+
+or more simply yet,
+
+Pe ≤ 2Q(exp[n(C(S) − R)]).
+
+(22)
+
+Note that for R < C(S), Pe decreases as a second order exponential in n.
+In summary, then, we see that the use of standard M -PAM at time 0, followed by the Elias algorithm over the
+next n − 1 transmissions, followed by ML detection, gives rise to a probability of error Pe that decreases as a
+second-order exponential for all R < C(S). Also Pe satisfies (21) and (22) for all n ≥ 1/S .
+5
+The term(M −1)/M in (13) arises because the largest and smallest signals each have only one nearest neighbor, whereas all other signals
+have two nearest neighbors.
+6
+Schalkwijk’s work was independent of Elias’s. He interpreted the steps in the algorithm as successive improvements in estimating X0
+rather than as estimating Z0 .
+
+6
+
+Although Pe decreases as a second-order exponential with this algorithm, the algorithm does not minimize Pe
+over all algorithms using ideal feedback. The use of standard M -PAM at time 0 could be replaced by PAM with
+non-equal spacing of the signal points for a modest reduction in Pe . Also, as shown in the next section, allowing
+transmissions 1 to n − 1 to make use of the discrete nature of X0 allows for a major reduction in Pe .7
+The algorithm above, however, does have the property that it is optimal among schemes in which, first, standard
+PAM is used at time 0 and, second, for each i, 1 ≤ i ≤ n − 1, Xi is a linear function of Z0 and Y1i−1 . The reason
+for this is that Z0 and Y1n−1 are then jointly Gaussian and the Elias scheme minimizes the mean square error in
+Z0 and thus also minimizes Pe .
+A. Broadband Analysis:
+Translating these results to a continuous time formulation where the channel is used 2W times per second,8 the
+capacity (in nats per second) is CW = 2W C . Letting T = n/2W and letting RW = 2W R be the rate in nats per
+second, this formula becomes
+Pe ≤ 2 Q (exp [(CW − RW )T ]) .
+(23)
+Let P = 2W S be the continuous-time power constraint, so that CW = W ln(1 + P/2W ). In the broadband limit
+as W → ∞ for fixed P , CW → P/2. Since (23) applies for all W > 0, we can simply go to the broadband limit,
+C∞ = P/2. Since the algorithm is basically a discrete time algorithm, however, it makes more sense to view the
+infinite bandwidth limit as a limit in which the number of available degrees of freedom n increases faster than
+linearly with the constraint time T . In this case, the signal-to-noise ratio per degree of freedom, S = PT /n goes
+to 0 with increasing T . Rewriting γn in (17) for this case,
+
+
+√
+PT
+1
+n
+γn ≥
+(24)
+ln(1 +
+− ) − T R∞
+3 exp
+2
+n
+n
+
+
+√
+1 P 2T 2
+PT
+3 exp
+≥
+− −
+− T R∞ ,
+(25)
+2
+2
+4n
+where the inequality ln(1 + x) ≥ x − x2 /2 was used. Note that if n increases quadratically with T , then the term
+P 2T 2
+4n is simply a constant which becomes negligible as the coefficient on the quadratic becomes large. For example,
+if n ≥ 6P 2 T 2 , then this term is at most 1/24 and (25) simplifies to
+γn ≥ exp [T (C∞ − R∞ )]
+
+for
+
+n ≥ 6P 2 T 2 .
+
+(26)
+
+This is essentially the same as the broadband SK result (see the final equation in [13]). The result in [13] used
+n = e2T CW degrees of freedom, but chose the subsequent energy levels to be decreasing harmonically, thus slightly
+weakening the coefficient of the result. The broadband result is quite insensitive to the energy levels used for each
+degree of freedom9 , so long as S0 is close to 1 and the other Si are close to 0. This partly explains why the
+harmonic choice of energy levels in [13] comes reasonably close to the optimum result.
+7
+Indeed, Zigangirov [15] developed an algorithm quite similar to that developed in the next section. The initial phase of that algorithm is
+very similar to the algorithm [12] just described, with the following differences. Instead of starting with standard M -PAM, [15] starts with
+a random ensemble of non-equally-spaced M -PAM codes ingeniously arranged to form a Gaussian random variable. The Elias scheme is
+then used, starting with this Gaussian random variable. Thus the algorithm in [15] has different constraints than those above. It turns out to
+have an insignificantly larger Pe (over this phase) than the algorithm here for S greater than [(1/ ln π6 ) − 1] and an insignificantly smaller
+Pe otherwise.
+8
+This is usually referred to as a channel bandlimited to W . This is a harmless and universally used abuse of the word bandwidth for
+channels without feedback, and refers to the ability to satisfy the Nyquist criterion with arbitrarily little power sent out of band. It is more
+problematic with feedback, since it assumes that the sum of the propagation delay, the duration of the transmit pulse, the duration of the
+matched filter at the receiver, and the corresponding quantities for the feedback, is at most 1/2W . Even allowing for a small fraction of
+out-of-band energy, this requires considerably more than bandwidth W .
+P
+9
+To see this, replace (1 + S1 )(n−1)/2 in (13) by 12 exp[ i ln(1 + Si )], each term of which can be lower bounded by the inequality
+ln(1 + x) ≥ x − x2 /2.
+
+7
+
+✻
+
+✻
+
+✛
+
+am−1 d0
+
+f (Y0 | U0 = am )
+
+✻
+
+✲
+✛
+
+m̂ = m
+
+m̂ = m+1
+
+✲
+
+am+1 d0
+
+a m d0
+
+√
+Fig. 2.
+Given that am is the sample value of the PAM source signal U0 , the sample value of X0 is am d0 where d0 = S0 /σ0 . The
+figure illustrates the probability density of Y0 given this conditioning and shows the M -PAM signal points for X0 that are neighbors to the
+sample value X0 = am d0 . Note that this density is N (am d0 , 1), i.e., it is the density of Z0 , shifted to be centered at am d0 . Detection
+using maximum likelihood at this point simply quantizes Y0 to the nearest signal point.
+
+IV. A N ALTERNATIVE PAM S CHEME
+
+IN THE HIGH SIGNAL - TO - NOISE REGIME
+
+In the previous section, Elias’s scheme was used to allow the receiver to estimate the noise Z0 originally added
+to the PAM signal at time 0. This gave rise to an equivalent observation, Y0 − E[Z0 | Y1n−1 ] with attenuated noise
+Un as given in (12). The geometric attenuation of E[Un2 ] with n is the reason why the error probability in the
+Schalkwijk and Kailath (SK) [13] scheme decreases as a second order exponential in time.
+In this section, we explore an alternative strategy that is again based on the use of M -PAM at time 0, but is quite
+different from the SK strategy at times 1 to n−1. The analysis is restricted to situations in which the signal-to-noise
+ratio (SNR) at time 0 is so large that the distance between successive PAM signal points in X0 is large relative to
+the standard deviation of the noise. In this high SNR regime, a simpler and more effective strategy than the Elias
+scheme suggests itself (see Figure 2). This new strategy is limited to the high SNR regime, but Section V develops
+a two-phase scheme that uses the SK strategy for the first part of the block, and switches to this new strategy when
+the SNR is sufficiently large.
+In this new strategy for the high SNR regime, the receiver makes a tentative ML decision
+m̂0 at time 0. As seen
+√
+in the figure, that decision is correct unless the noise exceeds half the distance d0 = S0 /σ0 to either the signal
+value on the right or the left of the sample value am of U0 . Each of these two events has probability Q(d0 /2).
+The transmitter uses the feedback to calculate m̂0 and chooses the next signal U1 (in the absence of a secondmoment constraint) to be a shifted version of the original M -PAM signal, shifted so that U1 = m̂0 − m where m
+is the original message symbol being transmitted. In other words, U1 is the integer-valued error in the
+p receiver’s
+tentative decision am̂0 of U0 . The corresponding transmitted signal X1 is essentially given by X1 = U1 S1 /E[U12 ],
+where S1 is the energy allocated to X1 .
+We now give an approximate explanation of why this strategy makes sense and how the subsequent transmissions
+are chosen. This is followed by a precise analysis. Temporarily ignoring the case where either m = 1 or m = M
+(i.e., where am has only one neighbor), U1 is 0 with probability 1 − 2Q(d0 /2). The probability that |U1 | is two or
+more is essentially negligible, so U1 = ±1 with a probability approximately equal to 2Q(d0 /2). Thus
+√
+U1 S1
+2
+E[U1 ] ≈ 2Q(d0 /2);
+X1 ≈ p
+(27)
+2Q(d0 /2)
+√
+This means that X1 is not only a shifted version of X0 , but (since d0 = S0 /σ0 ) is also scaled up by a factor
+that is exponential in S0 when S0 is sufficiently large. Thus the separation between adjacent signal points in X1 is
+exponentially increasing with S0 .
+This also means that when X1 is transmitted, the situation is roughly the same as that in Figure 2, except that
+the distance between signal points is increased by a factor exponential in S0 . Thus a tentative decision at time 1
+will have an error probability that decreases as a second order exponential in S0 .
+Repeating the same procedure at time 2 will then give rise to a third order exponential in S0 , etc. We now turn
+to a precise analysis and description of the algorithm at times 1 to n − 1.
+The following lemma provides an upper bound to the second moment of U1 , which was approximated in (27).
+Lemma 4.1: For any d ≥ 4, let U be a d-quantization of a normal random variable Z ∼ N (0, 1) in the sense
+that for each integer ℓ, if Z ∈ (dℓ − d2 , dℓ + d2 ], then U = ℓ. Then E[U 2 ] is upper bounded by
+E[U 2 ] ≤
+
+1.6
+d
+
+2
+
+exp[− d8 ]
+
+(28)
+
+8
+
+Note from Figure 2 that, aside √
+from a slight exception described below, U1 = m̂0 − m is the same as the
+d0 -quantization of Z0 where d0 = S0 /σ0 . The slight exception is that m̂0 should always lie between 1 and M .
+If Z0 > (M − m + 1/2), then U1 = M − m, whereas the d0 -quantization takes on a larger integer value. There
+is a similar limit for Z0 < 1 − m − 1/2. This reduces the magnitude of U1 in the above exceptional cases, and
+thus reduces the second moment. Thus the bound in the lemma also applies to U1 . For simplicity in what follows,
+we avoid this complication by assuming that the receiver allows m̂0 to be larger than M or smaller than 1. This
+increases both the error probability and the energy over true ML tentative decisions, so the bounds also apply to
+the case with true ML tentative decisions.
+Proof: From the definition of U , we see that U = ℓ if Z ∈ (dℓ − d2 , dℓ + d2 ]. Thus, for ℓ ≥ 1,
+d
+d
+Pr[U = ℓ] = Q(dℓ − ) − Q(dℓ + )
+2
+2
+From symmetry, Pr[U = −ℓ] = Pr[U = ℓ], so the second moment of U is given by
+
+
+∞
+X
+d
+d
+2
+2
+E[U ] = 2
+ℓ Q(dℓ − ) − Q(dℓ + )
+2
+2
+ℓ=1
+
+
+∞
+X
+d
+2
+2
+[ℓ − (ℓ − 1) ] Q(dℓ − ) .
+= 2Q(d/2) + 2
+2
+ℓ=2
+
+Using the standard upper bound Q(x) ≤
+this becomes
+
+√1
+2π x
+
+4
+E[U 2 ] ≤ √
+2π d
+
+exp[−x2 /2] for x > 0, and recognizing that ℓ2 − (ℓ − 1)2 = 2ℓ − 1,
+
+(
+
+exp[−d2 /8] +
+
+∞
+X
+
+)
+
+exp[−(2ℓ − 1)2 d2 /8]
+
+ℓ=2
+∞
+X
+
+)
+4
+2
+2
+exp[−4ℓ(ℓ − 1)d /8]
+exp[−d /8] 1 +
+=√
+2π d
+ℓ=2
+
+
+4
+1
+2
+≤√
+exp[−d /8]
+1 − exp(−d2 )
+2π d
+1.6
+2
+exp[− d8 ]
+≤
+for d ≥ 4.
+d
+(
+
+(29)
+
+We now define the rest of this new algorithm. We have defined the unconstrained signal U1 at time 1 to be
+m̂0 − m but have not specified the energy constraint to be used in amplifying U1 to X1 . The analysis is simplified
+by defining X1 in terms of a specified scaling factor between U1 and X1 . The energy in X1 is determined later by
+this scaling. In particular, let
+ 2
+√
+d0
+X1 = d1 U1
+where d1 = 8 exp
+.
+16
+The peculiar expression for d1 above looks less peculiar when expressed as d21 /8 = exp(d20 /8). When Y1 = X1 +Z1
+is received, we can visualize the situation from Figure 2 again, where now d0 is replaced by d1 . The signal set
+for X1 is again a PAM set but it now has signal spacing d1 and is centered on the signal corresponding to the
+transmitted source symbol m. The signals are no longer equally likely, but the analysis is simplified if a maximum
+likelihood tentative decision m̂1 is again made. We see that m̂1 = m̂0 − Ŷ1 where Ŷ1 is the d1 -quantization of Y1
+(and where the receiver again allows m̂1 to be an arbitrary integer) . We can now state the algorithm for each time
+i, 1 ≤ i ≤ n − 1.
+ 2 
+√
+di−1
+di =
+8 exp 16
+(30)
+Xi = di Ui
+
+(31)
+
+m̂i = m̂i−1 − Ŷi
+
+(32)
+
+Ui+1 = m̂i − m.
+
+(33)
+
+9
+
+where Ŷi is the di -quantization of Yi .
+Lemma 4.2: For d0 ≥ 4, the algorithm of (30)-(33) satisfies the following for all alphabet sizes M and all
+message symbols m:
+d2i
+8
+
+E[Xi2 ] ≤
+∞
+X
+i=1
+
+d20
+) ≥ gi (2).
+8
+12.8
+.
+di−1
+
+= gi (
+
+E[Xi2 ] ≤ 5.
+
+(34)
+(35)
+(36)
+
+Pr(m̂i 6= m) ≤ 1/gi+1 (2),
+
+(37)
+
+where gi (x) = exp(· · · (exp(x)) · · · ) with i exponentials.
+Proof: From the definition of di in (30),
+d2
+d2
+d2
+d2i
+= exp( i−1 ) = exp(exp( i−2 )) = · · · = gi ( 0 )
+8
+8
+8
+8
+This establishes the first part of (34) and the inequality follows since d0 ≥ 4 and gi (x) is increasing in x.
+Next, since Xi = di Ui , we can use (34) and Lemma 4.1 to see that
+
+E[Xi2 ] = d2i E[Ui2 ]
+
+
+
+d2i−1
+d2i−1
+1.6
+= 8 exp(
+)
+exp(−
+)
+8
+di−1
+8
+12.8
+≤
+,
+di−1
+where we have canceled the exponential terms, establishing (35).
+To establish (36), note that each di is increasing as a function of d0 , and thus each E[Xi2 ] is upper bounded by
+taking d0 ≥ 4 to be 4. Then E[X12 ] = 3.2, E[X22 ] = 1.6648, and the other terms can be bounded in a geometric
+series with a sum less than 0.12.
+Finally, to establish (37), note that
+Pr(m̂i 6= m) = Pr(|Ui |2 ≥ 1)
+(a)
+
+≤
+
+2
+≤ E[Ui+1
+]
+
+(b)
+1.6
+exp(−d2i /8) ≤ exp(−d2i /8)
+di
+
+(c)
+
+(d)
+
+= 1/ exp(gi (d20 /8)) ≤ 1/gi+1 (2),
+
+where we have used Lemma 4.1 in (a), the fact that di ≥ 4 in (b), and equation (34) in (c) and (d).
+We have now shown that, in this high SNR regime, the error probability decreases with time i as an ith order
+exponent. The constants involved, such as d0 ≥ 4 are somewhat ad hoc, and the details of the derivation are
+similarly ad hoc. What is happening, as stated before, is that by using PAM centered on the receiver’s current
+tentative decision, one can achieve rapidly expanding signal point separation with small energy. This is the critical
+idea driving this algorithm, and in essence this idea was used earlier by10 Zigangirov [15]
+V. A TWO - PHASE
+
+STRATEGY
+
+We now combine the Shalkwijk-Kailath (SK) scheme of Section III and the high SNR scheme of Section IV
+into a two phase strategy. The first phase, of block length n1 , uses the SK scheme. At time n1 − 1, the equivalent
+received signal Y0 − E[Z0 | Y1n1 −1 ], (see (12)), is used in an ML decoder to detect the original PAM signal X0 in
+the presence of additive Gaussian noise of variance σn2 1 .
+10
+
+However unlike the scheme presented above, in Zigangirov’s scheme the total amount of energy needed for transmission is increasing
+linearly with time.
+
+10
+
+Note that if we scale the equivalent received signal, Y0 − E[Z0 | Y1n1 −1 ] by a factor of 1/σn1 so as to have an
+equivalent unit variance additive noise, we see that the distance between adjacent signal points in the normalized
+PAM is dn1 −1 = 2γn1 where γn1 is given in (13). If n1 is selected to be large enough to satisfy dn1 −1 ≥ 4, then
+this detection at time n1 − 1 satisfies the criterion assumed at time 0 of the high SNR algorithm of Section IV. In
+other words, the SK algorithm not only achieves the error probability calculated in Section III, but also, if the block
+length of the SK phase n1 is chosen to be large enough, it creates the initial condition for the high SNR algorithm.
+That is, it provides the receiver and the transmitter at time n1 − 1 with the output of a high signal-to-noise ratio
+PAM. Consequently not only is the tentative ML decision at time n1 − 1 correct with moderately high probability,
+but also the probability of the distant neighbors of the decoded messages vanishes rapidly.
+The intuition behind this two-phase scheme is that the SK algorithm seems to be quite efficient when the signal
+points are so close (relative to the noise) that the discrete nature of the signal is not of great benefit. When the SK
+scheme is used enough times, however, the signal points becomes far apart relative to the noise, and the discrete
+nature of the signal becomes important. The increased effective distance between the signal points of the original
+PAM also makes the high SNR scheme, feasible. Thus the two-phase strategy switches to the high SNR scheme at
+this point and the high SNR scheme drives the error probability to 0 as an n2 order exponential.
+We now turn to the detailed analysis of this two-phase scheme. Note that 5 units of energy must be reserved for
+phase 2 of the algorithm, so the power constraint S1 for the first phase of the algorithm is n1 S1 = nS − 5. For
+any fixed rate R < C(S), we will find that the remaining n2 = n − n1 time units is a linearly increasing function
+of n and yields an error probability upper bounded by 1/gn2 +1 (2).
+A. The finite-bandwidth case
+For the finite-bandwidth case, we assume an overall block length n = n1 + n2 , an overall power constraint S ,
+and an overall rate R = (ln M )/n. The overall energy available for phase 1 is at least nS − 5, so the average
+power in phase 1 is at least (nS − 5)/n1 .
+We observed that the distance dn1 −1 between adjacent signal points, assuming that signal and noise are normalized
+to unit noise variance, is twice the parameter γn1 given in (16). Rewriting (16) for the power constraint (nS −5)/n1 ,
+
+
+√
+nS − 5
+1 n1 /2
+dn1 ≥ 2 3 1 +
+−
+exp(−nR)
+n1
+n1
+
+
+
+n1 /2
+√
+nS n1 /2
+6
+exp(−nR) 1 −
+=2 3 1+
+n1
+nS + n1
+
+
+n1 /2
+
+(a) √
+1
+nS n1 /2
+exp(−nR) 1 −
+≥2 3 1+
+n1
+1 + n1 /6
+n1 /2
+
+√
+Sn
+exp(−nR),
+(38)
+≥ 2e33 1 +
+n1
+where to get (a) we assumed that nS ≥ 6. We can also show that the multiplicative term, (1 −
+decreasing function of n1 satisfying
+
+
+n1 /2
+n1 /2
+1
+1
+1−
+≥ lim 1 −
+= e−3 .
+n1 →∞
+1 + n1 /6
+1 + n1 /6
+
+1
+n1 /2 ,
+1+n1 /6 )
+
+is a
+
+This establishes (38). In order to satisfy dn1 ≥ 4, it suffices for the right-hand side of (38) to be greater than or
+equal to 4. Letting ν = n1 /n, this condition can be rewritten as
+
+ 
+S
+ν
+3
+√ .
+≥ 2e
+exp n −R + ln(1 +
+(39)
+3
+2
+ν
+Define φ(ν) by
+
+ν
+ln(1 + S/ν).
+2
+This is a concave increasing function for 0 < ν ≤ 1 and can be interpreted as the capacity of the given channel
+if the number of available degrees of freedom is reduced from n to νn without changing the available energy per
+φ(ν) =
+
+11
+
+block, i.e., it can be interpreted as the capacity of a continuous time channel whose bandwidth has been reduced
+by a factor of ν . We can then rewrite (39) as
+φ(ν) ≥ R +
+
+β
+,
+n
+
+(40)
+
+3
+
+√ ). This is interpreted in Figure 3.
+where β = ln( 2e
+3
+
+φ(ν)
+
+C
+R + β/n
+R
+
+ν
+0
+
+φ−1 (R)
+
+νn′
+
+νn
+
+1
+
+This shows the function φ(ν) and also the value of ν, denoted φ−1 (R), at which φ(ν) = R. It also shows νn′ , which
+satisfies φ(νn′ ) = R + β/n, and gives the solution to (40) with equality. It turns out to be more convenient to satisfy (40) with
+−1
+(R))
+inequality using νn , which by simple geometry satisfies νn = φ−1 (R) + β(1−φ
+n(C−R) .
+Fig. 3.
+
+The condition dn1 ≥ 4 is satisfied by choosing n1 = ⌈nνn ⌉ for νn defined in Figure 3, i.e.,
+
+
+β(1 − φ−1 (R))
+n1 = nφ−1 (R) +
+C−R
+
+Thus the duration n2 of phase 2 can be chosen to be
+
+
+β(1 − φ−1 (R))
+−1
+.
+n2 = n[1 − φ (R)] −
+C −R
+
+(41)
+
+This shows that n2 increases linearly with n at rate 1 − φ−1 (R) for n > β/(C − R). As a result of lemma 4.2
+the error probability is upper bounded as
+Pr(m̂ 6= m) ≤ 1/gn2 +1 (2),
+
+(42)
+
+Thus the probability of error is bounded by an exponential order that increases at a rate 1 − φ−1 (R). We later
+derive a lower bound to error probability which has this same rate of increase for the exponential order of error
+probability.
+B. The broadband case - zero error probability
+The broadband case is somewhat simpler since an unlimited number of degrees of freedom are available. For
+phase 1, we start with equation (24), modified by the fact that 5 units of energy must be reserved for phase 2.
+
+
+√
+n1
+PT
+6
+dn1 ≥ 2 3 exp
+ln(1 +
+− ) − T R∞
+2
+n1
+n1
+
+
+2
+2
+√
+PT
+P T
+≥ 2 3 exp
+−3−
+− T R∞ ,
+2
+4n1
+where, in order to get the inequality in the second step, we assumed that PT ≥ 6 and used the identity ln(1 + x) ≥
+x − x2 /2. As in the broadband SK analysis, we assume that n1 is increasing quadratically with increasing T . Then
+P 2T 2
+P 2T 2
+we get,
+4n1 becomes just a constant. Specifically if n1 ≥
+4
+dn1 ≥
+
+It follows that dn1 ≥ 4 if
+
+√
+2 3
+e4
+
+T ≥
+
+exp [T (C∞ − R∞ )] ,
+4+ln 2−0.5 ln 3
+.
+C∞ −R∞
+
+(43)
+
+If (43) is satisfied, then phase 2 can be carried out for arbitrarily large n2 , with Pe satisfying (42). In principle, n2
+can be infinite, so Pe becomes 0 whenever T is large enough to satisfy(43).
+
+12
+
+One might object that the transmitter sequence is not well defined with n2 = ∞, but in fact it is, since at most
+a finite number of transmitted symbols can be nonzero. One might also object that it is impossible to obtain an
+infinite number of ideal feedback signals in finite time. This objection is certainly valid, but the entire idea of ideal
+feedback with infinite bandwidth is unrealistic. Perhaps a more comfortable way to express this result is that 0 is
+the greatest lower bound to error probability when (43) is satisfied, i.e., any desired error probability, no matter
+how small is achievable if the continuous-time block length T satisfies (43).
+VI. A LOWER
+
+BOUND TO ERROR PROBABILITY
+
+The previous sections have derived upper bounds to the probability of decoding error for data transmission using
+particular block coding schemes with ideal feedback. These schemes are non-optimal, with the non-optimalities
+chosen both for analytical convenience and for algorithmic simplicity. It appears that the optimal strategy is quite
+complicated and probably not very interesting. For example, even with a block length n = 1, and a message set size
+M = 4, PAM with equi-spaced messages is neither optimal in the sense of minimizing average error probability
+over the message set (see Exercise 6.3 of [6]) nor in the sense of minimizing the error probability of the worst
+message. Aside from this rather unimportant non-optimality, the SK scheme is also non-optimal in ignoring the
+discrete nature of the signal until the final decision. Finally, the improved algorithm of Section V is non-optimal
+both in using ML rather than maximum a posteriori probability (MAP) for the tentative decisions and in not
+optimizing the choice of signal points as a function of the prior received signals.
+The most important open question, in light of the extraordinarily rapid decrease of error probability with block
+length for the finite bandwidth case, is whether any strictly positive lower bound to error probability exists for fixed
+block length n. To demonstrate that there is such a positive lower bound we first derive a lower bound to error
+probability for the special case of a message set of size M = 2. Then we generalize this to codes of arbitrary rate
+and show that for R < C , the lower bound decreases as a kth order exponential where k increases with the block
+length n and has the form k = an − b′ where the coefficient a is the same as that in the upper bound in Section
+V. It is more convenient in this section to number the successive signals from 1 to n rather than 0 to n − 1 as in
+previous sections.
+A. A lower bound for M = 2
+Although it is difficult to find and evaluate the entire optimal code, even for M = 2, it turns out to be easy to find
+the optimal encoding in the last step. Thus, for each Y 1n−1 , we want to find the optimal choice of Xn = f (U, Y 1n−1 )
+as a function of, first, the encoding functions Xi = f (U, Y 1i−1 ), 1 ≤ i ≤ n − 1, and, second, the allocation of
+energy, S̃ = E[Xn2 |Y 1n−1 ] for that Y 1n−1 . We will evaluate the error probability for such an optimal encoding at time
+n and then relate it to the error probability that would have resulted from decoding at time n − 1. We will use this
+relation to develop a recursive lower bound to error probability at each time i in terms of that at time i − 1.
+i
+11
+For a given code function Xi = f (U, Y i−1
+1 ) for 1 ≤ i ≤ n − 1, the conditional probability density of Y 1 given
+U = 1 or 2 is positive for all sample values for Y i1 ; thus the corresponding conditional probabilities of hypotheses
+U = 1 and U = 2 are positive i.e.
+Pr(U =m|Y i1 ) > 0
+
+m ∈ {1, 2}, ∀Y i1 ∈ Ri .
+
+In particular, for m ∈ {1, 2}, define Φm = Pr(U =m|Y 1n−1 ) for some given Y 1n−1 . Finding the error probability
+Ψ = Pr(Û (Y n1 ) 6= U | Y 1n−1 ) is an elementary binary detection problem for the given Y 1n−1 . MAP detection, using
+the a priori probabilities Φ1 and Φ2 , minimizes the resulting error probability.
+For a given sample value of Y 1n−1 , let b1 and b2 be the values of Xn for U = 1 and 2 respectively. Let a be half
+the distance between b1 and b2 , i.e., 2a = b2 − b1 . The error probability Ψ depends on b1 and b2 only through a.
+For a given S̃ , we choose b1 and b2 to satisfy E[Xn |Y 1n−1 ] = 0, thus maximizing a for the given S̃ . The variance
+of Xn conditional on Y 1n−1 is given by
+1X
+Var(Xn |Y 1n−1 ) =
+Φi Φj (bi − bj )2 = 4Φ1 Φ2 a2 ,
+2
+i,j
+
+11
+
+We do not use the value of this density, but for completeness, it can be seen to be
+density (2π)−1/2 exp(−x2 /2).
+
+Qi
+
+j=1
+
+ξ[Yj − f (U, Y j−1
+)] where ξ(x) is the normal
+1
+
+13
+
+and since E[Xn |Y 1n−1 ] = 0, this means that a is related to S̃ by S̃ = 4Φ1 Φ2 a2 .
+Now let Φ = min{Φ1 , Φ2 }. Note that Φ is the probability of error for a hypothetical MAP decoder detecting U
+at time n − 1 from Y 1n−1 . The error probability Ψ for the MAP decoder at the end of time n is given by the classic
+result of binary MAP detection with a priori probabilities Φ and 1 − Φ,
+
+
+
+
+ln η
+ln η
+Ψ = (1 − Φ)Q a +
++ ΦQ a −
+,
+(44)
+2a
+2a
+R∞
+−1/2 exp(−z 2 /2) dz . This equation relates the error probability Ψ at the end
+where η = 1−Φ
+Φ and Q(x) = x (2π)
+of time n to the error probability Φ at the end of time n − 1, both conditional on Y 1n−1 . We are now going to view
+Ψ and Φ as functions of Y 1n−1 , and thus as random variables. Similarly S̃ ≥ 0 can be any non-negative function
+of Y 1n−1 , subject to a constraint Sn on its mean; so we can view S̃ as an arbitrary non-negative random variable
+with mean Sn . For each Y 1n−1 , S̃ and Φ determine the value of a; thus a is also a non-negative random variable.
+We are now going to lower bound the expected value of Ψ in such a way that the result is a function only of
+the expected value of Φ and the expected value Sn of S̃ . Note that Ψ in (44) can be lower bounded by ignoring
+the first term and replacing the second term with ΦQ(a). Thus,
+Ψ ≥ ΦQ(a)
+s
+
+
+S̃
+
+= ΦQ 
+4Φ(1 − Φ)
+s 
+S̃ 
+.
+≥ ΦQ 
+2Φ
+
+(45)
+
+where the last step uses the facts that Q(x) is a decreasing function of x and that 1 − Φ > 1/2.
+
+
+ s
+
+
+
+S̃ 
+2Φ
+
+hp i
+1
+ΦS̃
+= E[Φ]Q √
+E
+2E[Φ]
+
+
+q
+1
+E[Φ]E[S̃]
+≥ E[Φ]Q √
+2E[Φ]
+s
+!
+Sn
+.
+= E[Φ]Q
+2E[Φ]
+
+E[Ψ] ≥ E[Φ]Q 
+
+1
+E Φ
+E[Φ]
+
+(46)
+
+(47)
+(48)
+
+In (46), we used Jensen’s inequality, based on the facts that Q(x) is a convex function for x ≥ 0 and that Φ/E[Φ]
+is a probability distribution on Y 1n−1 . In (47), we used the Schwarz inequality along with the fact that Q(x) is
+decreasing for x ≥ 0.
+We now recognize that E[Ψ] is simply the overall error probability at the end of time n and E[Φ] is the overall
+error probability (if a MAP decision were made) at the end of time n − 1. Thus we denote these quantities as pn
+and pn−1 respectively,
+s
+!
+Sn
+pn ≥ pn−1 Q
+.
+(49)
+2pn−1
+Note that this lower bound is monotone increasing in pn−1. Thus we can further lower bound pn by lower
+bounding
+ppn−1 . We can lower bound pn−1 (for a given pn−2 and Sn−1 ) in exactly the same way, so that pn−1 ≥
+pn−2 Q( Sn−1 /2pn−2 ). These two bounds can be combined to implicitly bound pn in terms of pn−2 , Sn and Sn−1 .
+In fact, the same technique can be used for each i, 1 ≤ i ≤ n, getting
+s
+!
+Si
+pi ≥ pi−1 Q
+.
+(50)
+2pi−1
+
+14
+
+This gives us a recursive lower bound on pn for any given choice of S1 , . . . , Sn subject to the power constraint
+P
+i Si ≤ nS .
+We have been unable to find a clean way to optimize this over the choice of S1 , . . . , Sn , so as a very crude
+lower bound on pn , we upper bound each Si by nS . For convenience, multiply each side of (50) by 2/nS ,
+2pi
+2pi−1 q nS 
+for 1 ≤ i ≤ n.
+(51)
+≥
+Q
+2pi−1 ;
+nS
+nS
+q 
+nS
+nS
+At this point, we can see what is happening in this lower bound. As pi approaches 0, 2p
+→
+∞
+.
+Also
+Q
+2pi
+i
+− nS
+
+approaches 0 as e 4pi . Now we will lower bound the expression on the right hand side of (51). We can check
+numerically12 that for x ≥ 9,
+1 √
+(52)
+Q( x) ≥ exp(−x).
+x
+√
+Furthermore x1 Q( x) is decreasing in x for all x > 0, and thus
+1 √
+Q( x) ≥ exp(− max{x, 9})
+x
+
+∀x > 0.
+
+Substituting this into (51) we get,
+2pi
+1
+≥
+;
+nS
+, 9})
+exp(max{ 2pnS
+i−1
+
+for 1 ≤ i ≤ n.
+
+Applying this recursively for i = n down to i = k + 1 for any k ≥ 0 we get,
+
+1
+2pn
+≥
+nS
+, 9}), 9})
+exp(max{exp(max{ 2pnS
+n−2
+1
+(a)
+=
+exp(exp(max{ 2pnS
+, 9}))
+n−2
+1
+oi .
+h
+n
+≥
+nS
+,
+9
+gn−k max 2p
+k
+
+(53)
+
+where (a) simply follows from the fact that exp(9) > 9. This bound holds for k = 0, giving an overall lower bound
+on error probability in terms of p0 . In the usual case where the symbols are initially equiprobable, p0 = 1/2 and
+pn ≥
+
+nS
+.
+2gn [max(nS, 9)]
+
+(54)
+
+Note that this lower bound is an nth order exponential. Although it is numerically much smaller than the upper
+bound in Section V, it has the same general form. The intuitive interpretation is also similar. In going from block
+length n − 1 to n, with very small error probability
+q at n − 1, the symbol of large a priori probability is very close
+to 0 and the other symbol is approximately at S̃/pn−1 . Thus the error probability is decreased in one time unit
+by an exponential in pn−1 , leading to an nth order exponential over n time units.
+B. Lower bound for arbitrary M
+Next consider feedback codes of arbitrary rate R < C with sufficiently large blocklength n and M = enR
+codewords. We derive a lower bound on error probability by splitting n into an initial segment of length n1 and
+a final segment of length n2 = n − n1 . This segmentation is for bounding purposes only and does not restrict the
+feedback code. The error probability of a hypothetical MAP decoder at the end of the first segment, Pe (n1 ), can
+be lower bounded by a conventional use of the Fano inequality. We will show how to use this error probability as
+the input of the lower bound for M = 2 case derived in the previous subsection, i.e., equation (53). There is still
+the question of allocating power between the two segments, and since we are deriving a lower bound, we simply
+12
+
+That is, we can check numerically that (52) is satisfied for x = 9 and verify that the right-hand side is decreasing faster than the left
+for x > 9.
+
+15
+
+assume that the entire available energy is available in the first segment, and can be reused in the second segment.
+We will find that the resulting lower bound has the same form as the upper bound in Section V.
+Using energy Sn over the first segment corresponds to power Sn/n1 , and since feedback does not increase the
+channel capacity, the average directed mutual information over the first segment is at most n1 C(Sn/n1 ). Reusing
+the definitions ν = n1 /n and φ(ν) = ν2 ln(1 + Sν ) from Section V,
+n1 C(Sn/n1 ) = nφ(ν).
+
+The entropy of the source is ln M = nR, and thus the conditional entropy of the source given Y n1 1 satisfies
+n [R − φ(ν)] ≤ H(U |Y n1 1 )
+
+≤ h(Pe (n1 )) + Pe (n1 )nR
+
+≤ ln 2 + Pe (n1 )nR,
+
+(55)
+
+where we have used the Fano inequality and then bounded the binary entropy h(p) = −p ln p − (1 − p) ln(1 − p)
+by ln 2.
+To use (55) as a lower bound on Pe (n1 ), it is necessary for n1 = nν to be small enough that φ(ν) is substantially
+less than R, and to be specific we choose ν to satisfy
+R − φ(ν) ≥
+
+1
+.
+n
+
+(56)
+
+With this restriction, it can be seen from (55) that
+1 − ln 2
+.
+(57)
+nR
+Figure 4 illustrates that the following choice of n1 in (58) satisfies both equation (56) and equation (57). This uses
+the fact that φ(ν) is a monotonically increasing concave function of ν .
+
+
+1 − φ−1 (R)
+−1
+n1 = nφ (R) −
+.
+(58)
+C−R
+Pe (n1 ) ≥
+
+C
+
+φ(ν)
+
+R
+R − 1/n
+ν
+0
+
+νn νn′
+
+φ
+
+−1
+
+(R)
+
+1
+
+Fig. 4. This shows the value of ν, denoted φ−1 (R), at which φ(ν) = R. It also shows νn′ , where φ(νn′ ) = R − 1/n. This gives the
+−1
+(R)
+can be seen to be less than νn′ and thus also satisfies (56).
+solution to (56) with equality, but νn = φ−1 (R) − 1−φ
+n(C−R)
+
+The corresponding choice for n2 is
+
+
+−1
+
+n2 = n[1 − φ
+
+
+1 − φ−1 (R)
+.
+(R)] +
+C −R
+
+(59)
+
+Thus with this choice of n1 , n2 , the error probability at the end of time n1 satisfies (57).
+The straightforward approach at this point would be to generalize the recursive relationship in (50) to arbitrary
+M . This recursive relationship could then be used, starting at time i = n and using each successively smaller i
+until terminating the recursion at i = n1 where (57) can be used. It is simpler, however, since we have already
+derived (50) for M = 2, to define a binary coding scheme from any given M -ary scheme in such a way that the
+binary results can be used to lower bound the M -ary results. This technique is similar to one used earlier in [1].
+Let Xi = f (U, Y i−1
+1 ) for 1 ≤ i ≤ n be any given coding function for U ∈ M = {1, . . . , M }. That code is used
+to define a related binary code. In particular, for each received sequence Y n1 1 over the first segment, we partition
+
+16
+
+the message set M into two subsets, M1 (Y n1 1 ) and M2 (Y n1 1 ). The particular partition for each Y n1 1 is defined later.
+This partitioning defines a binary random variable V as follows,
+
+
+1
+U ∈ M1 (Y n1 1 )
+V =
+2
+U ∈ M2 (Y n1 1 )
+At the end of the transmission, the receiver will use its decoder to decide Û . We define the decoder for V at time
+n, using the decoder of U as follows,
+
+
+1
+Û ∈ M1 (Y n1 1 )
+V̂ =
+2
+Û ∈ M2 (Y n1 1 )
+Note that with the above mentioned definitions, whenever the M -ary scheme decodes correctly, the related binary
+scheme does also, and thus the error probability Pe (n) for the M -ary scheme must be greater than or equal to the
+error probability pn of the related binary scheme.
+The binary scheme, however, is one way (perhaps somewhat bizarre) of transmitting a binary symbol, and thus
+it satisfies the results13 of section VI-A. In particular, for the binary scheme, the error probability pn at time n is
+lower bounded by the error probability pn1 at time n1 by (53),
+Pe (n) ≥ pn ≥
+
+nS
+2
+
+»
+1
+ﬀ– .
+nS
+gn2 max 2p ,9
+n1
+
+(60)
+
+Our final task is to relate the error probability pn1 at time n1 for the binary scheme to the error probability Pe (n1 )
+in (57) for the M -ary scheme. In order to do this, let Φm (Y n1 1 ) be the probability of message m conditional on
+the received first segment Y n1 1 . The MAP error probability for an M -ary decision at time n1 , conditional on Y n1 1 ,
+is 1 − Φmax (Y n1 1 ) where Φmax (Y n1 1 ) = max{Φ1 (Y n1 1 ), . . . ΦM (Y n1 1 )}. Thus Pe (n1 ), given in (57), is the mean of
+1 − Φmax (Y n1 1 ) over Y n1 1 .
+Now pn1 is the mean, over Y n1 1 , of the error probability of a hypothetical MAP decoder for V at time n1 conditional
+on Y n1 1 , pn1 (Y n1 1 ). This is the smaller of the a posteriori probabilities of the subsets M1 , M2 conditional on Y n1 1 ,
+i.e.,
+
+
+ X
+
+X
+pn1 (Y n1 1 ) = min
+Φm (Y n1 1 )
+Φm (Y n1 1 ),
+(61)
+
+
+n1
+n1
+m∈M1 (Y 1 )
+
+m∈M2 (Y 1 )
+
+The following lemma shows that by an appropriate choice of partition for each Y n1 1 , this binary error probability
+is lower bounded by 1/2 the corresponding M -ary error probability.
+Lemma 6.1: For any probability distribution Φ1 , . . . , ΦM on a message set M with M > 2, let Φmax =
+max{Φ1 , . . . , ΦM }. Then there is a partition of M into two subsets, M1 and M2 such that
+X
+X
+1 − Φmax
+1 − Φmax
+Φm ≥
+Φm ≥
+and
+.
+(62)
+2
+2
+m∈M2
+m∈M1
+Proof:
+Order the messages in order of decreasing Φm . Assign the messages one by one in this order to the sets M1
+and M2 . When assigning the kth most likely message, we calculate the total probability of the messages that
+have already been assigned to each set, and assign the kth message to the set which has the smaller probability
+mass. If the probability mass of the sets are the same we choose one of the sets arbitrarily. With such a procedure,
+the difference in the probabilities of the sets, as they evolve, never exceeds Φmax . After all messages have been
+assigned, let
+X
+X
+Φm .
+Φm ;
+Φ′2 =
+Φ′1 =
+m∈M2
+
+m∈M1
+
+We have seen that
+
+|Φ′1
+
+−
+
+Φ′2 |
+
+≤ Φmax . Since
+
+Φ′1
+
++
+
+Φ′2
+
+= 1, (62) follows.
+
+This is not quite as obvious as it sounds. The binary scheme here is not characterized by a coding function f (V, Y i−1
+1 ) as in Section
+1
+VI-A , but rather is a randomized binary scheme. That is, for a given Y n
+1 and a given choice of V , the subsequent transmitted symbols Xi
+are functions not only of V and Y i−1
+1 , but also of a random choice of U conditional on V . The basic conclusion of (50) is then justified by
+averaging over both Y 1i−1 and the choice of U conditional on V .
+13
+
+17
+
+Since the error probability for the binary scheme is now at least one half of that for the M -ary scheme for each
+Y n1 1 , we can take the mean over Y n1 1 , getting pn1 ≥ Pe (n1 )/2. Combining this with (60) and (57)
+Pe (n) ≥
+
+nS
+1
+,
+n2 SR
+, 9)]
+2 gn2 [max( 1−ln
+2
+
+(63)
+
+where n2 is given in (59). The exact terms in this expression are not particularly interesting because of the very
+weak bounds on energy at each channel use. What is interesting is that the order of exponent in both the upper
+bound of (42) and (41) and the lower bound here are increasing linearly14 at the same rate 1 − φ−1 (R).
+VII. C ONCLUSIONS
+The SK data transmission scheme can be viewed as ordinary PAM combined with the Elias scheme for noise
+reduction. The SK scheme can also be improved by incorporating the PAM structure into the transmission of the
+error in the receiver’s estimate of the message, particularly during the latter stages. For the bandlimited version,
+this leads to an error probability that decreases with an exponential order an + b where a = 1 − φ−1 (R) and b is
+a constant. In the broadband version, the error probability is zero for sufficiently large finite constraint durations
+T . A lower bound to error probability, valid for all R < C was derived. This lower bound also decreases with an
+exponential order an + b′ (n) where again a = 1 − φ−1 (R) and b′ (n) is essentially a constant.15 It is interesting
+to observe that the strategy yielding the upper bound uses almost all the available energy in the first phase, using
+at most 5 units of energy in the second phase. The lower bound relaxed the energy constraint, allowing all the
+allowable energy to be used in the first phase and then to be used repeatedly in each time unit of the second
+phase. The fact that both bounds decrease with the same exponential order suggests that the energy available for
+the second phase is not of primary importance. An open theoretical question is the minimum overall energy under
+which the error probability for two code words can be zero in the infinite bandwidth case.
+R EFERENCES
+[1] P. Berlin, B. Nakiboğlu, B. Rimoldi, and E. Telatar. A simple converse of Burnashev’s reliability function. Information Theory, IEEE
+Transactions on, 55(7):3074–3080, July 2009.
+[2] M. V. Burnashev. Sequential discrimination of hypotheses with control of observations. Mathematics of the USSR-Izvestiya, 15(3):419–
+440, 1980.
+[3] M. V. Burnashev. Data transmission over a discrete channel with feedback and random transmission time. Problemy Peridachi
+Informatsii, 12(4):10–30, 1976.
+[4] P. Elias. ‘Channel capacity without coding. Quarterly progress report, MIT Research Laboratory of Electronics, Oct 15 1956. also in
+Lectures on Communication System Theory, E. Baghdady, Ed., New York:McGraw Hill, 1961.
+[5] R. G. Gallager, Information Theory and Reliable Communication, New York: Wiley, 1968.
+[6] R. G. Gallager. Principles of Digital Communication. Cambridge Press, New York, 2008.
+[7] Y-H. Kim, A. Lapidoth, and T. Weissman. The Gaussian channel with noisy feedback. In Information Theory, 2007. ISIT 2007. IEEE
+International Symposium on, pages 1416–1420, June 2007.
+[8] A. Kramer. Improving communication reliability by use of an intermittent feedback channel. Information Theory, IEEE Transactions
+on, 15(1):52–60, Jan 1969.
+[9] B. Nakiboğlu and R.G. Gallager. Error exponents for variable-length block codes with feedback and cost constraints. Information
+Theory, IEEE Transactions on, 54(3):945–963, March 2008.
+[10] M. S. Pinsker. The probability of error in block transmission in a memoryless Gaussian channel with feedback. Problemy Peridachi
+Informatsii, 4(4):1–14, 1968.
+[11] A. Sahai. Why do block length and delay behave differently if feedback is present? Information Theory, IEEE Transactions on,
+54(5):1860–1886, May 2008.
+[12] J. Schalkwijk. A coding scheme for additive noise channels with feedback–ii: Band-limited signals. Information Theory, IEEE
+Transactions on, 12(2):183–189, Apr 1966.
+[13] J. Schalkwijk and T. Kailath. A coding scheme for additive noise channels with feedback–i: No bandwidth constraint. Information
+Theory, IEEE Transactions on, 12(2):172–182, Apr 1966.
+[14] C. E. Shannon. Two-way communication channels. In Proc. Fourth Berkeley Symp. on Math. Statist. and Prob., volume 1, pages
+611–644, Berkeley CA, 1961. University of California Press.
+[15] K. Sh. Zigangirov. Upper bounds for the error probability for channels with feedback. Problemy Peredaci Informatsii, 6(2):87–92,
+1970.
+Note that the argument of gn2 is proportional to n2 , so that this bound does not quite decrease with the exponential order n2 . It
+does, however, decrease with an exponential order n2 + α(n), where α(n) increases with n much more slowly than, say, ln(ln(n)). Thus
+(n2 + α(n))/n is asymptotically proportional to 1 − φ−1 (R).
+′
+15 ′
+b (n) is a sublinear function of n, i.e. lim b n(n) = 0.
+14
+
+n→∞
+
+18
+
+[16] L. Ozarow. The capacity of the white Gaussian multiple access channel with feedback. Information Theory, IEEE Transactions on,
+30(4):623–629, Jul 1984.
+[17] L. Ozarow and S. Leung-Yan-Cheong. An achievable region and outer bound for the Gaussian broadcast channel with feedback
+(corresp.). Information Theory, IEEE Transactions on, 30(4):667–671, Jul 1984.
+[18] G. Kramer. Feedback strategies for white Gaussian interference networks. Information Theory, IEEE Transactions on, 48(6):1423–1438,
+Jun 2002.
+[19] S.I. Bross and M.A. Wigger. On the relay channel with receiver transmitter feedback. Information Theory, IEEE Transactions on,
+55(1):275–291, Jan. 2009.
+[20] A. Sahai, S.C. Draper, and M. Gastpar. Boosting reliability over awgn networks with average power constraints and noiseless feedback.
+In Information Theory, 2005. ISIT 2005. Proceedings. International Symposium on, pages 402–406, Sept. 2005.
+[21] D. Gündüz, D.R. Brown, and H.V. Poor. Secret communication with feedback. In Information Theory and Its Applications, 2008.
+ISITA 2008. International Symposium on, pages 1–6, Dec. 2008.
+[22] Y-H. Kim. Feedback capacity of the first-order moving average Gaussian channel. Information Theory, IEEE Transactions on,
+52(7):3063–3079, July 2006.
+[23] Y-H. Kim. Gaussian Feedback Capacity. PhD thesis, Stanford University, 2006.
+
+

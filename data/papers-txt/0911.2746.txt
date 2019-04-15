@@ -1,0 +1,959 @@
+Model Selection: Two Fundamental Measures of
+Coherence and Their Algorithmic Significance
+Waheed U. Bajwa, Robert Calderbank, and Sina Jafarpour
+
+arXiv:0911.2746v3 [cs.IT] 29 Apr 2010
+
+Princeton University, Princeton, NJ 08544
+
+Abstract—The problem of model selection arises in a number
+of contexts, such as compressed sensing, subset selection in linear
+regression, estimation of structures in graphical models, and
+signal denoising. This paper generalizes the notion of incoherence
+in the existing literature on model selection and introduces two
+fundamental measures of coherence—termed as the worst-case
+coherence and the average coherence—among the columns of a
+design matrix. In particular, it utilizes these two measures of
+coherence to provide an in-depth analysis of a simple one-step
+thresholding (OST) algorithm for model selection. One of the key
+insights offered by the ensuing analysis is that OST is feasible
+for model selection as long as the design matrix obeys an easily
+verifiable property. In addition, the paper also characterizes
+the model-selection performance of OST in terms of the worstcase coherence, µ, and establishes that OST performs nearoptimally in the low signal-to-noise ratio regime for N ×C design
+matrices with µ ≈ O(N −1/2 ). Finally, in contrast to some of the
+existing literature on model selection, the analysis in the paper is
+nonasymptotic in nature, it does not require knowledge of the true
+model order, it is applicable to generic (random or deterministic)
+design matrices, and it neither requires submatrices of the design
+matrix to have full rank, nor does it assume a statistical prior
+on the values of the nonzero entries of the data vector.
+
+I. I NTRODUCTION
+In information processing problems involving highdimensional data, the “curse of dimensionality” can often be
+broken by exploiting the fact that real-world data tend to live in
+low-dimensional manifolds. This phenomenon is exemplified
+by the important special
+case in which a data vector α ∈ CC
+. PC
+satisfies kαk0 = i=1 1{|αi |>0} ≤ k ≪ C and is observed
+according to the linear measurement model f = Φα + η.
+Here, Φ is an N × C (real- or complex-valued) matrix called
+the measurement or design matrix, while η ∈ CN represents
+noise in the measurement system. In this problem, the fact
+that α is “k-sparse” allows one to operate in the so-called
+“compressed” setting, k < N ≪ C, thereby enabling tasks
+that might be deemed prohibitive otherwise.
+Fundamentally, given a measurement vector f = Φα + η
+in the compressed setting, there are two complementary—but
+nonetheless distinct—questions that one needs to answer:
+[Estimation] Under what conditions can a k-sparse α be
+reliably and efficiently reconstructed from f ?
+[Model Selection] Under what conditions can the locations
+of the nonzero entries of a k-sparse α be reliably and
+efficiently recovered from f ?
+A number of researchers have successfully addressed the
+estimation question over the past few years under the rubric of
+compressed sensing. In many application areas, however, the
+
+model-selection question is equally—if not more—important
+than the estimation question. In particular, the problem of
+model selection (sometimes also known as variable selection
+or sparsity pattern recovery) arises indirectly in a number
+of contexts, such as subset selection in linear regression [1],
+estimation of structures in graphical models [2], and signal
+denoising [3]. In addition, solving the model-selection problem
+sometimes also enables one to solve the estimation problem.
+In this paper, we study the problem of polynomial-time
+model selection in a compressed setting for the case when the
+true model order k is unknown. Despite being well-motivated
+by applications, this problem has received less attention compared to its estimation counterpart in the compressed sensing
+literature; the most notable exceptions here being [2], [4]–
+[8]. In particular, the results reported in [2], [4] establish that
+the lasso [9] asymptotically identifies the correct model under
+certain conditions on the design matrix Φ and the sparse vector
+α. Later, Wainwright in [5] strengthens the results of [2], [4]
+and makes explicit the dependence of model selection using
+the lasso on the smallest (in magnitude) nonzero entry of α.
+However, apart from the fact that the results reported in [2],
+[4], [5] are asymptotic in nature, the main limitation of these
+works is that explicit verification of the conditions√
+that Φ needs
+to satisfy is computationally intractable for k & N .
+The most general (and nonasymptotic) results for model
+selection using the lasso have been reported in [6]. Specifically,
+Candès and Plan establish in [6] that the lasso correctly
+identifies most models with probability 1 − O(C −1 ) under
+certain conditions on the smallest nonzero entry of α provided:
+(i) the spectral norm (the largest singular value) and the worstcase coherence (the maximum absolute innerproduct between
+the columns) of Φ are not too large, and (ii) the values of
+the nonzero entries of α are statistically independent (and
+statistically symmetric around zero). The main limitation of
+this work is that statistical independence among the nonzero
+entries of α can be difficult to ensure in many applications.
+Finally, as opposed to the approach taken in [2], [4]–[6],
+the focus in [7], [8] is on model selection using a simple
+thresholding algorithm. In particular, it is shown in both [7],
+[8] that model selection using thresholding is asymptotically
+optimal in the low signal-to-noise ratio (SNR) regime. However, one of the main limitations of these works is that the
+reported results are mainly asymptotic in nature and rely on
+having some knowledge of the true model order. In addition,
+the analysis carried out in [7] is for the specific case of an
+independent and identically distributed (i.i.d.) Gaussian design
+
+matrix, while the analysis carried out in [8] is for the specific
+case of α with i.i.d. Gaussian nonzero entries.
+A. Our Contributions
+We begin by assuming that the design matrix Φ has unit
+ℓ2 -norm columns and introducing two fundamental measures
+of coherence among the columns {ϕi ∈ CN } of Φ:
+
+
+.
+• Worst-Case Coherence: µ = max hϕi , ϕj i, and
+i,j:i6=j
+
+ P
+
+. 1
+
+hϕi , ϕj i.
+• Average Coherence: ν = C−1 max 
+i
+j:j6=i
+
+In words, worst-case coherence is a similarity measure between the columns of a design matrix and average coherence
+is a measure of the spread of the columns of a design matrix
+within the N -dimensional unit ball. Our main objective in this
+paper is to make use of these two measures of coherence in
+order to analyze the one-step thresholding (OST) algorithm
+(see Algorithm 1) for model selection. Algorithmically, this
+makes our approach to model selection somewhat similar to
+the one studied by Fletcher, Rangan, and Goyal [7] and Reeves
+and Gastpar [8]. Analytically, however, the results reported in
+this paper are more general in nature than the ones in [7], [8];
+in particular, the asymptotic results of [7], [8] for thresholding
+can be obtained as a special case of Theorem 1 in Section II.
+More specifically, Theorem 1 holds for any (random or
+deterministic) design matrix with sufficiently small values of
+the worst-case and average coherence, and the stated result
+in that case is completely nonasymptotic in nature. Equally
+importantly, unlike the case of [7], [8], the threshold value in
+Theorem 1 is completely independent of the model order k and
+relies only on the knowledge of µ, C, and SNR . In addition,
+Theorem 1 can also be combined with the necessary conditions
+for asymptotically consistent model selection reported in [7],
+[10] to conclude that model selection using the OST is
+asymptotically optimal in the low SNR regime for any design
+matrix that has µ ≈ O(N −1/2 ) and ν ≈ O(N −1 ).
+Finally, in order to compare the results obtained in this paper
+for model selection using the OST with the nonasymptotic
+results reported in [6, Theorem 1.3] for the lasso, Theorem 2
+rederives Theorem 1 in terms of conditions on the model order
+k and the smallest nonzero entry of α. In particular, it can be
+easily concluded from Theorem 2 and [6, Theorem 1.3] that
+the OST—despite being computationally primitive—performs
+as well as the lasso for model selection in the low SNR
+regime provided the design matrix has µ ≈ O(N −1/2 ) and
+ν ≈ O(N −1 ). In addition, unlike the assumptions made in
+[6], the OST achieves this without requiring that most N × k
+submatrices of Φ be well-conditioned and the nonzero entries
+of α be statistically independent.
+II. M AIN R ESULT
+A. Problem Setup
+Before proceeding with presenting the main result of this
+paper, we need to be precise about our problem formulation.
+To this end, we begin by reconsidering the measurement model
+f = Φα + η in the compressed setting (k < N ≪ C) and take
+
+Algorithm 1 The One-Step Thresholding (OST) Algorithm
+for Model Selection
+Input: An N × C (real- or complex-valued) matrix Φ, a vector
+f ∈ CN , and a thresholding parameter λ > 0.
+.
+Output: Compute y = ΦH f and return an estimate of the
+.
+model Sb = {i ∈ {1, . . . , C} : |yi | > λ}.
+
+the noise vector η to be distributed as CN(0, σ 2 I), although the
+results can be readily generalized for other noise distributions.
+We also assume without loss of generality that Φ has unit ℓ2 norm columns and kαk2 = 1, since any scaling of Φ and α
+can be accounted for in the scaling of σ. In addition, we do
+not impose any prior distribution on the design matrix Φ and
+the nonzero entries of α. Finally, we use the notation supp(α)
+for the set containing the locations of the nonzero entries of α
+and assume, similar to the case of [6], [8], that supp(α) is a
+uniformly random k-subset of {1, . . . , C}. In other words, we
+have a uniform prior on the model supp(α).
+B. The Coherence Property and Its Implications
+It is often realized in the literature that successful model
+selection requires the columns of the design matrix to be
+incoherent; see, e.g., [2], [4], [6]. Below, we mathematically
+formalize this notion in terms of the coherence property.
+Definition 1 (The Coherence Property). A matrix Φ is said to
+obey the coherence property if the following conditions hold:
+12µ
+1
+, and
+(CP-2) ν ≤ √ .
+(CP-1) µ ≤ √
+10 log C
+N
+Notice that the coherence property can be easily verified
+in polynomial time since it only requires checking that
+kΦH Φ − Ikmax ≤ (10 log C)−1/2 and k(ΦH Φ − I)1k∞ ≤
+12(C − 1)N −1/2 kΦH Φ − Ikmax .
+Before proceeding with describing the implications of the
+coherence property, it is instructive to first define three fundamental quantities as follows:
+.
+αmin = min |αi |,
+i:|αi |>0
+
+SNR min
+
+.
+=
+
+α2min
+,
+E[kηk22 ]/k
+
+MAR
+
+. α2
+= min .
+1/k
+
+In words, αmin is the magnitude of the smallest nonzero entry
+of α, SNRmin is the ratio of the energy in the smallest nonzero
+entry of α and the average noise energy per nonzero entry, and
+MAR —which is termed as the minimum-to-average ratio [7]—
+is the ratio of the energy in the smallest nonzero entry of α
+and the average signal energy per nonzero entry. We are now
+ready to state the main result of this paper.
+Theorem 1. Suppose that Φ obeys the coherence property
+and write its worst-case coherence as µ = c1 N −1/β for some
+c1 > 0 (which may depend on log
+p ∞]. Next,
+	
+ C) and
+√ β ∈ (1,
+choose the threshold λ = 4 max 12µ 2 log C, σ 2 log C .
+Then the OST satisfies Pr(Sb =
+6 supp(α)) ≤ 9C −1 as long as
+the number of measurements
+(
+
+β/2 )
+64
+2c2
+N > max 2k log C,
+k log C,
+k log C
+.
+SNR min
+
+MAR
+
+Here, the quantity c2 > 0 is defined as c2 = (96 c1 )2 .
+Remark 1. The constants in the second and third terms in
+the max expression can be significantly reduced if one is
+only interested in showing the model-selection consistency of
+OST; that is, limC→∞ Pr(Sb =
+6 supp(α)) = 0. One should be
+particularly vigilant of this fact while comparing these results
+to the asymptotic ones reported in [7] for thresholding.
+Note that there are two fundamental but complementary
+approaches that can be taken while analyzing an algorithm for
+model selection, namely, the minimum measurement resources
+approach and the permissible signal class approach. The
+statement of Theorem 1 helps us analyze the OST for model
+selection using the former approach and is best suited for
+comparing our results with those in [5], [7], [10]. On the other
+hand, Candès and Plan in [6] take the latter approach while
+analyzing the lasso for model selection and the following result
+is best suited for comparison purposes in this regard.
+Theorem 2. Suppose that Φ obeysthe coherence
+property and
+p
+	
+√
+choose the threshold λ = 4 max 12µ 2 log C, σ 2 log C .
+Then, as long as k ≤ N/(2 log C) and
+o
+n p
+p
+αmin > max 8 σ 2 log C, 96µ 2 log C
+
+the OST satisfies Pr(Sb 6= supp(α)) ≤ 9C −1 .
+
+C. Discussion
+
+The statements of Theorem 1 and Theorem 2 can be best
+put into perspective by considering specific examples of design
+matrices. Because of space constraints, we only consider
+here the case when Φ is an (appropriately normalized) i.i.d.
+Gaussian matrix. It is a well-known fact in the literature
+that the
+p worst-case coherence of Φ in this case is roughly
+2 log C/N with high probability; see, e.g., [6]. In
+µ ≈
+addition, it can also
+√ be shown using the Bernstein inequality
+that ν ≤ 12N −1 2 log C with high probability in this case.
+It therefore follows that a Gaussian design matrix obeys the
+coherence property with high probability.
+Theorem 1 therefore implies that the OST identifies the
+correct modeln in this case o
+with high probability as long
+k log C k log2 C
+. In particular, this expression
+,
+as N & max SNR
+MAR
+min
+.
+k log C
+reduces to N & SNR min for the case of SNR = 1/E[kηk22 ] ≪ 1.
+On the other hand, we have from [7], [10] that no scheme
+k log C
+.
+can asymptotically identify the correct model if N 6& SNR
+min
+This proves the near-optimality of the OST for model selection in the low SNR regime for any design matrix that has
+µ ≈ O(N −1/2 ) and ν ≈ O(N −1 ). Finally, note that we could
+have made a similar conclusion by focusing on Theorem 2
+and comparing the conditions in the low SNR regime in that
+case with those in [6, Theorem 1.3].
+III. P ROOFS
+The general roadmap for the proofs of Theorem 1 and
+Theorem 2 is as follows. Below, we first introduce the notion
+of (k, ǫ, δ)-statistical orthogonality condition (StOC). Next,
+we establish in Lemma 1 that if Φ satisfies the StOC then
+
+OST recovers the support of α with high probability provided
+αmin is large enough. Subsequently, we establish in Lemma 2
+and Lemma 3 the relationship between the StOC parameters
+and the worst-case and average coherence of Φ. The proofs of
+Theorem 1 and Theorem 2 then follow by judiciously combining the results of these three lemmas using the coherence
+property.
+.
+Definition 2 ((k, ǫ, δ)-StOC). Let Π = (π1 , . . . , πk ) be a
+uniformly random (ordered) k-subset of {1, . . . , C} and let
+.
+Πc = {1, . . . , C} − Π. Then, given ǫ, δ ∈ [0, 1), Φ is said
+to satisfy the (k, ǫ, δ)-statistical orthogonality condition if the
+following inequalities
+ H
+
+(ΦΠ ΦΠ − I)z  ≤ ǫkzk2
+(StOC-1)
+ H
+∞
+ΦΠc ΦΠ z  ≤ ǫkzk2
+(StOC-2)
+∞
+
+k
+
+hold for every fixed z ∈ C with probability exceeding 1 − δ
+(with respect to the choice of Π).
+
+Remark 2. Note that the StOC derives its name from the fact
+that if Φ is an orthogonal matrix then it trivially satisfies the
+StOC for every k with ǫ = δ = 0.
+.
+Lemma 1. Let Π = supp(α) be a uniformly random
+k-subset of {1, . . . , C}. Further, suppose that the matrix
+Φ satisfies the p
+(k, ǫ, δ)-StOC
+	 and choose the threshold as
+λ = 2 max ǫ, 2 σ 2 log C . Then, under the assumption that
+αmin > 2λ, the OST satisfies
+−1
+
+
+p
+2π log C · C
+.
+Pr Sb 6= Π ≤ δ + 2
+
+. 
+Proof: We begin by defining z T = απ1 . . . απk and
+writing the vector y = ΦH f as y = ΦH ΦΠ z + ΦH η. Now, let
+.
+Πc = {1, . . . , C} − Π and note that in order to establish that
+b
+S = Π we need to show that kyΠc k∞ ≤ λ and min |yπi | > λ.
+i
+.
+In this regard, first note that η̃ = ΦH η is a complex Gaussian
+random vector whose entries are identically (although not
+independently) distributed as CN(0, σ 2 ). It therefore follows
+from the tail bound on the maximum of C arbitrary
+complex
+p
+Gaussian random variables that kη̃k∞ ≤ 2 σ 2 log C with
+−1
+√
+. Further, define
+probability exceeding 1 − 2 2π log C · C
+\
+p
+	
+. 
+G = {kη̃k∞ ≤ 2 σ 2 log C} {(StOC-1) ∩ (StOC-2)}
+
+and notice that, since the noise is independent of Π, we have
+√
+−1
+. In addition, conditioned
+Pr(G) > 1 − δ − 2 2π log C · C
+on the event G, we have
+(a)
+
+kyΠc k∞ ≤ kΦH
+Πc ΦΠ zk∞ + kη̃k∞
+(b)
+p
+(c)
+≤ ǫ + 2 σ 2 log C ≤ λ
+
+(1)
+
+where (a) follows from the triangle inequality, (b) is a
+consequence of the conditioning
+and (c) follows from
+ p on G, 	
+the fact that λ = 2 max ǫ, 2 σ 2 log C .
+Finally, in order to show that min |yπi | > λ, we define
+i
+
+r = (ΦH
+Π ΦΠ − I)z and note that, conditioned on the event G,
+
+we have for any i ∈ {1, . . . , k}
+|yπi | = |απi + ri + η̃πi | ≥ |απi | − krk∞ − kη̃k∞
+p
+(e)
+(d)
+> 2λ − ǫ − 2 σ 2 log C ≥ λ (2)
+
+where (d) follows from the conditioning on G and the assumption that αmin > 2λ, while (e) is a simple consequence of the
+choice of λ. This completes the proof of the lemma since we
+have now shown that Pr(Sb 6= Π) ≤ Pr (G c ).
+Having established Lemma 1, our next goal is to relate the
+StOC parameters with the worst-case and average coherence.
+.
+Lemma 2. Let Π = (π1 , . . . , πk ) be a uniformly random
+(ordered) k-subset of {1, . . . , C}. Then, for any fixed z ∈ Ck ,
+ǫ ≥ 0, and k ≤ min{ǫ2 ν −2 /4, C/2}, we have
+ 2 −2 
+ǫ µ
+.
+Pr ({Φ does not satisfy(StOC-1)}) ≤ 4k exp −
+576
+
+Proof: The proof of this lemma relies heavily on the socalled method of bounded differences (MOBD)
+[11]. Specifi-
+
+
+P
+ H
+
+
+
+
+zj hϕπi , ϕπj i
+cally, note that (ΦΠ ΦΠ − I)z ∞ = max 
+i
+j6=i
+.
+and define Π−i = (π1 , . . . , πi−1 , πi+1 , . . . , πk ). Then for a
+.
+fixed index i, and conditioned on the event Ai′ = {πi = i′ },
+we have the following equality from basic probability theory
+ 
+ X
+
+
+ k
+zj hϕπi , ϕπj i > ǫkzk2Ai′ =
+Pr 
+j=1
+j6=i
+
+ 
+ X
+
+
+ k
+
+
+zj hϕi′ , ϕπj i > ǫkzk2Ai′ .
+Pr
+
+(3)
+
+j=1
+j6=i
+
+Next, in order to apply the MOBD, we construct a Doob’s
+martingale sequence (M0 , M1 , . . . , Mk−1 ) as follows:
+k
+ i
+hX
+
+zj hϕi′ , ϕπj iAi′ , and
+M0 = E
+j=1
+j6=i
+
+k
+
+i
+hX
+ −i
+, Ai′ , ℓ = 1, . . . , k − 1 (4)
+zj hϕi′ , ϕπj iπ1→ℓ
+Mℓ = E
+j=1
+j6=i
+
+−i
+where π1→ℓ
+is the first ℓ coordinates of Π−i . Here, note that
+X
+ 
+  
+
+M 0  ≤
+zj E hϕi′ , ϕπj i|Ai′ 
+j6=i
+
+ C
+
+ (b) √
+(a) X   X
+1
+
+
+zj 
+≤
+hϕi′ , ϕq i ≤ k ν kzk2
+
+
+C
+−
+1
+q=1
+
+(5)
+
+j6=i
+
+q6=i′
+
+where (a) follows since, conditioned on Ai′ , πj has a uniform
+distribution over {1, . . . , C} − {i′ }, while (b) mainly follows
+from the definition of average coherence. Further, if we define
+k
+
+i
+hX
+.
+ −i
+(6)
+, πℓ−i = x, Ai′
+zj hϕi′ , ϕπj iπ1→ℓ−1
+Mℓ (x) = E
+j=1
+j6=i
+
+then, since (M0 , M1 , . . . , Mk−1 ) is a Doob’s martingale sequence, it can be easily
+verified that |Mℓ − Mℓ−1 | is upper
+bounded by supx,y Mℓ (x) − Mℓ (y) (see,
+ e.g., [12]). 
+Next, in order to upperbound
+sup
+ x,y Mℓ (x) − Mℓ (y) ,iwe
+h
+.
+ −i
+first define dℓ,j = E hϕi′ , ϕπj iπ1→ℓ−1
+, πℓ−i = x, Ai′ −
+
+i
+h
+ −i
+, πℓ−i = y, Ai′ and then notice that
+E hϕi′ , ϕπj iπ1→ℓ−1
+
+
+X  
+X  
+
+
+
+
+zj dℓ,j  +
+zj dℓ,j . (7)
+Mℓ (x) − Mℓ (y) ≤
+j≤ ℓ+1
+j6=i
+
+j> ℓ+1
+j6=i
+
+In addition, we have that for every j > ℓ+1, j 6= i, the random
+variable πj has a uniform distribution over {1, . . . , C} −
+−i
+−i
+{π1→ℓ−1
+, x, i′ } when conditioned on {π1→ℓ−1
+, πℓ−i = x, i′ },
+while πj has a uniform distribution over {1, . . . , C} −
+−i
+−i
+{π1→ℓ−1
+, y, i′ } when conditioned on {π1→ℓ−1
+, πℓ−i = y, i′ }.
+Therefore, we have for every j > ℓ + 1, j 6= i that
+
+
+2µ
+1
+
+
+.
+(8)
+|dℓ,j | =
+hϕi′ , ϕy i − hϕi′ , ϕx i ≤
+C−ℓ−1
+C−k
+
+ 
+ 
+P
+Similarly, it can be argued that j≤ ℓ+1 zj dℓ,j  ≤ zℓ+1 2µ
+ j6= i 
+ 
+P
+when i ≤ ℓ, j≤ ℓ+1 zj dℓ,j  ≤ zℓ 2µ when i = ℓ + 1,
+ j6=i 
+P
+|zℓ+1 |
+and j≤ ℓ+1 zj dℓ,j  ≤ (|zℓ | + C−k
+)2µ when i > ℓ + 1.
+j6=i
+
+Consequently, it can be easily verified that
+
+
+
+kzk1 
+. (9)
+sup Mℓ (x) − Mℓ (y) ≤ 2µ |zℓ | + |zℓ+1 | +
+C−k
+x,y
+|
+{z
+}
+.
+=c
+ℓ
+
+We have now established that (M0 , M1 , . . . , Mk−1 ) is a
+bounded-difference martingale with |Mℓ − Mℓ−1 | ≤ cℓ for
+ℓ =P
+1, . . . , k − 1. Further, it can also be verified from (9)
+k−1 2
+≤ 36µ2 kzk22 since k ≤ C/2. In addition,
+that
+ℓ=1 cℓ √
+since |M0 | ≤ k ν kzk2 and k ≤ ǫ2 ν −2 /4, we have from
+the Azuma inequality for bounded-difference martingale sequences [13] adapted to the complex-valued setup that
+ 
+ X
+
+
+ k
+zj hϕi′ , ϕπj i > ǫkzk2Ai′ ≤
+Pr 
+j=1
+j6=i
+
+ 
+
+
+ǫ2 µ−2
+ǫkzk2 
+. (10)
+Ai′ ≤ 4 exp −
+Pr Mk−1 − M0 | >
+
+2
+576
+
+Combining all these facts together, we therefore finally obtain
+
+
+
+
+
+Pr (ΦH
+Φ
+−
+I)z
+>
+ǫkzk
+2
+Π Π
+∞
+(c)
+
+≤k
+
+C
+X
+
+i′ =1
+
+ 
+ X
+
+
+ k
+zj hϕi′ , ϕπj i > ǫkzk2Ai′ Pr (Ai′ )
+Pr 
+j=1
+j6=i
+
+2 −2
+
+
+ǫ µ
+≤ 4k exp −
+576
+
+(d)
+
+(11)
+
+where (c) follows from the union bound and the fact that the
+πi ’s are identically (although not independently) distributed,
+
+while (d) follows from (10) and the fact that πi has a uniform
+distribution over {1, . . . , C}.
+.
+Lemma 3. Let Π = (π1 , . . . , πk ) be a uniformly random
+(ordered) k-subset of {1, . . . , C}. Further, define the random
+.
+subset Πc = {1, . . . , C} − Π. Then, for any fixed z ∈ Ck ,
+ǫ ≥ 0, and k ≤ min{ǫ2 ν −2 /4, C/2}, we have
+ 2 −2 
+ǫ µ
+.
+Pr ({Φ does not satisfy(StOC-2)}) ≤ 4C exp −
+256
+Proof Sketch: The proof of this lemma also relies on
+the MOBD and is very similar to that of Lemma 2. As such,
+we only provide a sketch of the proof
+ here. To begin
+ with,
+P
+
+ H
+
+we note that ΦΠc ΦΠ z ∞ = max  zj hϕπic , ϕπj i, where
+i∈[C−k] j
+.
+[C − k] = {1, . . . , C − k} and πic denotes the ith coordinate
+of Πc . Then for a fixed index i ∈ [C − k], and conditioned on
+.
+the event Ai′ = {πic = i′ }, we have the following equality
+ 
+ X
+
+ k
+
+zj hϕπic , ϕπj i > ǫkzk2 Ai′ =
+Pr 
+j=1
+
+ 
+ X
+
+
+ k
+zj hϕi′ , ϕπj i > ǫkzk2 Ai′ . (12)
+Pr 
+j=1
+
+Next, as in the case of Lemma 2, we construct a Doob’s
+martingale sequence (M0 , M1 , . . . , Mk ) as follows:
+k
+ i
+hX
+
+zj hϕi′ , ϕπj iAi′ , and
+M0 = E
+j=1
+
+k
+
+i
+hX
+
+zj hϕi′ , ϕπj iπ1→ℓ , Ai′ , ℓ = 1, . . . , k
+Mℓ = E
+
+(13)
+
+j=1
+
+where π1→ℓ now denotes the first ℓ coordinates
+  of√Π. It can
+ 
+now be argued (as in Lemma
+2)
+that:
+(i)
+ M0 ≤ k ν kzk2,
+
+.
+1
+= cℓ , and (iii)
+(ii) |Mℓ − Mℓ−1 | ≤ 2µ |zℓ | + kzk
+C−k
+Pk
+2
+2
+2
+2 −2
+/4, we once
+ℓ=1 cℓ ≤ 16µ kzk2 . Therefore, since k ≤ ǫ ν
+again have from the (complex) Azuma
+inequality
+that (12) is
+2 −2 
+µ
+. Combining all these facts
+upperbounded by 4 exp − ǫ 256
+together, we finally obtain the claimed result as follows
+ (a)
+
+ 2 −2 
+
+
+ǫ µ
+
+Pr ΦH
+≤
+4C
+exp
+−
+Φ
+z
+>
+ǫkzk
+(14)
+c
+Π
+2
+Π
+∞
+256
+
+where (a) mainly follows from the union bound and the fact
+that πic has a uniform distribution over {1, . . . , C}.
+We are finally ready to prove the main results of this paper
+using Lemmata 1–3.
+Proof of Theorem 1: Note that Lemma 2 and Lemma 3
+imply that if Φ has worst-case coherence µ and average
+coherence ν then, as long as k ≤ C/2, Φ satisfies
+(k, ǫ, δ) the
+√
+ǫ2 µ−2
+StOC for any ǫ ∈ [2 kν, 1) with δ = 8C exp − 576 .
+√
+.
+Now let k ≤ N/(2 log C) and define ǫ′ = 24µ 2 log C.
+Then,
+since Φ satisfies the coherence property, we have
+√
+2 kν ≤ ǫ′ < 1 and therefore Φ satisfies the (k, ǫ′ , δ ′ ).
+StOC with δ ′ = 8C −1 . Consequently, Lemma 1 states that
+
+−1
+Pr(Sb 6= supp(α)) ≤ 9C
+p as long as N ≥ 2k log C,
+′
+αmin > 4ǫ , and αmin > 8 σ 2 log C. Further, note that
+p
+64
+k log C, and
+αmin > 8 σ 2 log C ⇐⇒ N >
+SNR min
+
+β/2
+2c2
+′
+αmin > 4ǫ ⇐⇒ N >
+k log C
+.
+
+MAR
+
+This completes the proof of the theorem.
+Proof of Theorem 2: The proof of this theorem follows
+along similar lines as that of Theorem 1 and is therefore
+omitted here for the sake of brevity.
+
+IV. C ONCLUSION
+In this paper, we have analyzed the one-step thresholding
+(OST) algorithm for model selection in terms of the worstcase and average coherence of the design matrix. In stark
+contrast to the existing work on model selection using thresholding, our analysis is completely nonasymptotic in nature,
+it does not require knowledge of the true model order, and
+it is applicable to arbitrary (random or deterministic) design
+matrices. In particular, we have established in the paper that
+the OST can be used for model selection as long as the
+design matrix obeys an easily verifiable property. Further, we
+have specified the dependence of the OST performance on
+the worst-case coherence of the design matrix and shown that
+it performs near-optimally in the low SNR regime for design
+matrices with O(N −1/2 ) worst-case coherence. Finally, unlike
+the assumptions made in [6], our analysis also does not require
+that most N × k submatrices of Φ be well-conditioned and the
+nonzero entries of the data vector be statistically independent.
+R EFERENCES
+[1] A. Miller, Subset Selection in Regression. Chapman and Hall, 1990.
+[2] N. Meinshausen and P. Bühlmann, “High-dimensional graphs and variable selection with the lasso,” Ann. Statist., vol. 34, no. 3, pp. 1436–
+1462, Jun. 2006.
+[3] S. S. Chen, D. L. Donoho, and M. A. Saunders, “Atomic decomposition
+by basis pursuit,” SIAM J. Scientific Comput., vol. 20, no. 1, pp. 33–61,
+Jan. 1998.
+[4] P. Zhao and B. Yu, “On model selection consistency of lasso,” J.
+Machine Learning Res., vol. 7, pp. 2541–2563, 2006.
+[5] M. J. Wainwright, “Sharp thresholds for high-dimensional and noisy
+sparsity recovery using ℓ1 -constrained quadratic programming (Lasso),”
+IEEE Trans. Inform. Theory, vol. 55, no. 5, pp. 2183–2202, May 2009.
+[6] E. J. Candès and Y. Plan, “Near-ideal model selection by ℓ1 minimization,” Ann. Statist., vol. 37, no. 5A, pp. 2145–2177, Oct. 2009.
+[7] A. K. Fletcher, S. Rangan, and V. K. Goyal, “Necessary and sufficient
+conditions for sparsity pattern recovery,” IEEE Trans. Inform. Theory,
+vol. 55, no. 12, pp. 5758–5772, Dec. 2009.
+[8] G. Reeves and M. Gastpar, “A note on optimal support recovery in
+compressed sensing,” in Proc. 43rd Asilomar Conf. Signals, Systems
+and Computers, Pacific Grove, CA, Nov. 2009.
+[9] R. Tibshirani, “Regression shrinkage and selection via the lasso,” J. Roy.
+Statist. Soc. Ser. B, vol. 58, no. 1, pp. 267–288, 1996.
+[10] W. Wang, M. J. Wainwright, and K. Ramchandran, “Informationtheoretic limits on sparse signal recovery: Dense versus sparse
+measurement matrices,” submitted. Available: arXiv:0806.0604v1
+[11] C. McDiarmid, “On the method of bounded differences,” in Surveys in
+Combinatorics, J. Siemons, Ed. Cambridge University Press, 1989, pp.
+148–188.
+[12] R. Motwani and P. Raghavan, Randomized Algorithms. New York, NY:
+Cambridge University Press, 1995.
+[13] K. Azuma, “Weighted sums of certain dependent random variables,”
+Tohoku Math. J., vol. 19, no. 3, pp. 357–367, 1967.
+
+

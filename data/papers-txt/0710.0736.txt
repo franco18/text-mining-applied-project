@@ -1,0 +1,1372 @@
+1
+
+Colour Image Segmentation by the
+Vector-valued Allen-Cahn Phase-field Model: a
+Multigrid Solution
+arXiv:0710.0736v1 [cs.CV] 3 Oct 2007
+
+David A Kay
+
+∗
+
+Alessandro Tomasi
+
+Abstract
+We propose a new method for the numerical solution of a PDE-driven model for colour image
+segmentation and give numerical examples of the results. The method combines the vector-valued
+Allen-Cahn phase field equation with initial data fitting terms. This method is known to be
+closely related to the Mumford-Shah problem and the level set segmentation by Chan and Vese.
+Our numerical solution is performed using a multigrid splitting of a finite element space, thereby
+producing an efficient and robust method for the segmentation of large images.
+This work has been submitted to the IEEE for possible publication. Copyright may be transferred without notice, after which this version may no longer be accessible.
+
+I. Introduction
+The Mumford-Shah functional was first proposed in [24] as a general way to pose the problem
+of image segmentation. Reviews can be found for example in Petitot [26], and Fusco [12]. The
+generality of its statement has led to several methods of solution; in particular, the model sometimes
+referred to as the reduced Mumford-Shah was solved by the level set method by Chan and Vese [8],
+based on a previous paper on the motion of multiphase junctions tracked by the level set method
+by Zhao, Chan, Merriman and Osher [33], and subsequently extended in Chan and Vese [6], [7],
+[9], Vese [29], Chan, Shen and Vese [5]. Due to the extent of their work, it is also often referred
+to as the Chan-Vese model. The level set is used to track the boundaries of objects and should
+converge to the set of contours in the image.
+Esedoḡlu and Tsai [11] proposed the Allen-Cahn equation, also known as the phase field model,
+as a method of solution to the reduced Mumford-Shah problem when used in conjunction with the
+Chan-Vese fitting terms. The Allen-Cahn equation has been used in the context of image processing
+by Beneš, Chalupecký and Mikula [3], who first convolve the image with a Gaussian smoothing
+kernel to eliminate noise, and then use it as an anisotropic gradient filter based on the proposals
+by Perona and Malik [20]. Our approach differs significantly in that we use no smoothing kernel
+and we modify the energy functional by adding fitting terms; moreover, we use the vector-valued
+formulation of the Allen-Cahn equation due to Garcke, Nestler and Stoth [13].
+A different phase transition model (Modica-Mortola) was also recently used by Jung, Kang and
+Shen [14], and although the model and numerical method of solution therein differs from this work,
+it is in many ways similar in the fundamental approach of adapting a phase transition model to
+solve the Mumford-Shah problem, and in the results obtained.
+Oxford
+Computing
+Laboratory,
+Wolfson
+Building,
+Parks
+Road,
+Oxford,
+OX1 3QD,
+UK.
+David.Kay@comlab.ox.ac.uk Tel: 0044 (0)1865 610814
+Department of Mathematics, University of Sussex, Falmer, Brighton, BN1 9RF, UK. keug1@sussex.ac.uk Tel: 0044
+(0)1273 873450. Corresponding author.
+
+DRAFT
+
+2
+
+Our computations are solved by a multigrid algorithm which falls into the category of Successive
+Subspace Corrections (see Xu [30], [31]). This was successfully applied to the vector-valued AllenCahn equation in Kornhuber, [17], Kornhuber and Krause [18], [19] with a small variation (see
+Kornhuber and Krause [15]).
+In section II we briefly introduce and summarise previous directly relevant work leading up to
+section II-C, in which we formally introduce our own formulation and show how the minimisation
+of our functional leads to the desired system of PDEs; in section III we discretise the system and
+introduce the numerical method of solution, and in section IV we present a few practical aspects
+of implementation together with examples.
+II. Image segmentation by the Allen-Cahn equation
+A. Relation to the Mumford-Shah functional
+Given an image I ∈ Ω ⊂ R2 , the Mumford-Shah method seeks to partition the domain Ω into
+several subdomains Ωi separated by a set K of boundaries, also known as edges or discontinuities.
+This segmentation takes the form of piecewise smooth functions u ∈ Ω − K which are discontinuous
+on K; the method of selection from all possible functions u is minimisation of an energy functional
+Z
+Z
+Z
+2
+MS(u) =
+|∇u| dx + µ
+dσ + λ (u − I)2 dx
+(1)
+Ω−K
+
+K
+
+Ω
+
+where µ, λ are positive constants.
+The first term minimises the variation of u and promotes its smoothness, the second term
+minimises the length of interfaces and determines the boundaries between Ωi , and the third term,
+sometimes referred to as the fidelity or fitting term, minimises the variation between u and I.
+As noted in Petitot [26], the coefficients µ and λ define several scales of the problem: low µ leads
+to fine-grain segmentation, high µ to coarse-grain results. Sensitivity to contrast is measured by
+(4λ2 µ)1/4 and robustness to noise depends on λµ.
+Many variations on this theme have been proposed since its first formulation. Mumford and Shah
+themselves pointed out that a reduced form of the problem, referred to as the minimal partition
+problem, is the restriction of u to piecewise constant functions, i.e. u = ci with each ci a constant
+on each connected region Ωi . The minimising values are then clearly the averages of I across each
+region.
+In the level set case, using by way of example a single function φ to segment an image containing
+only one object against a background, the Chan-Vese functional introduced in [8] replaces the
+fidelity term in MS(u) by two fitting terms,
+Z
+Z
+2
+F1 (φ) + F2 (φ) =
+|I − c1 | x +
+|I − c2 |2 dx
+(2)
+inside(φ=0)
+
+outside(φ=0)
+
+where c1 , c2 are the average of I inside and outside φ = 0, respectively. Considering for a moment the
+ideal situation in which the image contains only one object, i.e. is split into two regions of roughly
+constant value clearly separated by a gradient boundary, these two terms are clearly minimised
+when the set φ = 0 coincides with the contour of the object, i.e. the set K.
+B. A phase-field formulation
+The Allen-Cahn PDE was introduced in [1] to model the domain coarsening occurring after a
+phase transition. It follows the evolution of a function u(x) known as the order parameter, which
+smoothly varies between the values of 0 and 1 across an interface1 to represent which parts of the
+1
+
+The original model was defined on the interval [−1, 1], but it is convenient to consider [0, 1] for our purposes,
+without loss of generality.
+DRAFT
+
+3
+
+material are in one phase or another. It is obtained by minimising the following energy functional:
+Z
+1
+(3)
+AC(u) =
+ǫ|∇u|2 + Ψ(u) dx
+4ǫ
+Ω
+The function Ψ(u) represents a potential that attains minimal values at the two extreme values of
+u. This is not in general a convex function, nor is it necessarily smooth. Esedoḡlu and Tsai [11],
+for example, chose the quartic double-well form of the potential, Ψ(u) = u2 (1 − u)2 .
+Comparing the first two terms in (1) and (3), the first term is identical up to a scaling constant,
+while the role of the second term is quite similar since the parameter ǫ is directly related to the
+width of interfaces between phases; it is well known that minimising Ψ(u) as above reduces both
+the width and length of boundaries. In this paper, we examine the results of extending (3) to its
+vector-valued formulation and combining it with fitting terms such as those in (2).
+It is reasonable to suggest that the results obtained by a level set method and a phase-field
+method should be closely comparable because both are known to be equivalent to curve motion by
+mean curvature; for an overview, see for example [10].
+The method of solution described in [11] follows the MBO thresholding scheme by Merriman,
+Bence and Osher [21], [22], which assigns to the order parameter either one or the other extremal
+value at each step; we propose to use the formulation known as the double obstacle instead, in
+which, Ψ takes the form
+Ψ(u) = Φ(u) + Q(u),
+where
+
+Φ(u) =
+
+(
+
+0
+u ∈ [0, 1]
++∞ u < [0, 1]
+
+is known as the indicator function on the set [0, 1], and Q(u) is the concave quadratic
+
+Q(u) = u(1 − u).
+C. A modified vector-valued Allen-Cahn equation
+Our primary objective is to achieve a fast, robust image segmentation method. Given a domain
+Ω ⊂ R2 and an image I: Ω → Rc with c data channels or colours, we follow the motion of a function
+u with several (N) components that we want to adapt to the significant features of I. We propose
+to do this by solving a system of PDEs on a finite-element space by a multrigrid method, and we
+derive this system by minimising an energy functional of the form
+Z
+|∇u|2 u(1 − u)
+E=
+ǫ
++
++ Φ(u) + λu · F(c, I) dx,
+(4)
+2
+ǫ
+Ω
+where
+
+R
+
+F(c, I) = (I − c)2 , c = RΩ
+
+uI
+
+u
+Ω
+
+,
+
+(5)
+
+the quantity c representing the average of I in u, in other words being a measure of the oscillation
+of the data over the support of u.
+In order to achieve a simultaneous segmentation of I into arbitrarily many pieces, we refer to the
+vector-valued formulation of the Allen-Cahn system was introduced in Garcke, Nestler and Stoth
+
+DRAFT
+
+4
+
+[13], which allows one to consider an arbitrary number of components to the order parameter, now
+described by a single vector-valued function u ∈ VN in the function set defined as
+
+
+N
+
+
+
+N X
+
+
+
+
+2
+VN ≔ 
+:
+v
+∈
+H
+(Ω)
+v
+(x)
+=
+1
+a.e.
+in
+Ω,
+v
+≥
+0
+a.e.
+in
+Ω
+,
+(6)
+
+i
+i
+
+
+
+
+i=1
+
+In other words, the vector-valued function u must pointwise remain on the N-dimensional Gibbs
+Simplex
+
+
+
+
+N
+
+
+
+X
+
+
+
+
+
+
+N
+
+x
+∈
+R
+x
+=
+1,
+0
+≤
+x
+GN : = 
+,
+(7)
+
+
+i
+i
+
+
+
+
+
+
+
+i=1
+
+which is itself an (N − 1)-dimensional subset of the hyperplane
+
+
+
+
+N
+
+
+
+X
+
+
+
+
+
+
+N
+
+x
+=
+1
+ΣN : = 
+.
+x
+∈
+R
+
+
+i
+
+
+
+
+
+
+
+i=1
+
+N
+
+Trivially, xi ≤ 1 ∀x ∈ G (though not so for all x ∈ ΣN ).
+An N-dimensional extension to the potential function Ψ(u) is now required, with N minima given
+by u j = 1, ui,j = 0; the form
+N
+X
+Q(u) =
+ui (1 − ui )
+i=1
+
+has been used in the following, with Φ(u) now the indicator function on GN and Ψ(u) = Φ(u)+Q(u)
+as for the standard double-obstacle Allen-Cahn.
+Following standard procedure, we wish to minimise the energy functional (4) to derive a pde to
+which we can introduce a pseudo-time stepping to find a global minimum. To find the variational
+derivative of (4) in a direction v, care must be taken to remain in GN ; in other words, we do not
+want our function
+to leave the allowed
+set. If considering E(u + αv) for some α ∈ R, it must be that
+P
+P
+P
+i u + αv =
+i u = 1, and hence
+i αv = 0. To that end, Garcke, Nestler and Stoth [13] introduce
+the hyperplane
+
+
+
+
+N
+
+
+
+X
+
+
+
+
+
+
+
+N
+TΣN : = 
+u
+∈
+R
+u
+=
+0
+
+
+i
+
+
+
+
+
+
+ i=1
+
+which is at all points tangent to ΣN (and hence to GN ), together with the projection operator T
+defined by
+1
+(8)
+Tx: = x − (x · 1N ) · 1N
+N
+as acting on a vector x ∈ RN , where 1N : = (1, 1 . . . 1) ∈ RN . Geometrically, the two hyperplanes ΣN
+and TΣN are parallel; TΣN passes through the origin; the vector
+1N
+N̂: =
+∈ GN
+N
+is normal to TΣN and represents the shortest distance between ΣN and TΣN . As N grows larger,
+this distance grows smaller. By construction, u − v ∈ TΣN ∀u, v ∈ ΣN .
+We now turn to the question of minimising (4). As is usual for the Allen-Cahn functional (3), we
+use a gradient descent method, i.e. we find the directional derivative of (4), and obtain a variational
+inequality to be solved numerically. Using the notation h·, ·i to indicate the standard inner product,
+and using the the N-subgradient
+n
+o
+∂Φ(u): = ξ ∈ RN | Φ(v) − Φ(u) ≥ ξ(v − u) ,
+DRAFT
+
+5
+
+since we have
+
+hξ, u − vi ≥ 0
+
+∀ u, v ∈ dom Φ, ∀ξ ∈ ∂Φ(u).
+
+(9)
+
+it is easy to see that a simple minimisation with respect to the order parameter u, which subsequently determines the constants ci as well (as seen in [8]), leads to
+
+h
+
+2
+1
+∂
+E(u), Tvi ≥ h−ǫ△u − u + λF(c, I) + ξ, Tvi
+∂u
+ǫ
+ǫ
+
+and hence, by introducing a pseudo-time parametrisation, we have the inclusion
+
+
+2
+hut − ǫ△u + T − u + λF(c, I) , v − ui ∋ h−∂Φ(u), v − ui
+ǫ
+≥ 0
+
+(10)
+(11)
+
+∀u, v ∈ VN . An approximation to this variational inequality can naturally be sought in terms of a
+finite element method, as described below.
+III. Discretisation and Numerical Solution
+It has been shown that iterative solvers such as the Jacobi, Gauss-Seidel, Successive OverRelaxation and multigrid methods can be reduced to a class known as Subspace Correction methods;
+these first appeared in Xu [30], see also Xu [31], Kornhuber [16]. Convergence of subspace correction
+methods has been examined for example in Tai and Xu [27] for convex optimisation problems and
+in Neuss [25].
+In essence, it is shown that a viable alternative to constantly projecting the solution from one
+level to another is to once and for all project all basis functions from all multigrid levels onto
+the coarsest one, solving the problem by iterating through all basis functions. An example of this
+projection method is shown in figure 2. This method was successfully applied to the vector-valued
+Allen-Cahn equation by Kornhuber [17], Kornhuber and Krause [18], [19].
+In subsection III-A we introduce the finite element method to establish the notation; building
+upon that basis, subsection III-B shows the multigrid discretisation used, while subsection III-C
+details a few aspects of the numerical implementation due to the Gibbs Space constraint and the
+double-obstacle method.
+A. Finite Element Notation
+The continuous domain Ω is split into a set of subdomains T , referred to as a triangulation,
+given by the set of triangles τ such that
+[
+Ω=
+τ
+τ∈T
+
+The natural length scale associated with each triangulation is
+
+h: = max diam(τ).
+τ∈T
+
+The vertices of all triangles form a set of n points or nodes, and for the purposes of this work, each
+triangulation is further required not to have any hanging nodes, i.e. nodes that are not corners of
+a triangle. Each node xi ∈ Ω, i = 1 . . . n is assigned a function ηi (x) such that
+(
+1 if x = xi ;
+ηi : =
+0 if x , xi .
+DRAFT
+
+6
+
+Although these functions can be arbitrarily elaborate while still satisfying the specified requirements, continuous piecewise linear functions are more than adequate for second-order problems
+such as ours. The set of all such functions, which can also be written as
+n
+o
+S: = η ∈ C(Ω): η|τ is linear ∀τ ∈ T ,
+(12)
+
+forms a basis for the finite element space
+
+Vh = span {ηi }ni=1
+such that all functions uh ∈ Vh can be represented as
+n
+X
+h
+u (x) =
+uhi ηi (x)
+
+(13)
+
+(14)
+
+i=1
+
+and such that continuous functions u on the original domain can be represented on the triangulation
+by their piecewise linear interpolant π: C(Ω) → Vh .
+We use the lumped mass and stiffness matrices
+n
+X
+M̂: =
+M = hηi , 1i, A: = h∇ηi , ∇η j i ∀ηi , η j ∈ Vh .
+j=1
+
+To discretise the inequality in (11) by the finite element method, we pass to the the weak
+formulation
+
+
+2
+∀vh ∈ Vh
+(15)
+huht + T − uh + λF(c, I) , vh − uh i − ǫh∇uh , ∇(vh − uh )i ≥ 0
+ǫ
+so that the discrete solution uh is only required to have H1 regularity. We can then consider
+the above problem as a series of sub-problems over each basis function. This is known to be
+equivalent to an iterative solver, such as a Gauss-Seidel method; the precise sequence in which
+these are considered can be altered for instance to follow a red-black Gauss-Seidel pattern. By
+simple application of the properties of the projection operator T, using the discretisation method
+outlined above, we have n problems of the form
+
+
+
+2
+ut + T − u + λF(c, I) M̂(v − u) − ǫuA(v − u) ≥ 0.
+(16)
+ǫ
+with some appropriate time discretisation to follow. The inequality is due to the multi-valued nature
+of the subgradient at the boundaries of GN ; each iteration in the numerical method is performed
+as though (16) were a strict equality, and if the result lies outside the acceptable space, then it is
+projected appropriately, as described in section III-C.
+B. Multigrid Solution
+The rate of convergence of Gauss-Seidel methods requires O(n) iterations per time-step, and
+O(n2 ) computations overall to converge to a solution, which is less than optimal. Multigrid methods
+are known to be more efficient, in most cases being of only O(n) complexity overall; they rely on
+constructing several nested finite element spaces, usually by refining a coarse or macro triangulation
+T1 L − 1 times, eventually giving the fine triangulation TL , where
+
+Tl ⊂ Tl+1 .
+Figure 1 shows a simple example of one such refinement. Each triangulation is associated with
+its own finite element function space. Using projection and restriction operators, the solution is
+DRAFT
+
+7
+
+(a)
+
+(b)
+1
+
+1
+
+0.9
+
+0.9
+
+0.8
+
+0.8
+
+0.7
+
+0.7
+
+0.6
+
+0.6
+
+0.5
+
+0.5
+
+0.4
+
+0.4
+
+0.3
+
+0.3
+
+0.2
+
+0.2
+
+0.1
+0
+
+Fig. 1.
+
+0.1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+0
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+a) A coarse grid; b) the same grid, after one refinement.
+
+computed on one level, usually by a Gauss-Seidel solver or equivalent, and then passed to another
+level to be corrected. The theoretical basis of the multigrid method lies in showing that the error
+at each iteration can be considered to have several components of varying frequency, and that
+each time the problem is solved on a grid of natural spacing h, the error components that are of
+frequency h or higher are all reduced significantly, while those with a lower frequency are barely
+affected. The multigrid method significantly improves convergence by using several levels to deal
+with many components of the error in every iteration.
+A recent development in multigrid methods has been to consider iterative solvers as part of the
+Succesive Subspace Correction framework, which simply considers a minimisation over a sequence
+of function spaces such as (13), each defined as the set spanned by the basis functions defined on a
+different grid. In the context of finite elements, such a hierarchy of function sets is readily provided
+by the basis functions at each level of refinement. To be more precise, given the problem Pi,j : find
+u such that
+
+
+2
+huht + T − uh + λF(c, I) , ηi − uh i − ǫh∇uh , ∇(ηi − uh )i ≥ 0
+ηi ∈ VN,j ,
+ǫ
+an SSC method applied to this case consists of simply solving all such Pi,j by looping through all
+nodes i and levels j and updating the solution at each step, in whatever appropriate sequence the
+specific method demands.
+Consider the finite element discretisation in (16); we firstly discretise in time using a backward
+Euler scheme to obtain the fully discrete problem. At each time step, j, we use the SSC method
+to efficiently update the approximation uk as follows: starting at the coarsest level and moving to
+the finest in a standard multigrid w pattern, for every basis function ηiL , i = 1, 2, ..., nL on level L
+we update uk+1 = uk + αiL where αiL satisfies the inequality
+ k
+
+
+ u + αiL η − u j
+2
+
++ T − u j + λF(c j , I)  − ǫA(uk + αη) ≥ 0
+M̂ 
+δt
+ǫ
+Once all basis functions and levels have been looped over, the iteration is complete; if the solution
+satisfies some prescribed error tolerance, it is accepted and becomes the new iterate u j+1 ; otherwise,
+the iteration is repeated using the computed iteration as the new starting point.
+All basis functions η of all multigrid levels are projected onto the finest grid. An example of this
+projection is given in figure 2. Thus each iteration is of the form
+
+DRAFT
+
+8
+
+(a)
+
+(b)
+1
+
+1
+
+0.8
+
+0.8
+
+0.6
+
+0.6
+
+0.4
+
+0.4
+
+0.2
+
+0.2
+
+0
+0
+
+0
+0
+0.5
+1
+
+Fig. 2.
+
+1
+
+0.8
+
+0.6
+
+0.4
+
+0.2
+
+0
+
+0.5
+1
+
+1
+
+0.8
+
+0.6
+
+0.4
+
+0.2
+
+0
+
+a) A basis function defined on a coarse grid; b) the same basis function projected onto a finer grid
+
+
+!
+uk + αη − ut
+2 t
+t
+M̂
++ T − u + λF(c , I) − ǫA(uk + αη) = 0
+δt
+ǫ
+before projection into the required function space. It is enough to multiply both sides by ηT and
+re-arrange the above by simple algebra to obtain an equation for α:
+ 
+
+
+
+2
+αηT (M̂ − ǫδtA)η = ηT M̂ ut − uk + δtT ut − λF(ct , I) + ǫAuk .
+(17)
+ǫ
+C. Gibbs Space Constraint Pseudocode
+In the vector-valued case, since N functions need to be updated simultaneously for each basis
+function, it is clear that α is also vector-valued and of size N. In order to preserve the constraint
+N
+X
+
+ui = 1.
+
+N
+X
+
+αi = 0.
+
+i=1
+
+it must be that for each update
+
+i=1
+
+This is actually taken care of by the choice of minimisation, i.e. by involving the projection operator
+T and only allowing search directions u + αTv.
+Secondly, for the functions to remain in the Gibbs space GN at all times, at each iteration of the
+numerical scheme we must ensure that the result still lies in GN , i.e. in addition to the restriction
+on the sum of α above, all components of u must be positive. This requirement may be less than
+straightforward to enforce on coarse grids, where several nodes are affected by the change in α;
+this is also mentioned in Kornhuber [17] and is due to the large support of the coarse grid basis
+functions after projection onto the finest grid; for that reason, a truncated multigrid algorithm may
+be more efficient than a full v-cycle.
+The pseudo-code for a general subspace correction is given below; it is assumed that for each
+basis function, a list of affected nodes has been drawn so that the least amount of work possible is
+being done.
+1) Evaluate α as per (17); then, calculate a trial version of u.
+2) Check for each function ui whether any of its entries have become negative. If not, no further
+work is required.
+DRAFT
+
+9
+
+3) Otherwise, we have a split of the functions ui into two sets, Q being the set of ui with negative
+(unacceptable) values, and P being the remainder.
+For each function in Q, we need to determine a new αi such that ui remains between 0 and 1,
+i.e. such that the lowest
+P value is zero. This is easily done and we refer to this correction as β.
+Since we know that α = 0 must be satisfied, if we decrease αi then we need to increase all
+other α j , j , i by a corresponding amount. However, we can exclude those functions that are
+already negative. Therefore, if there are k functions in P and we decrease αi by an amount
+β, then we need to decrease all αk by β/k.
+Do this for each function in Q.
+4) All functions in Q are now guaranteed to lie between 0 and 1. However, the successive
+corrections β applied to the functions in P may have caused some of those to become negative;
+hence, repeat from step 2, but only considering a restricted set of functions. Repeat this
+process until there are no more negative functions.
+Since at least one function is being removed from the set of all available functions at each
+repetition of this process, it is a procedure of maximum order N complexity.
+IV. Implementation
+A. Determination of Natural Scales
+In principle, it is necessary to consider the possibility that the interface between two areas of
+interest be only one pixel wide; in other words, that two neighbouring pixels belong to different
+objects in the image. It is well known that the interface width of the double obstacle Allen-Cahn
+equation is of O(ǫ) - see for example [10] and references therein. This immediately suggests a natural
+length scale for the problem: an ǫ smaller than the size of a pixel in the given data would not make
+sense, and a larger ǫ would only blur edges and corners. All our computations have been performed
+using this natural length scale.
+The value of ǫ also suggests an estimate for a plausible λ; if the value σ = λǫ were much less than
+1, the effects of the fidelity terms would be negligible; conversely, if it were too much larger than 1,
+the interface width would be reduced to such a slim margin that it could no longer be considered
+a diffuse interface. It was found in our computations that a value of roughly σ ∈ [10, 100] gave the
+most interesting results.
+However, it must be noted that the numerical discretisation of the Allen-Cahn equation can
+only give interface motion results of a satisfactory level of accuracy when there are several nodes
+to represent each interface, ideally 8 but in practice at least 4. In the context of a multigrid
+simulation, this can be achieved quite naturally by taking the given image’s pixel structure as the
+reference grid and refining it an appropriate number of times - assuming uniform refinement to be
+the simplest case, where the number of nodes roughly doubles each time, this implies at least three
+refinements. It is also possible to coarsen the regular pixel grid a few times, depending on the size
+of the image. Thus the coarsest grid in the final setup will probably not correspond to the grid on
+which the data was defined.
+Another consequence of the need for a refinement process is the need to represent the image
+data on a finer grid than the one it was defined on. In the present model, the only link between
+the evolution of the function u to the image to be processed are the fidelity terms of the form
+Z
+(I − c)2 dx
+Ω
+
+with the constants
+
+R
+
+c = RΩ
+
+Ω
+
+Iu
+u
+DRAFT
+
+10
+
+approximating the average of I on supp u. The method of implementation of these terms is therefore
+critical to obtaining a good result. Moreover, a decision needs to be made as to what function space
+the image I is assumed to belong to. There are several candidates, such as C∞ (Ω) smooth functions,
+which make the mathematical analysis much easier and are generally derived by convolving the
+image data with a Gaussian; Lipschitz continuous functions, which include piecewise linear interpolants; and functions of bounded variation. This distinction can be of great practical importance
+to a finite element method because depending on the chosen approach to node placement and
+fidelity term implementation it may be necessary to compare the values of u and I at points that
+do not correspond to given pixel values, or to points that lie exactly on the boundary between two
+or more pixels (e.g. corners). Which space the image belongs to ultimately depends on what kind
+of data one is examining, but in this case we have chosen to consider the image as a set of piecewise
+constant values over each pixel; this is done in order not to artificially blur any edges before any
+computations have even taken place.
+Together with mesh refinement, it is necessary to project the values of the original pixels to
+the fine grid. This is not done by interpolating the data values in any way, in order not to create
+spurious gradients. This is necessary because the fitting terms in our method rely on calculating
+the average value of I in each region; introducing new gradients also introduces small areas of
+different average value, which may be erroneously identified as new objects. Therefore, every newly
+created node is assigned exactly the same value as one of its neighbours. This preserves sharp
+discontinuities; it also leads to some staircasing of the data, but only on a relatively small scale
+that should be locked out by fixing ǫ on the coarse grid.
+B. Data Projection
+If it is indeed necessary to project the values of the original pixels to the fine grid, this should
+not be by interpolating the data values in any way, in order not to create spurious gradients. This
+is necessary because the fitting terms rely on calculating the average value of I in each region;
+introducing new gradients also introduces small areas of different average value, which may be
+erroneously identified as new objects in their own right. Therefore, every newly created node is
+assigned exactly the same value as one of its neighbours, which preserves sharp discontinuities.
+In other words, the image data is taken to represent an underlying function I ∈ BV of bounded
+variation.
+There are at least two distinct options for the implementation of these terms using a finite element
+model. The first is direct projection of the image data, node by node. The second is to note that
+the image function I is only weakly represented in the FE system, in the sense that only the value
+of its integral over a region is contained in the fidelity terms, and therefore in principle only the
+value of its integral on each element is required; projection can therefore be carried out triangle by
+triangle. This makes perfect sense as long as the triangulation is nested. In other words, the fidelity
+terms can be computed by either of the two following methods: either one uses the standard mass
+matrix,
+
+Mij : = hηi , η j i,
+!2
+N
+X
+M·I·u
+Min · In − P
+F=
+M·u
+n=1
+
+DRAFT
+
+11
+
+Projection by node
+
+Projection by simplex
+
+Fig. 3.
+
+A clarification of two different data projection schemes
+
+or one computes the integral of I from first principles:
+
+MI =
+
+τn
+N X
+X
+
+I|t hηi |t , ηn |t i;
+
+n=1 t=1
+
+MI · u
+F = MI − P
+M·u
+
+!2
+
+Each method is associated with its own advantages, disadvantages, and computational costs. It
+is worth noting that the errors associated with each one decrease with each mesh refinement. The
+former can be thought of as projection by node and the latter as projection by simplex ; examples
+are shown in figure 3.
+C. Post-processing
+Fig. 4a shows an example of the post-processed solution. The green and blue functions indicate
+segmented regions as identified by the program; using these, the average of the data, osc I, is
+used in each to obtain the denoised data (red). This process is easily achieved by multiplying said
+average by the component itself, then summing all the resulting components; this is referred to as
+the composite. Recall that the measure of osc I on the support of each component ui is already
+known and used actively in the fitting terms driving the evolution (see (5)). Further, because each
+component has values not identical to 0 or 1, notably at each interface, it is useful to round all
+values to either extremum, in such a way that only one component is equal to 1 and all others
+are 0 at any given point; in this way, segmented regions are defined more precisely. This naturally
+leads to the rounded composite, the advantage of which is shown in 4b, a comparison of the errors
+given by the composite and rounded composite.
+
+DRAFT
+
+12
+
+(a)
+
+(b)
+
+1.2
+
+1.2
+
+1
+
+1
+
+0.8
+
+0.8
+
+0.6
+
+0.6
+
+0.4
+
+0.4
+
+0.2
+
+0.2
+
+0
+
+−0.2
+
+0
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+−0.2
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+Fig. 4. a)A comparison of noisy data (black), segmented regions (green and blue), and resulting denoised signal
+(red); b) errors for the composite (blue) and rounded composite (green) segmentation.
+
+(a)
+
+(b)
+
+1
+
+0.05
+
+0.9
+
+0.04
+
+0.8
+
+0.03
+
+0.7
+
+0.02
+
+0.6
+
+0.01
+
+0.5
+
+0
+
+0.4
+
+−0.01
+
+0.3
+
+−0.02
+
+0.2
+
+−0.03
+
+0.1
+0
+
+Fig. 5.
+
+−0.04
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+−0.05
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+a) noisy data (black) and rounded composite (red); b)original noise (blue) vs. recovered noise (green).
+
+Figure 5a shows the noisy data (black) and the resulting rounded composite (red); for comparison,
+Fig. 5b shows the original noise (blue) and the recovered noise (green) obtained by subtracting the
+rounded composite from the initial data.
+D. Two Dimensional Examples
+Figure 6 shows the results of our method as applied to an image of concentric circles, with some
+noise. Figure 7 shows a more interesting case depicting what appears to be several overlapping
+geometric solids superimposed on a chequered background, for comparison with the results in
+Jung, Kang and Shen [14].
+We also wish to examine the case of multi-channel data, the most obvious example of which
+is that of colour images. Although there is no reason why the proposed method could not be
+extended to images acquired at different wavelengths, for example by combining a visible nighttime photograph with an infrared scan of the same area, the following arguments will concentrate
+on the case of colour images captured in the visible spectrum.
+It may seem natural to perform the processing on each channel individually. However, this does
+not take into account the fact that the information gathered from each channel is not disjoint but
+has a certain, possibly stronger, correlation across channels rather than within the space of each
+channel - in other words, the same pixel on each channel most likely corresponds to the same object
+being photographed, whereas there’s no such guarantee for any two adjacent pixels in the same
+
+DRAFT
+
+13
+
+Image data
+
+Rounded composite
+
+Vectorial constituents
+
+Remainder
+
+Fig. 6. Segmentation of four concentric circles at [.25 .95 .55 .75] over a background at level .1, with added random
+noise of amplitude .05. The remainder shows a combination of error and noise, scaled to show all detail
+
+channel.2 Also, the problem remains of how to combine the resulting information, and this is not
+a straightforward course of action in the case of segmentation.
+Several methods to non-trivially process a colour image have previously been examined. The
+structure-texture decomposition method suggested by Meyer [23] was recently extended to colour
+images by Aujol and Kang [2] applying the G-norm to the RGB space. Another interesting approach
+is presented for example in Tang, Sapiro and Caselles [28], where the chromaticity values of each
+pixel are mapped onto the unit sphere and then processed using a diffusion-based filter; the authors
+consider both isotropic and anisotropic types. A rather similar approach seems to have been used in
+Yu and Bajaj [32], developed seemingly independently. It was argued in Kang and Shen [4] that a
+chromaticity-brightness (CB) filter outperforms a hue-saturation-value (HSV) filter in combination
+with a total variation method.
+We propose to use multi-channel information in our model by adapting the fitting terms in (5)
+to use the information from each of the colour channels I j :
+R
+ui I j
+ci,j (ui , I j ) = RΩ
+u
+Ω i
+2
+This depends on the field of interest. For example, in astronomy it may well be the case that a channel of
+information corresponds to a specific wavelength of light, in which case it is not only true that any one object is
+highly unlikely to appear across all wavelenghts, but the same absorption spectrum across different wavelenghts
+being captured at the same pixel most likely indicates two similar objects (e.g. gas clouds), one behind the other.
+
+DRAFT
+
+14
+
+Image data
+
+Rounded composite
+
+Vectorial constituents
+
+Fig. 7.
+
+Segmentation of a geometric composite
+
+F(ci,j , I j ) =
+
+3
+X
+
+|I j − ci,j (ui , I j )|2 dx
+
+j=1
+
+This method can be followed regardless of how the multi-channel information is encoded, i.e. it can
+in principle be applied to any colour space, and any number of channels. For simplicity, the RGB
+space has been used in computations so far. Figures 8 and 9 were obtained using the RGB space. As
+can clearly be seen, the use of the RGB space cannot distinguish between a difference in colour and
+one in luminosity, potentially leading to somewhat unrealistic segmentations of complex real-world
+images; this could possibly be remedied by using the L*a*b* space and ignoring the luminosity
+component.
+V. Conclusion
+The method here presented is a flexible method for image segmentation and denoising based
+on the combination of previously consolidated work. It can either be fine-tuned to specific goals
+DRAFT
+
+15
+
+Fig. 8.
+
+Image data
+
+Rounded composite
+
+Vectorial constituents
+
+Remainder
+
+Flowers
+
+Image data
+
+Fig. 9.
+
+Rounded composite
+
+Lena
+
+or be allowed to run with almost no user input other than the initial image, which can define its
+own natural scale. Thanks to the multigrid formulation, computational costs will not spiral out of
+control. The method can also be further extended in several directions, including adaptive mesh
+refinement and adaptive time-stepping to further reduce computational time; it can deal with any
+desired colour space and any number of input and output channels, independent of each other.
+The Esedoḡlu-Tsai formulation involving MBO thresholding has the advantage of dealing well
+with the well-known unstable equilibrium value of 1/2; however, we would suggest that there are
+important dynamics motivated by the Chan-Vese fitting terms, especially at short time-scales, that
+are lost by the thresholding mechanism. Our multigrid solution seeks to retain the computational
+swiftness while capturing the full dynamics of the equations.
+
+DRAFT
+
+16
+
+References
+[1] S. M. Allen and J. W. Cahn. A macroscopic theory for antiphase boundary motion and its applications to
+antiphase domain coarsening. Acta Metal., 27:1085–1095, 1979.
+[2] J.-F. Aujol and S. H. Kang. Color image decomposition and restoration. Journal of Visual Communication
+and Image Representation, 17(4):916–928, August 2006. Previously appeared as UCLA CAM Report 04-73,
+December 2004.
+[3] M. Beneš, V. Chalupecký, and K. Mikula. Geometrical image segmentation by the Allen-Cahn equation. Applied
+Numerical Mathematics, 51(2-3):187–205, 2004.
+[4] T. F. Chan, S.-H. Kang, and J. J. Shen. Total variation denoising and enhancement of color images based on
+the CB and HSV color models. Journal of Visual Communication and Image Representation, 12(4):422–435,
+2001. Previously appeared as Tech. Report UCLA CAM 00-25, June 2001.
+[5] T. F. Chan, J. J. Shen, and L. Vese. Variational PDE models in image processing. Notices of the American
+Mathematical Society, 50(1):14–26, September 2002. Later appeared as Tech. Report UCLA CAM 02-61,
+December 2002.
+[6] T. F. Chan and L. Vese. An active contour model without edges. Lecture Notes in Computer Science, 1682:141–
+151, 1999.
+[7] T. F. Chan and L. Vese. Image segmentation using level sets and the piecewise-constant Mumford-Shah model.
+Technical Report 00-14, UCLA CAM, April 2000. Submitted to IJCV, 2000.
+[8] T. F. Chan and L. Vese. Active contours without edges. IEEE Transactions on Image Processing, 10(2):266–277,
+2001. Previously appeared as Tech. Report UCLA CAM Report 98-53, December 1998.
+[9] T. F. Chan and L. Vese. A level set algorithm for minimizing the Mumford-Shah functional in image processing.
+In IEEE/Computer Society Proceedings of the 1st IEEE Workshop on ”Variational and Level Set Methods in
+Computer Vision”, pages 161–168, 2001.
+[10] C. M. Elliott. Approximations of curvature dependent interface motion. In I. Duff and G. A. Watson., editors,
+State of the Art Numerical Analysis, pages 407–440. Clarendon Press, Oxford, 1997. Also appeared as University
+of Sussex, CMAIA Research Report 96/21.
+[11] S. Esedoḡlu and Y.-H. R. Tsai. Threshold dynamics for the piecewise constant mumford-shah functional. Journal
+of Computational Physics, 211(1):367–384, 2006.
+[12] N. Fusco. An overview of the Mumford-Shah problem. Milan Journal of Mathematics, 71(1):95–119, September
+2003.
+[13] H. Garcke, B. Nestler, and B. Stoth. On anisotropic order parameter models for multi-phase systems and their
+sharp interface limits. Physica D, 115:87–108, 1998.
+[14] Y. M. Jung, S. H. Kang, and J. Shen. Multiphase image segmentation via Modica-Mortola phase transition.
+Technical Report 06-31, UCLA CAM, June 2006.
+[15] R. Kornhuber. Monotone multigrid methods for elliptic variational inequalities I. Numerische Mathematik,
+69:167–184, 1994.
+[16] R. Kornhuber. Nonlinear multigrid techniques. In J. Blowey, J. Coleman, and A. Craig, editors, Theory and
+Numerics of Differential Equations, pages 179–229. Springer Verlag, 2001.
+[17] R. Kornhuber. On multigrid methods for vector-valued Allen-Cahn equations with obstacle potential. In
+I. Herrera, D. E. Keyes, B. Olof, and R. Y. Widlund, editors, Proceedings of the 14th international conference on
+Domain Decomposition Methods in Science and Engineering, pages 307–314, 2003.
+[18] R. Kornhuber and R. Krause. On multigrid methods for vector-valued Allen-Cahn equations. In I. H. et al.,
+editor, Domain Decomposition Methods in Science and Engineering, pages 307–314. UNAM, 2003.
+[19] R. Kornhuber and R. Krause. Robust multigrid methods for vector-valued Allen-Cahn equations with logarithmic
+free energy. Computing and Visualization in Science, 9(2):103–116, 2006.
+[20] J. Malik and P. Perona. Scale space and edge detection using anisotropic diffusion. Proc. IEEE Computer Soc.
+Workshop on Computer Vision, pages 6–22, 1987. Also appeared in IEEE Transactions on Pattern Analysis and
+Machine Intelligence, Vol. 12 no. 7 July 1990 pg 629–639.
+[21] B. Merriman, J. K. Bence, and S. J. Osher. Diffusion generated motion by mean curvature. Technical Report
+92-18, UCLA CAM, April 1992.
+[22] B. Merriman, J. K. Bence, and S. J. Osher. Motion of multiple junctions: a level set approach. Journal of
+Computational Physics, 112(2):334–363, 1994.
+[23] Y. Meyer. Oscillating patterns in image processing and nonlinear evolution equations. In The Fifteenth Dean
+Jacqueline B Lewis Memorial Lectures, number 22 in University Lecture Series. AMS, 2001.
+[24] D. Mumford and J. Shah. Optimal approximation by piecewise smooth functions and associated variational
+problems. Comm. Pure Appl. Math., 42:577–685, 1989.
+[25] N. Neuss. V-cycle convergence with unsymmetric smoothers and application to an anisotropic model problem.
+SIAM Journal on Numerical Analysis, 35(3):1201–1212, 1998.
+
+DRAFT
+
+17
+
+[26] J. Petitot. An introduction to the Mumford-Shah segmentation model. Journal of Physiology - Paris, 97:335–342,
+2003.
+[27] X.-C. Tai and J. Xu. Global and uniform convergence of subspace correction methods for some convex
+optimization problems. Mathematics of Computation, 71(237):105–124, 2001.
+[28] B. Tang, G. Sapiro, and V. Caselles. Color image enhancement via chromaticity diffusion. IEEE Transactions
+on Image Processing, 10(5):701–707, May 2001.
+[29] L. A. Vese. Multiphase object detection and image segmentation. Technical Report 02-36, UCLA CAM, June
+2002.
+[30] J. Xu. Iterative methods by space decomposition and subspace correction. SIAM Review, 34(4):581–613, 1992.
+[31] J. Xu. The method of subspace corrections. Journal of Computational and Applied Mathematics, 128:335–362,
+2001.
+[32] Z. Yu and C. Bajaj. Anisotropic vector diffusion in image smoothing. In Proceedings of International Conference
+on Image Processing, pages 828–831, 2002.
+[33] H.-K. Zhao, T. Chan, B. Merriman, and S. Osher. A variational level set approach to multiphase motion. J.
+Comput. Phys., 127(1):179–195, 1996.
+
+DRAFT
+
+
