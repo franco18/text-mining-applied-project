@@ -37,7 +37,7 @@ Se selecciona la estructura b) la cual permite a nivel de documento tener las pa
 
 #### Nota
 
-Luego de la presentación se realiza otra solucion utilizando la librería sklearn.feature_extraction.text.CountVectorizer el cual permite generar el vocabulario y la matriz dispersa de frecuencia de pablaras por documento.
+Luego de las sugerencias dadas en la presentación se realiza otra solución utilizando la librería sklearn.feature_extraction.text.CountVectorizer el cual permite generar el vocabulario y la matriz dispersa de frecuencia de pablaras por documento. Esta estructura facilitara la busqueda entre similitud de documentos, y aplicación de algoritmos de machine learning en general.
 
 Para ver mas ingresar al notebook que se encuentra [aquí](https://github.com/franco18/text-mining-applied-project/blob/master/second_approach/BagOfWordsSecondApproach.ipynb) 
 
