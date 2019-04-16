@@ -35,6 +35,12 @@ b)
 
 Se selecciona la estructura b) la cual permite a nivel de documento tener las palabras correspondientes junto con sus métricas.
 
+#### Nota
+
+Luego de la presentación se realiza otra solucion utilizando la librería sklearn.feature_extraction.text.CountVectorizer el cual permite generar el vocabulario y la matriz dispersa de frecuencia de pablaras por documento.
+
+Para ver mas ingresar al notebook que se encuentra [aquí](https://github.com/franco18/text-mining-applied-project/blob/master/second_approach/BagOfWordsSecondApproach.ipynb) 
+
 
 ### Preparación de los Datos
 
