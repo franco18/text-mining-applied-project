@@ -15,7 +15,7 @@ from nltk.stem import WordNetLemmatizer # metodo para lematizar
 class Word2VecUtility(object):
 
     @staticmethod
-    def review_to_wordlist( review ):
+    def review_to_wordlist( review, is_metadata=False ):
         stemmer = PorterStemmer() # instancia una forma de stemming
         wordnet_lemmatizer = WordNetLemmatizer()
 
@@ -38,9 +38,9 @@ class Word2VecUtility(object):
 
         # 5. aplica lematizacion, stemming, elimina de stop words y
         # aplica reglas lógicas para reducir la cantidad de tokens
-
-        words = [wordnet_lemmatizer.lemmatize(stemmer.stem(w), pos="v") for w in words if (len(w)>1) and (w not in stops) and wordnet.synsets(w) ] 
-        #
-        # 6. Return a list of words
-        
+        if(is_metadata):
+            words = [wordnet_lemmatizer.lemmatize(stemmer.stem(w), pos="v") for w in words if (len(w)>1) and (w not in stops) ]
+        else:
+            words = [wordnet_lemmatizer.lemmatize(stemmer.stem(w), pos="v") for w in words if (len(w)>1) and (w not in stops) and wordnet.synsets(w) ] 
+            
         return(words)
