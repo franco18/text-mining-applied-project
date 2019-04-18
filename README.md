@@ -96,7 +96,7 @@ ProyectoIntegrador.ipynb
 parser_metadata.ipynb
 ```
 
-5. Para genera la matriz disperas con el vocabulario generado a partir de los documentos se utilizo la libreria: sklearn. Se instala ejeucntado el siguiente comando:
+5. Para la representación vectorial del vocabulario en los documentos se utilizo la libreria: sklearn. Se instala ejeucntado el siguiente comando:
 
 ```python
 pip install numpy, scipy, scikit-learn
