@@ -75,7 +75,7 @@ Dentro de los métodos para recuperar información de los textos, existen varios
 
 ## Guía de uso
 
-Para correr el programa se necesita instalar las siguientes librerías
+Para correr los programas se necesita instalar las siguientes librerías
 
 1. Instalar las librerias 'stopwords','punkt', 'wordnet' de la siguiente manera:
 ```python
@@ -94,6 +94,21 @@ ProyectoIntegrador.ipynb
 
 ```python
 parser_metadata.ipynb
+```
+
+5. Para la representación vectorial del vocabulario en los documentos se utilizo la libreria: sklearn. Se instala ejecutando el siguiente comando:
+
+```python
+pip install numpy, scipy, scikit-learn
+```
+
+6. Para la categorizacion de documentos (ver [aqui](https://github.com/franco18/text-mining-applied-project/blob/master/second_approach/MetaDataBagOfWords.ipynb) notebook) se deben instalar las siguientes librerias:
+
+```python
+pip install xmltodict
+pip install wordcloud
+pip install paramiko
+pip install gensim
 ```
 
 Ubicado en la siguiente [ruta](https://github.com/franco18/text-mining-applied-project/blob/master/xml_parser/parser_metadata.ipynb)
