@@ -1,0 +1,10 @@
+prefix = "data/"
+stop-words = "data/lemur-stopwords.txt"
+dataset = "cranfield"
+corpus = "tutorial.toml"
+query-judgements = "data/cranfield/cranfield-qrels.txt"
+index = "cranfield-idx"
+[[analyzers]]
+	filter = "default-unigram-chain"
+	method = "ngram-word"
+	ngram = 1
