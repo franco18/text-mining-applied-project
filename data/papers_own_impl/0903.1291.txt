@@ -1,0 +1,592 @@
+The quantum query complexity of certification
+
+arXiv:0903.1291v2 [quant-ph] 6 Oct 2014
+
+Andris Ambainis∗
+
+Andrew M. Childs†
+
+François Le Gall‡
+
+Seiichiro Tani‡,§
+
+Abstract
+We study the quantum query complexity of finding a certificate for a d-regular, k-level
+balanced nand formula. We show that the query complexity is Θ̃(d(k+1)/2 ) for 0-certificates,
+and Θ̃(dk/2 ) for 1-certificates. In particular, this shows that the zero-error quantum query
+complexity of evaluating such formulas is Õ(d(k+1)/2 ). Our lower bound relies on the fact that
+the quantum adversary method obeys a direct sum theorem.
+
+1
+
+Introduction
+
+Recently, there has been considerable progress in understanding the quantum query complexity of
+evaluating Boolean formulas. Here, we consider the closely related problem of certifying the value
+of a formula.
+An n-bit Boolean formula φ corresponds to a rooted tree with n leaves, where each leaf represents
+a binary variable xi for i ∈ {1, . . . , n}, and each internal vertex represents a logic gate acting on
+its children. We can evaluate φ on an input x ∈ {0, 1}n by applying the logic gates from the leaves
+toward the root, giving some binary value φ(x) at the root. Suppose we are given a black box that,
+on input i, produces the bit xi . The minimum number of queries to such a black box required to
+learn φ(x) for an arbitrary x ∈ {0, 1}n is called the query complexity of evaluating φ.
+In this article, we focus on the case of nand formulas, in which each internal vertex corresponds
+to a nand gate. (Note that formulas consisting of and, or, and not gates are equivalent to nand
+formulas.) Furthermore, we suppose that the tree is regular, with internal vertices of degree d, and
+balanced, with a total of k levels. Thus, there are n = dk input variables.
+To evaluate such a formula on a black-box input, a deterministic classical computer must make
+all n queries. However, the expected number of queries for a randomized
+√ classical computer to
+k
+evaluate the formula with zero error is O(λd ) [16, 18], where λd := (d − 1 + d2 + 14d + 1)/4, using
+a simple recursive strategy. Indeed, this is the optimal query complexity not just for zero-error
+algorithms [16], but also for bounded-error ones [17]. If we fix d and let k grow, this represents a
+polynomial speedup over the deterministic strategy of evaluating all leaves, since only O(nlogd λd )
+queries are required; for example, with d = 2, the classical query complexity is Θ(n0.753... ). On the
+other hand, if we fix k and let d grow, then the query complexity is essentially n.
+For quantum computers, the situation is quite different. Grover’s algorithm shows that if k = 1,
+√
+so that d = n, a quantum computer can evaluate the formula with bounded error in O( n) queries
+[12], which is optimal [7]. Similar results can be obtained for constant k: a recursive strategy
+√
+with straightforward error reduction uses O( n logk−1 n) queries [8], and a more delicate approach
+∗
+
+Department of Computing, University of Latvia
+Department of Combinatorics & Optimization and Institute for Quantum Computing, University of Waterloo
+‡
+Quantum Computation and Information Project, ERATO-SORST, JST
+§
+NTT Communication Science Laboratories, NTT Corporation
+†
+
+1
+
+√
+to error reduction uses O( nαk ) queries for some constant α [14]. In particular, this shows that
+√
+the quantum query complexity is O( n) provided k is constant, and even gives some speedup for
+sufficiently large constant d. However, for the case where d is a small constant, no better-thanclassical quantum algorithm was known for nearly ten years. A breakthrough occurred with the
+revolutionary quantum walk approach of [11], which—combined with a simple
+√ observation on the
+simulation of Hamiltonian dynamics by quantum circuits [10]—showed that n1+o(1) queries suffice
+for the case where d = 2. Subsequent work showed that in fact the quantum query complexity
+√
+is O( n) for any d, k [4]. Since this is optimal [5], the quantum query complexity of evaluating
+balanced nand formulas is now a closed problem.
+Here, we consider the problem of determining a minimal certificate for the value of a nand
+formula. A certificate for φ on input x ∈ {0, 1}n is a subset c ⊆ {1, . . . , n} such that the values of
+xi for i ∈ c determine φ(x). We say that a certificate c is minimal if no proper subset of c is also a
+certificate.
+We can view the size of the minimal certificate as a kind of nondeterministic query complexity,
+since this is the number of queries required to verify the value of the formula if we can guess the
+certificate. The certificate size of a regular, balanced nand formula can be understood simply, as
+follows. Let Cb (k) denote the size of a minimal certificate for a k-level balanced nand formula
+evaluating to b (a b-certificate). We have C0 (0) = C1 (0) = 1, and
+C0 (k) = d C1 (k − 1)
+Solving this recursion, we obtain
+(
+dk/2
+C0 (k) =
+d(k+1)/2
+
+C1 (k) = C0 (k − 1).
+
+k even
+k odd
+
+C1 (k) =
+
+(
+
+dk/2
+d(k−1)/2
+
+k even
+k odd.
+
+(1)
+
+(2)
+
+√
+Thus, the certificate size is precisely n for a formula with an even number of levels, and is close
+to that value when the number of levels is large and odd. Note that a minimal 0-certificate is a set
+of 0-inputs for k even and a set of 1-inputs for k odd; a minimal 1-certificate is a set of 1-inputs for
+k even and a set of 0-inputs for k odd.
+Given a regular, balanced nand formula and a black box for the input, we are interested in
+the number of queries required to output a minimal certificate. This question is of interest for
+several reasons. Whereas the optimal classical algorithm for evaluating a nand formula produces
+a certificate in the course of its evaluation, the same does not hold for the known optimal quantum
+algorithms, so it is natural to ask whether quantum computers have a comparable advantage for
+certification as they do for evaluation. (The algorithm of [4] produces a quantum state that is
+related to certificates, which suggests a potential approach to certificate finding, but it turns out
+that a simpler strategy is nearly optimal.) In addition, the query complexity of certificate finding
+gives an upper bound on the zero-error query complexity of the problem (as emphasized in [9]),
+although it is not known if this bound is optimal in general.
+Note that Aaronson introduced a notion of quantum certificate complexity [1], which is also
+concerned with quantum algorithms for certifying the value of a function. However, our setting
+is different: we study quantum algorithms which output classical certificates, while in Aaronson’s
+work, the quantum algorithm itself is a certificate and no classically-verifiable certificate is provided.
+For a constant number of levels k, the previous best quantum algorithm for producing a certificate for a nand formula uses O(d(k+2)/2 ) queries in the case of 0-certificates, and O(d(k+1)/2 ) in the
+case of 1-certificates [9, Lemma 1]. We improve upon this, and also give a result for non-constant
+k, as follows:
+2
+
+Theorem 1. Fix k > 1 and consider a d-regular, k-level balanced nand formula φ with black-box
+input x. The bounded-error and zero-error quantum query complexities of certifying (φ, x) are
+O(k2 d(k+1)/2 )
+2 k/2
+
+O(k d
+
+)
+
+and
+
+Ω(d(k+1)/2 )
+
+if φ(x) = 0
+
+(3)
+
+and
+
+k/2
+
+if φ(x) = 1.
+
+(4)
+
+Ω(d
+
+)
+
+In particular, the zero-error quantum query complexity of evaluating φ(x) is O(k2 d(k+1)/2 ).
+Note that for k = 1, the formula is simply a single nand gate, and the bounded-error query
+√
+complexity of certifying it on any input is Θ( n).
+The upper bound in Theorem 1 comes from a strategy that applies the formula evaluation
+algorithm of [4] recursively, as described in Section 2. The lower bound appeals to direct sum
+theorems. We discuss a direct sum theorem for adversary lower bounds in general in Section 3, and
+apply it to certification in Section 4. We conclude in Section 5 by mentioning a few open questions.
+
+2
+
+Algorithm
+
+To find a certificate for a nand formula, consider the following simple recursive strategy. First
+√
+evaluate the root using the O( n)-query algorithm of [4]. If the result is 0, each child of the root
+must evaluate to 1, and we can find a 1-certificate for each in turn. If the result is 1, then we search
+for a child evaluating to 0 using Grover’s algorithm combined with formula evaluation, and then
+find a 0-certificate for it.
+This strategy gives a nearly optimal algorithm for certificate finding. However, we must be
+careful when applying the formula evaluation algorithm recursively, since it only succeeds with
+bounded error, and we must ensure that this error can be kept under control.
+To find a b-certificate for a k-level tree, we can apply the procedure Ab (k), defined as follows.
+Procedure A0 (k).
+• If k = 1, query every leaf. If they are all 1, then output every index; otherwise, go into an
+infinite loop.
+• If k > 1, run A1 (k − 1) on each subtree.
+Procedure A1 (k).
+• If k = 1, repeat Grover’s algorithm until a 0-leaf is found, verifying the result to ensure
+one-sided error. When a 0-leaf is found, output its index.
+• If k > 1, repeat the following until passing the verification:
+
+– Perform robust quantum search [14] for a 0-subtree, using the nand tree evaluation
+algorithm [4] as a subroutine. (Note that robust quantum search has two-sided error.)
+Repeat the search until a 0-subtree T is found.
+– Verify that T is a 0-subtree with error probability at most 1/n2 by running the nand
+tree evaluation algorithm O(log n) times and taking a majority vote.
+
+• Once T passes the verification, run A0 (k − 1) on T .
+A simple inductive argument shows that Ab (k) will never terminate when given a formula
+evaluating to b̄. Furthermore, when Ab (k) does halt, it is guaranteed to return a correct b-certificate.
+It remains to understand how long it takes for Ab (k) to produce a b-certificate.
+
+3
+
+Lemma 2. Suppose that Ab (k) is given a d-regular, k-level balanced nand formula evaluating to b.
+Assume that the verification step in procedure A1 never makes an error. Then the expected number
+of queries before A0 (k), A1 (k) terminates is
+
+
+
+√
+√ 
+log
+k+1 ,
+√d
+√d
+O
+k
+1
++
+k
+(5)
+d
+dk ,
+O k 1 + k log
+d
+d
+respectively.
+
+Proof. Let E[Ab (k)] denote the expected number of queries made by Ab (k) when given a formula
+evaluating to b, assuming the procedure
+√ A1 never makes an erroneous verification. For k = 1, we
+have E[A0 (1)] = d and E[A1 (1)] = O( d). For k ≥ 2,
+E[A1 (k)] = O(dk/2 ) + O(d(k−1)/2 log n) + E[A0 (k − 1)]
+
+
+
+√ d dk/2 + E[A0 (k − 1)]
+= O 1 + k log
+
+(6)
+
+E[A0 (k)] = d E[A1 (k − 1)].
+
+(8)
+
+
+√ 
+√d
+E[A1 (k)] = O k 1 + k log
+dk
+
+(9)
+
+
+
+√
+√d
+dk+1
+E[A0 (k)] = O k 1 + k log
+
+(10)
+
+d
+
+and
+
+(7)
+
+Solving this recurrence gives
+d
+
+and
+
+d
+
+as claimed.
+
+Of course, we cannot actually assume that A1 never makes a verification error, but we can
+nevertheless obtain a zero-error algorithm for b-certification as follows. First of all, if A1 outputs
+a certificate, then the certificate is guaranteed to be correct. Thus, a verification error can only
+result in A1 not finding a certificate (and, possibly, going into an infinite loop while searching for
+a certificate in the wrong subtree).
+To handle the possibility of a verification error causing A1 to run forever,
+√ fix some sufficiently
+large constant c. Run Ab√on the input; if it does not halt after ck(1+klog d/ d)d(k+1)/2 queries (for
+b = 0) or ck(1 + klog d/ d)dk/2 queries (for b = 1), restart A1 . The probability that one or more
+verifications fail during each trial is O((log2 n)/n), since the error probability of each verification is
+at most 1/n2 , and the total number of verifications per trial is at most the total number of queries,
+which is upper bounded by O(n log2 n). Thus only the expected number of O(1) repetitions of
+A1 are required before the process terminates with a correct certificate. This gives a zero-error
+quantum algorithm with an expected running time given by Lemma 2, with no assumptions about
+verification errors.
+
+3
+
+A direct sum theorem for the adversary method
+
+We now turn to the question of lower bounds. Our approach to the lower bound for certificate
+finding is based on the concept of a direct sum theorem. A direct sum theorem says that if solving
+
+4
+
+one instance of a problem requires q queries, then solving t instances requires Ω(tq) queries. (Several papers on quantum lower bounds—e.g., [3, 15]—have studied direct product theorems, which
+are stronger statements. In particular, a strong direct product theorem says that if an algorithm
+attempts to solve t instances with o(tq) queries, then it can only succeed with an exponentially
+small probability. In this paper, we only need direct sum theorems.)
+One of the main methods for proving lower bounds on quantum query complexity is the quantum
+adversary method [2], which can be reformulated as follows [6]:
+Theorem 3. Let S ⊆ {0, 1}n , and let Σ be a finite set. For any function f : S → Σ, define
+ADV(f ) := max
+Γ
+
+kΓk
+
+maxni=1 kΓ
+
+◦ Di k
+
+,
+
+(11)
+
+where k·k denotes the spectral norm; Γ 6= 0 is a symmetric, entrywise non-negative |S| × |S| matrix
+satisfying Γxy = 0 if f (x) = f (y); (Di )xy = 1 if xi 6= yi and (Di )xy = 0 otherwise; and ◦ denotes
+the Hadamard (i.e., entrywise) product of matrices. Finally, let Qǫ (f ) denote the minimum number
+of quantum queries to x needed to compute f (x) with error at most ǫ. Then
+p
+1 − 2 ǫ(1 − ǫ)
+ADV(f ).
+(12)
+Qǫ (f ) ≥
+2
+We show that the quantity ADV(f ) obeys a direct sum theorem, as follows.
+Theorem 4. Let S ⊆ {0, 1}n , and let Σ be a finite set. Given a function f (1) : S → Σ, let
+f (t) : S t → Σt be the function defined by f (t) (x) := (f (1) (x1 . . . xn ), . . . , f (1) (x(t−1)n+1 . . . xtn )).
+Then ADV(f (t) ) = t ADV(f (1) ).
+Proof. Let Γ(1) be an optimal adversary matrix for f (1) , and let Γ(t) := Γ(1) ⊗ I ⊗t−1 + I ⊗ Γ(t−1) ,
+where I denotes the |S| × |S| identity matrix. Choosing Γ = Γ(t) , the numerator of ADV(f (t) ) is
+kΓ(t) k = tkΓ(1) k (since Γ(t) is a sum of t commuting terms, each a tensor product of Γ(1) and an
+identity matrix).
+(t)
+(t)
+(t)
+Now let Di denote the |S|t × |S|t matrix with (Di )xy = 1 if xi 6= yi and (Di )xy = 0
+(t)
+(1)
+otherwise. For i ∈ {1, . . . , n}, we have Di = Di ⊗ J ⊗t−1 , where J denotes the |S| × |S| matrix
+(t)
+with every entry equal to 1. Matrices Di for i ∈ {n + 1, . . . , tn} can be expressed similarly by
+suitable permutation of the tensor factors. Then for i ∈ {1, . . . , n},
+(t)
+
+(1)
+
+kΓ(t) ◦ Di k = k(Γ(1) ⊗ I ⊗t−1 + I ⊗ Γ(t−1) ) ◦ (Di
+=
+=
+
+(1)
+k(Γ ◦ Di ) ⊗
+(1)
+kΓ(1) ◦ Di k,
+(1)
+
+I
+
+⊗t−1
+
+⊗ J ⊗t−1 )k
+
+k
+
+(13)
+(14)
+(15)
+
+(1)
+
+(t)
+
+where the second equality uses the fact that I ◦ Di is the zero matrix. By symmetry, kΓ(t) ◦ Di k
+for general i ∈ {1, . . . , tn} only depends on the congruence class of i modulo n. It follows that
+ADV(f (t) ) ≥ t ADV(f (1) ).
+Although we do not need the converse to establish a direct sum theorem, it can be proven
+as follows. Using semidefinite programming duality, we can express ADV(f ) as a minimization
+problem; in particular [20],
+ADV(f ) = min
+p
+
+max
+
+x,y∈S
+f (x)6=f (y)
+
+1
+Xq
+
+i:xi 6=yi
+
+5
+
+px (i) py (i)
+
+,
+
+(16)
+
+P
+where the minimization is over sets of probability distributions px (i), i.e., ni=1 px (i) = 1 for all
+(t)
+x ∈ S. Let p(1) achieve the minimum in (16) for f = f (1) . For each x ∈ S t , let px be the
+probability distribution obtained by selecting one of the t blocks uniformly at random and then
+(t)
+choosing the ith coordinate within that block according to p(1) . In other words, let px (i) :=
+1 (1)
+(t)
+(t)
+t pxn⌊i/n⌋+1 ...xn⌊i/n⌋+n (i mod n) for each i ∈ {1, . . . , tn}. To have f (x) 6= f (y), we must have
+f (1) (xjn+1 . . . xjn+n ) 6= f (1) (yjn+1 . . . yjn+n ) for some j ∈ {0, . . . , t − 1}; without loss of generality,
+suppose j = 1. Since the denominator of (16) is a sum of positive terms, the maximum over
+x, y ∈ S t is achieved by the case where xi = yi for all i ∈ {n + 1, . . . , tn}, such that there is no
+contribution to the denominator from these indices. Thus, we find
+ADV(f (t) ) ≤
+
+1
+
+max
+
+x,y∈S
+f (1) (x)6=f (1) (y)
+
+X
+
+r
+
+i:xi 6=yi
+
+1 (1) 1 (1)
+px (i) py (i)
+t
+t
+
+= t ADV(f (1) ),
+
+(17)
+
+which completes the proof.
+As a consequence of this fact, whenever a function f has an optimal adversary lower bound, it
+obeys a direct sum theorem. This can be compared with the multiplicative adversary method [19],
+in which a multiplicative adversary lower bound implies a strong direct product theorem.
+Note that the lower bound of Theorem 4 applies to the negative adversary method as well [13],
+so negative adversary lower bounds also imply direct sum theorems.
+
+4
+
+Lower bound
+
+We now apply the result of the previous section to give a nearly optimal lower bound for certificate
+finding.
+The query complexity of certification is clearly Ω(dk/2 ), as knowing a certificate allows one to
+evaluate the formula. (Recall that a minimal certificate for a balanced formula is a subset of inputs
+all taking the same value; hence we can learn this value by evaluating one input.) This immediately
+shows that the algorithm of Section 2 is close to optimal for 1-certificate finding.
+It remains to prove the lower bound for 0-certificate finding. First, suppose that k is even. In
+this case, a 0-certificate consists of one 0-leaf from each of dk/2 bottom subtrees, where each subtree
+has size d. Suppose we are told which of the bottom subtrees we need to consider; this can only
+make the problem easier. Then we must find a 0-leaf in each of these subtrees. Intuitively, the best
+strategy for finding these leaves is to run Grover’s algorithm for an input of size d independently on
+each of the dk/2 subtrees. To make this intuition
+rigorous, we can apply the direct sum theorem for
+√
+search, which says we need at least Ω(t d) queries to solve t independent instances of the search
+problem on inputs of size d. While we could prove this using Theorem 4, it is also implied by the
+strong direct product theorem for search from [3] (which applies even to the problem of finding t
+marked items with the promise that they exist). Thus, with t = dk/2 , we find a lower bound of
+Ω(d(k+1)/2 ) queries. (A similar argument works for 1-certificate finding with k odd, but we do not
+need it.)
+We can apply a similar approach when k is odd. Suppose we could prove a direct sum theorem
+for 1-certifying two-level nand formulas—in other words, that finding 1-certificates to t independent
+two-level formulas requires t times the number of queries required to certify one such formula. A
+0-certificate with k odd consists of all d 1-leaves of each of d(k−1)/2 bottom subtrees. If we are told
+which subtrees we must consider one level above, then we must evaluate d(k−1)/2 two-level trees.
+Thus, a direct sum theorem would say that we need Ω(d(k−1)/2 · d) = Ω(d(k+1)/2 ) queries.
+6
+
+To prove this direct sum theorem, by Theorem 4, it suffices to give an adversary lower bound
+for the problem of 1-certifying a two-level nand formula. Since we are promised that the formula
+evaluates to 1, at least one of its d subtrees evaluates to 0, i.e., all d inputs to that subtree are 1.
+We further promise that precisely one subtree evaluates to 0, and that in all other subtrees, d − 1
+of the d inputs evaluate to 1, with the remaining input evaluating to 0. These promises only make
+2
+the problem easier. Let S ⊆ {0, 1}d denote the set of such inputs, and let f : S → {1, . . . , d} be
+defined by f (x) = i, where i is the unique index of the subtree that evaluates to 0.
+We claim that ADV(f ) = Ω(d). To see this, let Γ be the |S| × |S| matrix in which Γxy = 0
+unless x and y differ in exactly two bits and f (x) 6= f (y), in which case Γxy = 1. In the latter case,
+• the subtree which evaluates to 0 in x evaluates to 1 in y, meaning that one of its d inputs
+switches from 1 in x to 0 in y, and
+• exactly one of d − 1 subtrees which evaluates to 1 in x evaluates to 0 in y, meaning that its
+unique 0-input in x switches to 1 in y.
+Thus, for any fixed x, there are d(d − 1) possible y with f (x) 6= f (y). In other words, Γ is the
+adjacency matrix of a d(d − 1)-regular graph, which means that kΓk = d(d − 1).
+Now, fixing x as well as an index i, the maximum number of ys with xi 6= yi is d: if i is an input
+to the subtree evaluating to 0 in x, then we only have the freedom to choose one of d − 1 other
+subtrees in which we switch a fixed input, whereas if i is an input to a subtree evaluating to 1 in
+x, then we only have the freedom to choose one of d inputs to the 0-subtree to switch. This means
+that Di ◦ Γ is the adjacency matrix of a graph of maximum degree d, which implies kDi ◦ Γk ≤ d.
+Overall, we have ADV(f ) ≥ d − 1 = Ω(d).
+Note that, more generally, a similar argument can be used to establish a direct sum theorem for
+the problem of certifying k-level nand formulas. In particular, the bounded-error quantum query
+complexity of certifying t independent d-regular, k-level balanced nand formulas, each of which
+evaluates to b ∈ {0, 1}, is Ω(td(k+1)/2 ) for b = 0 and Ω(tdk/2 ) for b = 1.
+
+5
+
+Open questions
+
+We have described a nearly optimal quantum algorithm for certifying the value of a regular, balanced
+nand formula. This leaves several open questions:
+• For constant-degree formulas, there is a logarithmic gap between our lower and upper bounds.
+Is it possible to improve the lower bound or the algorithm (or both)?
+√
+• Since a certificate can be used to verify the value of a formula with zero error in only O( n)
+queries, our result shows in particular that the zero-error quantum query complexity of evaluating a d-regular, k-level balanced nand formula is O(k 2 d(k+1)/2 ). However, the best known
+lower bound is Ω(dk/2 ), from the bounded-error case. Is there a faster quantum algorithm for
+evaluating a formula with zero error that does not work by producing a certificate? (More
+generally, the relationship between bounded- and zero-error quantum query complexity is
+poorly understood.)
+• We have restricted our attention to regular, balanced formulas. What is the quantum query
+complexity of certifying an arbitrary nand formula? Of course, we can apply a similar
+recursive strategy to unbalanced formulas, but in general, it is not clear how Procedure A1
+should select a 0-subtree, since some subtrees may require more queries to certify than others.
+
+7
+
+Acknowledgments
+We thank Harry Buhrman and Rahul Jain for helpful discussions. We also thank Robin Kothari
+for pointing out that Theorem 1 only applies for k > 1. AA was supported by University of
+Latvia research grant ZP01-100 and a Marie Curie International Reintegration Grant (IRG). AMC
+received support from MITACS, NSERC, and the US ARO/DTO.
+
+References
+[1] S. Aaronson, Quantum certificate complexity, Journal of Computer and System Sciences 74 (2008), no. 3, 313-322,
+available at quant-ph/0210020. Preliminary version in CCC 2003.
+[2] A. Ambainis, Quantum lower bounds by quantum arguments, Journal of Computer and System Sciences 64
+(2002), no. 4, 750–767, available at quant-ph/0002066. Preliminary version in STOC 2000.
+[3]
+
+, A new quantum lower bound method, with an application to strong direct product theorem for quantum
+search, quant-ph/0508200.
+
+[4] A. Ambainis, A. M. Childs, B. W. Reichardt, R. Špalek, and S. Zhang, Any AND-OR formula of size N can be
+evaluated in time N 1/2+o(1) on a quantum computer, Proc. 48th IEEE Symposium on Foundations of Computer
+Science, 2007, pp. 363–372. Merged version of quant-ph/0703015 and arXiv:0704.3628.
+[5] H. Barnum and M. Saks, A lower bound on the quantum query complexity of read-once functions, Journal of
+Computer and System Sciences 69 (2004), no. 2, 244–258, available at quant-ph/0201007.
+[6] H. Barnum, M. Saks, and M. Szegedy, Quantum query complexity and semidefinite programming, Proc. 18th
+IEEE Conference on Computational Complexity, 2003, pp. 179–193.
+[7] C. H. Bennett, E. Bernstein, G. Brassard, and U. Vazirani, Strengths and weaknesses of quantum computing,
+SIAM Journal on Computing 26 (1997), 1510–1523, available at quant-ph/9701001.
+[8] H. Buhrman, R. Cleve, and A. Wigderson, Quantum vs. classical communication and computation, Proc. 30th
+ACM Symposium on Theory of Computing, 1998, pp. 63–68, available at quant-ph/9802040.
+[9] H. Buhrman, R. Cleve, R. de Wolf, and C. Zalka, Bounds for small-error and zero-error quantum algorithms,
+Proc. 40th IEEE Symposium on Foundations of Computer Science, 1999, pp. 358–368, available at cs/9904019.
+[10] A. M. Childs, R. Cleve, S. P. Jordan, and D. Yeung, Discrete-query quantum algorithm for NAND trees,
+quant-ph/0702160.
+[11] E. Farhi, J. Goldstone, and S. Gutmann, A quantum algorithm for the Hamiltonian NAND tree, Theory of
+Computing 4 (2008), no. 1, 169–190, available at quant-ph/0702144.
+[12] L. K. Grover, Quantum mechanics helps in searching for a needle in a haystack, Physical Review Letters 79
+(1997), 325–328, available at quant-ph/9706033. Preliminary version in STOC 1996.
+[13] P. Høyer, T. Lee, and R. Špalek, Negative weights make adversaries stronger, Proc. 39th ACM Symposium on
+Theory of Computing, 2007, pp. 526–535.
+[14] P. Høyer, M. Mosca, and R. de Wolf, Quantum search on bounded-error inputs, Proc. 30th International Colloquium on Automata, Languages, and Programming, 2003, pp. 291–299, available at quant-ph/0304052.
+[15] H. Klauck, R. Špalek, and R. de Wolf, Quantum and classical strong direct product theorems and optimal timespace tradeoffs, SIAM Journal on Computing 36 (2007), no. 5, 1472–1493, available at quant-ph/0402123. Preliminary version in FOCS 2004.
+[16] M. Saks and A. Wigderson, Probabilistic boolean decision trees and the complexity of evaluating game trees, Proc.
+27th IEEE Symposium on Foundations of Computer Science, 1986, pp. 29–38.
+[17] M. Santha, On the Monte Carlo Boolean decision tree complexity of read-once formulae, Random Structures and
+Algorithms 6 (1995), no. 1, 75–87.
+[18] M. Snir, Lower bounds on probabilistic linear decision trees, Theoretical Computer Science 38 (1985), 69–82.
+[19] R. Špalek, The multiplicative quantum adversary, Proc. 23rd IEEE Conference on Computational Complexity,
+2008, pp. 237–248, available at quant-ph/0703237.
+[20] R. Špalek and M. Szegedy, All quantum adversary methods are equivalent, Theory of Computing 2 (2006), no. 1,
+1–18, available at quant-ph/0409116. Preliminary version in ICALP 2005.
+
+8
+
+

@@ -1,0 +1,4754 @@
+1
+
+Unequal Error Protection:
+An Information Theoretic Perspective
+
+arXiv:0803.2570v4 [cs.IT] 25 Oct 2009
+
+Shashi Borade Barış Nakiboğlu Lizhong Zheng
+EECS, Massachusetts Institute of Technology
+{ spb , nakib , lizhong } @mit.edu
+Abstract
+An information theoretic framework for unequal error protection is developed in terms of the exponential
+error bounds. The fundamental difference between the bit-wise and message-wise unequal error protection (UEP)
+is demonstrated, for fixed length block codes on DMCs without feedback. Effect of feedback is investigated via
+variable length block codes. It is shown that, feedback results in a significant improvement in both bit-wise and
+message-wise UEP (except the single message case for missed detection). The distinction between false-alarm
+and missed-detection formalizations for message-wise UEP is also considered. All results presented are at rates
+close to capacity.
+
+I. I NTRODUCTION
+Classical theoretical framework for communication [35] assumes that all information is equally important.
+In this framework, the communication system aims to provide a uniform error protection to all messages: any
+particular message being mistaken as any other is viewed to be equally costly. With such uniformity assumptions,
+reliability of a communication scheme is measured by either the average or the worst case probability of error,
+over all possible messages to be transmitted. In information theory literature, a communication scheme is said to
+be reliable if this error probability can be made small. Communication schemes designed with this framework
+turn out to be optimal in sending any source over any channel, provided that long enough codes can be employed.
+This homogeneous view of information motivates the universal interface of “bits” between any source and any
+channel [35], and is often viewed as Shannon’s most significant contribution.
+In many communication scenarios, such as wireless networks, interactive systems, and control applications,
+where uniformly good error protection becomes a luxury; providing such a protection to the entire information
+might be wasteful, if not infeasible. Instead, it is more efficient here to protect a crucial part of information better
+than the rest. For example,
+• In a wireless network, control signals like channel state, power control, and scheduling information are often
+more important than the payload data, and should be protected more carefully. Thus even though the final
+objective is delivering the payload data, the physical layer should provide a better protection to such protocol
+information. Similarly for the Internet, packet headers are more important for delivering the packet and need
+better protection to ensure that the actual data gets through.
+• Another example is transmission of a multiple resolution source code. The coarse resolution needs a better
+protection than the fine resolution so that the user at least obtains some crude reconstruction after bad noise
+realizations.
+• Controlling unstable plants over noisy communication link [33] and compressing unstable sources [34]
+provide more examples where different parts of information need different reliability.
+In contrast with the classical homogeneous view, these examples demonstrate the heterogeneous nature of information. Furthermore the practical need for unequal error protection (UEP) due to this heterogeneity demonstrated
+in these examples is the reason why we need to go beyond the conventional content-blind information processing.
+This research is supported by DARPA ITMANET project and an AFOSR grant FA9550-06-0156. Initial part of this paper was submitted
+to IEEE International Symposium on Information Theory, 2008.
+
+2
+
+Consider a message set M = {1, 2, 3, . . . , 2k } for a block code. Note that members of this set, i.e. “messages”,
+can also be represented by length k strings of information bits, b = [b1 , b2 , . . . bk ]. A block code is composed of
+an encoder which maps the messages, M ∈ M into channel inputs and a decoder which maps channel outputs to
+decoded message, M̂ ∈ M. An error event for a block code is {M̂ 6= M }. In most information theory texts, when
+an error occurs, the entire bit sequence b is rejected. That is, errors in decoding the message and in decoding
+the information bits are treated similarly. We avoid this, and try to figure out what can be achieved by analyzing
+the errors of different subsets of bits separately.
+In the existing formulations of unequal error protection codes [38] in coding theory, the information bits are
+partitioned into subsets, and the decoding errors in different subsets of bits are viewed as different kinds of errors.
+For example, one might want to provide a better protection to one subset of bits by ensuring that errors in these
+bits are less probable than the other bits. We call such problems as “bit-wise UEP”. Previous examples of packet
+headers, multiple resolution codes, etc. belong to this category of UEP.
+However, in some situations, instead of bits one might want to provide a better protection to a subset of
+messages. For example, one might consider embedding a special message in a normal k-bit code, i.e., transmitting
+one of 2k + 1 messages, where the extra message has a special meaning and requires a smaller error probability.
+Note that the error event for the special message is not associated to error in any particular bit or set of bits.
+Instead, it corresponds to a particular bit-sequence (i.e. message) being decoded as some other bit-sequence.
+Borrowing from hypothesis testing, we can define two kinds of errors corresponding to a special message.
+• Missed-detection of a message i occurs when transmitted message M is i and decoded message M̂ is some
+other message j 6= i. Consider a special message indicating some system emergency which is too costly to
+be missed. Clearly, such special messages demand a small missed detection probability. Missed detection
+probability of a message is simply the conditional error probability after its transmission.
+• False-alarm of a message i occurs when transmitted message M is some other message j 6= i and decoded
+message M̂ is i. Consider the reboot message for a remote-controlled system such as a robot or a satellite
+or the “disconnect” message to a cell-phone. Its false-alarm could cause unnecessary shutdowns and other
+system troubles. Such special messages demand small false alarm probability.
+We call such problems as “message-wise UEP”. In conventional framework, every bit is as important as every
+other bit and every message is as important as every other message. In short in conventional framework it is
+assumed that all the information is “created equal”. In such a framework there is no reason to distinguish between
+bit-wise or message wise error probabilities because message-wise error probability is larger than bit-wise error
+probability by an insignificant factor, in terms of exponents. However, in the UEP setting, it is necessary to
+differentiate between message-errors and bit-errors. We will see that in many situations, error probability of
+special bits and messages have behave very differently.
+The main contribution of this paper is a set of results, identifying the performance limits and optimal coding
+strategies, for a variety of UEP scenarios. We focus on a few simplified notions of UEP, most with immediate
+practical applications, and try to illustrate the main insights for them. One can imagine using these UEP strategies
+for embedding protocol information within the actual data. By eliminating a separate control channel, this can
+enhance the overall bandwidth and/or energy efficiency.
+For conceptual clarity, this article focuses exclusively on situations where the data rate is essentially equal
+to the channel capacity. These situation can be motivated by the scenarios where data rate is a crucial system
+resource that can not be compromised. In these situations, no positive error exponent in the conventional sense
+can be achieved. That is, if we aim to protect the entire information uniformly well, neither bit-wise nor messagewise error probabilities can decay exponentially fast with increasing code length. We ask the question then “can
+we make the error probability of a particular bit, or a particular message, decay exponentially fast with block
+length?”
+When we break away from the conventional framework and start to provide better protection to against certain
+kinds of errors, there is no reason to restrict ourselves by assuming that those errors are erroneous decoding of
+some particular bits or missed detections or false alarms associated with some particular messages. A general
+
+3
+
+formulation of UEP could be an arbitrary combination of protection demands against some specific kinds of
+errors. In this general definition of UEP, bit-wise UEP and message-wise UEP are simply two particular ways
+of specifying which kinds of errors are too costly compared to others.
+In the following, we start by specifying the channel model and giving some basic definitions in Section II.
+Then in section III we discuss bit-wise UEP and message-wise UEP for block codes without feedback. Theorem
+1 shows that for data-rates approaching capacity, even a single bit cannot achieve any positive error exponent.
+Thus in bit-wise UEP, the data-rate must back off from capacity for achieving any positive error exponent even
+for a single bit. On the contrary, in message-wise UEP, positive error exponents can be achieved even at capacity.
+We first consider the case when there is only one special message and show that, Theorem 2, optimal (misseddetection) error exponent for the special message is equal to the red-alert exponent, which is defined in section
+III-B. We then consider situations where an exponentially large number of messages are special and each special
+message demands a positive (missed detection) error exponent. (This situation has previously been analyzed
+before in [12], and a result closely related to our has been reported there.) Theorem 3 shows a surprising result
+that these special messages can achieve the same exponent as if all the other (non-special) messages were absent.
+In other words, a capacity achieving code and an error exponent-optimal code below capacity can coexist without
+hurting each other. These results also shed some new light on the structure of capacity achieving codes.
+Insights from the block codes without feedback becomes useful in Section IV where we investigate similar
+problems for variable length block codes with feedback. Feedback together with variable decoding time creates
+some fundamental connections between bit-wise UEP and message-wise UEP. Now even for bit-wise UEP, a
+positive error exponent can be achieved at capacity. Theorem 5 shows that a single special bit can achieve the
+same exponent as a single special message—the red-alert exponent. As the number of special bits increases, the
+achievable exponent for them decays linearly with their rate as shown in Theorem 6. Then Theorem 7 generalizes
+this result to the case when there are multiple levels of specialty—most special, second-most special and so on.
+It uses a strategy similar to onion-peeling and achieves error exponents which are successively refinable over
+multiple layers. For single special message case, however, Theorem 8 shows that feedback does not improve
+the optimal missed detection exponent. The case of exponentially many messages is resolved in Theorem 9.
+Evidently many special messages cannot achieve an exponent higher than that of a single special message, i.e.
+red-alert exponent. However it turns out that the special messages can reach red-alert exponent at rates below
+a certain threshold, as if all the other special messages were absent. Furthermore for the rates above the very
+same threshold, special messages reach the corresponding value of Burnashev’s exponent, as if all the ordinary
+messages were absent.
+Section V then addresses message-wise UEP situations where special messages demand small probability of
+false-alarms instead of missed-detections. It considers the case of fixed length block codes with out feedback
+as well as variable length block codes with feedback. This discussion for false-alarms was postponed from
+earlier sections to avoid confusion with the missed-detection results in earlier sections. Some future directions
+are discussed briefly in Section VI.
+After discussing each theorem, we will provide a brief description of the optimal strategy, but refrain from
+detailed technical discussions. Proofs can be found in later sections. In section VII and section VIII we will
+present the proofs of the results in Section III, on block codes without feedback, and Section IV, on variable
+length block codes with feedback, respectively. Lastly in Section IX we discuss the proofs for the false-alarm
+results of Section V. Before going into the presentation of our work let us give a very brief overview of the
+previous work on the problem, in different fields.
+A. Previous Work and Contribution
+The simplest method of unequal error protection is to allocate different channels for different types of data.
+For example, many wireless systems allocate a separate “control channel”, often with short codes with low
+rate and low spectral efficiency, to transmit control signals with high reliability. The well known Gray code,
+assigning similar bit strings to close by constellation points, can be viewed as UEP: even if there is some error
+
+4
+
+in identifying the transmitted symbol, there is a good chance that some of the bits are correctly received. But
+clearly this approach is far from addressing the problem in any effective way.
+The first systematic consideration of problem in coding theory was within the frame work of linear codes. In
+[24], Masnick and Wolf suggested techniques which protects different parts (bits) of the message against different
+number of channel errors (channel symbol conversions). This frame work has extensively studied over the years
+in [22], [16], [7], [26], [21], [27], [8] and in many others. Later issue is addressed within frame work of Low
+Density Parity Check (LDPC) codes too [39], [29], [30], [32], [31], and [28].
+“Priority encoded transmission” (PET) was suggested by Albenese et.al. [2] as an alternative model of the
+problem, with packet erasures. In this approach guarantees are given not in terms of channel errors but packet
+erasures. Coding and modulation issues are addressed simultaneously in [10]. For wireless channels, [15] analyzes
+this problem in terms of diversity-multiplexing trade-offs.
+In contrast with above mentioned work, we pose and address the problem within the information theoretic
+frame work. We work with the error probabilities and refrain from making assumptions about the particular
+block code used while proving our converse results. This is the main difference between our approach and the
+prevailing approach within the coding theory community.
+In [3], Bassalygo et. al. considered the error correcting codes whose messages are composed of two group
+of bits, each of which requires different level of protection against channel errors and provided inner and outer
+bounds to the achievable performance, in terms of hamming distances and rates. Unlike other works within
+coding theory frame work, they do not make any assumption about the code. Thus their results can indeed be
+reinterpreted in our framework as a result for bit wise UEP, on binary symmetric channels.
+Some of the the UEP problems have already been investigated within the framework of information theory
+too. Csiszár studied message wise UEP with many messages in [12]. Moreover results in [12] are not restricted
+to the rates close to capacity, like ours. Also messages wise UEP with single special message was dealt with in
+[23] by Kudryashov. In [23], an UEP code with single special message is used as a subcode within a variable
+delay communication scheme. The scheme proposed in [23] for the single special message case is a key building
+block in many of the results in section IV. However the optimality of the scheme was not proved in [23]. We
+show that it is indeed optimal.
+The main contribution of the current work is the proposed frame work for UEP problems within information
+theory. In addition to the particular results presented on different problems and the contrasts demonstrated between
+different scenarios, we believe the proof techniques used in subsections1 VII-A, VIII-B.2 and VIII-D.2 are novel
+and they are promising for the future work in the field.
+II. C HANNEL M ODEL
+
+AND
+
+N OTATION
+
+A. DMC’s and Block Codes
+We consider a discrete memoryless channel (DMC) WY |X , with input alphabet X = {1, 2, . . . , |X |} and output
+alphabet Y = {1, 2, . . . , |Y|}. The conditional distribution of output letter Y when the channel input letter X
+equals i ∈ X is denoted by WY |X (·|i).
+Pr [Y = j| X = i] = WY |X (j|i)
+
+∀i ∈ X , ∀j ∈ Y.
+
+We assume that all the entries of the channel transition matrix are positive, that is, every output letter is reachable
+from every input letter. This assumption is indeed a crucial one. Many of the results we present in this paper
+change when there are zero-probability transitions.
+A length n block code without feedback with message set M = {1, 2, . . . , |M|} is composed of two mappings,
+encoder mapping and decoder mapping. Encoder mapping assigns a length n codeword,2
+∆
+
+x̄n (k) = (x̄1 (k), x̄2 (k) · · · , x̄n (k))
+1
+
+∀k ∈ M
+
+The key idea in subsection VIII-B.2 is a generalization of the approach presented in [4].
+Unless mentioned otherwise, small letters (e.g. x) denote a particular value of the corresponding random variable denoted in capital
+letters (e.g. X).
+2
+
+5
+
+where x̄t (k) denotes the input at time t for message k. Decoder mapping, M̂ , assigns a message to each possible
+channel output sequence, i.e. M̂ : Y n → M.
+At time zero, the transmitter is given the message M , which is chosen from M according to a uniform
+distribution. In the following n time units, it sends the corresponding codeword. After observing Y n , receiver
+decodes a message. The error probability Pe and rate R of the code is given by
+h
+i
+Pe , Pr M̂ 6= M
+and
+R , ln |M|
+n .
+B. Different Kinds of Errors
+While discussing message-wise UEP, we consider the conditional error probability for a particular message
+i ∈ M,
+
+h
+i
+
+Pr M̂ 6= i M = i .
+
+Recall that this is the same as the missed detection probability for message i.
+On the other hand when we are talking about bit-wise UEP, we consider message sets that are of the form
+M = M1 × M2 . In such cases message M is composed of two submessages, M = (M1 , M2 ). First submessage
+M1 corresponds to the high-priority bits while second submessage M2 corresponds to the low-priority bits. The
+uniform choice of M from M, implies the uniform and independent choice of M1 and M2 from M1 and M2
+respectively. Error probability of a submessage Mj is given by
+i
+h
+j = 1, 2
+Pr M̂j 6= Mj
+
+Note that the overall message M is decoded incorrectly when
+h either M
+i 1 or M2 or both are decoded incorrectly.
+The goal of bit-wise UEP is to achieve best possible Pr M̂1 6= M1 while ensuring a reasonably small Pe =
+h
+i
+Pr M̂ 6= M .
+C. Reliable Code Sequences
+
+We focus on systems where reliable communication is achieved in order to find exponentially tight bounds for
+error probabilities of special parts of information. We use the notion of code-sequences to simplify our discussion.
+A sequence of codes indexed by their block-lengths is called reliable if
+lim Pe (n) = 0
+
+n→∞
+
+For any reliable code-sequence Q, the rate RQ is given by
+RQ , lim inf
+n→∞
+
+ln |M(n) |
+n
+
+The (conventional) error exponent of a reliable sequence is then
+EQ , lim inf
+n→∞
+
+− ln Pe (n)
+n
+
+.
+Thus the number of messages in Q is3 = enRQ and their average error probability decays like e−nEQ with block
+length. Now we can define error exponent E(R) in the conventional sense, which is equivalent to the ones given
+in [20], [36], [13], [17], [25].
+3
+
+.
+The = sign denotes equality in the exponential sense. For a sequence a(n) ,
+ln a(n)
+.
+a(n) = enF ⇔ F = lim inf
+n→∞
+n
+
+6
+
+Definition 1: For any R ≤ C the error exponent E(R) is defined as
+∆
+
+E(R) =
+
+sup EQ
+
+Q:RQ ≥R
+
+As mentioned previously, we are interested in UEP when operating at capacity. We already know, [36], that
+E(C) = 0, i.e. the overall error probability cannot decay exponentially at capacity. In the following sections,
+we show how certain parts of information can still achieve a positive exponent at capacity. In doing that, we
+are focusing only on the reliable sequences whose rates are equal to C. We call such reliable code sequences as
+capacity-achieving sequences.
+Through out the text we denote Kullback-Leibler (KL) divergence between two distributions αX (·) and βX (·)
+as D (αX (·)k βX (·)).
+X
+(i)
+D (αX (·)k βX (·)) =
+αX (i) ln αβXX (i)
+i∈X
+
+Similarly conditional KL divergence between VY |X (·|·) and WY |X (·|·) under PX (·) is given by
+X
+
+
+ X
+V
+(j|i)
+D VY |X (·|X) WY |X (·|X) PX =
+PX (i)
+VY |X (j|i) ln WYY|X
+|X (j|i)
+i∈X
+
+j∈Y
+
+The output distribution that achieves the capacity is denoted by PY∗ and a corresponding input distribution is
+denoted by PX∗ .
+III. UEP
+
+AT
+
+C APACITY: B LOCK C ODES
+
+WITHOUT
+
+F EEDBACK
+
+A. Special bit
+We first address the situation where one particular bit (say the first) out of the total log2 |M| bits is a special
+bit—it needs a much better error protection than the overall information. The error probability of the special bit is
+required to decay as fast as possible while ensuring reliable communication at capacity, for the overall code. The
+single special bit is denoted by M1 where M1 = {0, 1} and over all message M is of the form M = (M1 , M2 )
+where M = M1 × M2 . The optimal error exponent Eb for the special bit is then defined as follows4 .
+(n)
+Definition 2: For a capacity-achieving sequence Q with message sets M(n) = M1 ×M2 where M1 = {0, 1},
+the special bit error exponent is defined as
+Eb ,Q , lim inf
+n→∞
+
+− ln Pr
+
+(n)
+
+[M̂1 6=M1 ]
+
+n
+
+Then Eb is defined
+h as Eb ,
+i supQ Eb ,Q .
+.
+(n)
+Thus if Pr
+M̂1 6= M1 = exp(−nEb ,Q ) for a reliable sequence Q, then Eb is the supremum of Eb ,Q over
+all capacity-achieving Q’s.
+Since E(C) = 0, it is clear that the entire information cannot achieve any positive error exponent at capacity.
+However, it is not clear whether a single special bit can steal a positive error exponent Eb at capacity.
+Theorem 1:
+Eb = 0
+This implies that, if we want the error probability of the messages to vanish with increasing block length and
+the error probability of at least one of the bits to decay with a positive exponent with block length, the rate of
+the code sequence should be strictly smaller than the capacity.
+Proof of the theorem is heavy in calculations, but the main idea behind is the “blowing up lemma” [13].
+Conventionally, this lemma is only used for strong converses for various capacity theorems. It is also worth
+mentioning that the conventional converse techniques like Fano’s inequality are not sufficient to prove this result.
+4
+Appendix A discusses a different but equivalent type of definition and shows why it is equivalent to this one. These two types of
+definitions are equivalent for all the UEP exponents discussed in this paper.
+
+7
+
+M̂ = 0
+
+M̂ = 1
+
+Fig. 1.
+
+Splitting the output space into 2 distant enough clusters.
+
+Intuitive interpretation: Let the shaded balls in Fig. 1 denote the minimal decoding regions of the messages.
+These decoding regions ensure reliable communication, they are essentially the typical noise-balls ([11]) around
+codewords. The decoding regions on the left of the thick line corresponds to M̂1 = 1 and those on the right
+correspond to the same when M̂1 = 0. Each of these halves includes half of the decoding regions. Intuitively, the
+blowing up lemma implies that if we try to add slight extra thickness to the left clusters in Figure 1, it blows up
+to occupy almost all the output space. This strange phenomenon in high dimensional spaces leaves no room for
+the right cluster to fit. Infeasibility of adding even slight extra thickness implies zero error exponent the special bit.
+
+B. Special message
+.
+Now consider situations where one particular message (say M = 1) out of the = enC total messages is a special
+message—it needs a superior error protection. The missed detection probability for this ‘emergency’ message
+needs to be minimized. The best missed detection exponent Emd is defined as follows.5
+Definition 3: For a capacity-achieving sequence Q, missed detection exponent is defined as
+Emd ,Q , lim inf
+n→∞
+
+− ln Pr
+
+(n)
+
+[M̂ 6=1|M =1]
+n
+
+.
+
+Then Emd is defined as Emd , supQ Emd ,Q .
+Compare this with the situation where we aim to protect all the messages uniformly well. If all the messages
+demand equally good missed detection exponent, then no positive exponent is achievable at capacity. This follows
+from the earlier discussion about E(C) = 0. Below theorem shows the improvement in this exponent if we only
+demand it for a single message instead of all.
+Definition 4: The parameter C̃ is defined6 as the red-alert exponent of a channel.
+
+C̃ , max D PY∗ (·)k WY |X (·|i)
+i∈X
+
+We will denote the input letter achieving above maximum by xr .
+Theorem 2:
+Emd = C̃.
+
+˛
+˛
+h
+i
+h
+i
+˛
+˛
+Note that the definition obtained by replacing Pr (n) M̂ 6= 1˛ M = 1 by minj Pr (k) M̂ 6= j ˛ M = j is equivalent to the one given
+above, since we are taking the supremum over Q anyway. In short, the message j with smallest conditional error probability could always
+be relabeled as message 1.
+6
+Authors would like to thank Krishnan Eswaran of UC Berkeley for suggesting this name.
+5
+
+8
+
+Recall that Karush-Kuhn-Tucker (KKT) conditions for achieving capacity imply the following expression for
+capacity, [20, Theorem 4.5.1].
+
+
+C = max D WY |X (·|i) PY∗ (·)
+i∈X
+
+Note that simply switching the arguments of KL divergence within the maximization for C, gives us the expression
+for C̃. The capacity C represents the best possible data-rate over a channel, whereas red-alert exponent C̃ represents
+the best possible protection achievable for a message at capacity.
+It is worth mentioning here the “very noisy” channel in [20]. In
+[6], the KL divergence
+ this formulation
+
+is symmetric, which implies D PY∗ (·)k WY |X (·|i) ≈ D WY |X (·|i) PY∗ (·) . Hence the red-alert exponent and
+capacity become roughly equal. For a symmetric channel like BSC, allinputs can be used as xr . Since the PY∗ is
+the uniform distribution for these channels, C̃ = D PY∗ (·)k WY |X (·|i) for any input letter i. This also happens
+to be the sphere-packing exponent Esp (0) of this channel [36] at rate 0.
+Optimal strategy: Codewords of a capacity achieving code are used for the ordinary messages. Codeword for
+the special message is a repetition sequence of the input letter xr . For all the output sequences special message
+is decoded, except for the output sequences with empirical distribution (type) approximately equal to PY∗ . For
+the output sequences with empirical distribution approximately PY∗ , the decoding scheme of the original capacity
+achieving code is used.
+Indeed Kudryashov [23] had already suggested the encoding scheme described above, as a subcode for his nonblock variable delay coding scheme. However discussion in [23] does not make any claims about the optimality
+of this encoding scheme.
+Intuitive interpretation: Having a large missed detection exponent for the special message corresponds to having
+a large decoding region for the special message. This ensures that when M = 1, i.e. when the special message
+is transmitted, probability of M̂ 6= 1 is exponentially small. In a sense Emd indicates how large the decoding
+.
+region of the special message could be made, while still filling = enC typical noise balls in the remaining space.
+The red region in Fig. 2 denotes such a large region. Note that the actual decoding region of the special message
+is much larger than this illustration, because it consists of all output types except the ones close to PY∗ , whereas
+the ordinary decoding regions only contain the output types close to PY∗ .
+
+Fig. 2.
+
+Avoiding missed-detection
+
+Utility of this result is two folds: first, the optimality of such a simple scheme was not obvious before; second,
+as we will see later protecting a single special message is a key building block for many other problems when
+feedback is available.
+
+9
+
+C. Many special messages
+.
+Now consider the case when instead of a single special message, exponentially many of the total = enC
+(n)
+messages are special. Let Ms ⊆ M(n) denote this set of special messages,
+nr
+M(n)
+s = {1, 2, · · · , ⌈e ⌉}.
+
+The best missed detection exponent, achievable simultaneously for all of the special messages, is denoted by
+Emd (r).
+Definition 5: For a capacity-achieving sequence Q, the missed detection exponent achieved on sequence of
+subsets Ms is defined as
+− ln max Pr (n) [M̂ 6=i|M =i]
+i∈Ms(n)
+.
+Emd ,Q,Ms , lim inf
+n
+n→∞
+
+Then for a given r < C , Emd (r) is defined as, Emd (r) , supQ,Ms Emd ,Q,Ms where maximization is over
+(n)
+ln |Ms |
+= r.
+Ms ’s such that lim inf
+n→∞
+n
+This message wise UEP problem has already been investigated by Csiszár in his paper on joint source-channel
+coding [12]. His analysis allows for multiple sets of special messages each with its own rate and an overall rate
+that can be smaller than the capacity.7
+.
+Essentially, Emd (r) is the best value for which missed detection probability of every special message is =
+exp(−nEmd (r)) or smaller. Note that if the only messages in the code are these ⌈enr ⌉ special messages (instead
+.
+of |M(n) | = enC total messages), their best missed detection exponent equals the classical error exponent E(r)
+discussed earlier.
+Theorem 3:
+Emd (r) = E(r) ∀ r ∈ [0, C).
+Thus we can communicate reliably at capacity and still protect the special messages as if we are only
+communicating the special messages. Note that the classical error exponent E(r) is yet unknown for the rates
+below critical rate (except zero rate). Nonetheless, this theorem says that whatever E(r) can be achieved for ⌈enr ⌉
+.
+messages when they are by themselves in the codebook, can still be achieved when there are = enC additional
+ordinary messages requiring reliable communication.
+Optimal strategy: Start with an optimal code-book for ⌈enr ⌉ messages which achieves the error exponent E(r).
+These codewords are used for the special messages. Now the ordinary codewords are added using random coding.
+The ordinary codewords which land close to a special codeword may be discarded without essentially any effect
+on the rate of communication.
+Decoder uses a two-stage decoding rule, in first stage of which it decides whether or not a special message was
+sent. If the received sequence is close to one or more of the special codewords, receiver decides that a special
+message was sent else it decides an ordinary message was sent. In the second stage, receiver employs an ML
+decoding either among the ordinary messages or the among the special messages depending on its decision in
+the first stage.
+The overall missed detection exponent Emd (r) is bottle-necked by the second stage errors. It is because the first
+stage error exponent is essentially the sphere-packing exponent Esp (r), which is never smaller than the second
+stage error exponent E(r).
+Intuitive interpretation: This means that we can start with a code of ⌈enr ⌉ messages, where the decoding
+regions are large enough to provide a missed detection exponent of E(r). Consider the balls around each codeword
+with sphere-packing radius (see Fig. 3(a)). For each message, the probability of going outside its ball decays
+exponentially with the sphere-packing exponent. Although, these ⌈enr ⌉ balls fill up most of the output space,
+7
+
+Authors would like to thank Pulkit Grover of UC Berkeley for pointing out this closely related work, [12]
+
+10
+
+.
+there are still some cavities left between them. These small cavities can still accommodate = enC typical noise
+balls for the ordinary messages (see Fig. 3(b)), which are much smaller than the original ⌈enr ⌉ balls. This is
+analogous to filling sand particles in a box full of large boulders. This theorem is like saying that the number of
+sand particles remains unaffected (in terms of the exponent) in spite of the large boulders.
+
+(a) Exponent optimal code
+Fig. 3.
+
+(b) Achieving capacity
+
+“There is always room for capacity”
+
+D. Allowing erasures
+In some situations, a decoder may be allowed declare an erasure when it is not sure about the transmitted
+message. These erasure events are not counted as errors and are usually followed by a retransmission using a
+decision feedback protocol like Hybrid-ARQ. This subsection extends the earlier result for Emd (r) to the cases
+when such erasures are allowed.
+In decoding with erasures, in addition to the message set M, the decoder can map the received sequence Y n
+to a virtual message called “erasure”. Let Perasure denote the average erasure probability of a code.
+h
+i
+Perasure = Pr M̂ = erasure
+
+Previously when there was no erasures, errors were not detected. For errors and erasures decoding, erasures are
+detected errors, the rest of the errors are undetected errors and Pe denotes the undetected error probability. Thus
+average and conditional (undetected) error probabilities are given by
+
+h
+i
+h
+i
+
+Pe = Pr M̂ 6= M , M̂ 6= erasure
+and Pe (i) = Pr M̂ 6= M , M̂ 6= erasure M = i
+
+An infinite sequence Q of block codes with errors and erasures decoding is reliable, if its average error probability
+and average erasure probability, both vanish with n.
+lim Pe (n) = 0
+
+n→∞
+
+and
+
+lim Perasure (n) = 0
+
+n→∞
+
+If the erasure probability is small, then average number of retransmissions needed is also small. Hence this
+condition of vanishingly small Perasure (n) ensures that the effective data-rate of a decision feedback protocol
+remains unchanged in spite of retransmissions. We again restrict ourselves to reliable sequences whose rate equal
+C.
+We could redefine all previous exponents for decision-feedback (df) scenarios, i.e. for reliable codes with erasure
+decoding. But resulting exponents do not change with the provision of erasures with vanishing probability for
+single bit or single message problems, i.e. decision feedback protocols such as Hybrid-ARQ does not improve
+Eb or Emd . Thus we only discuss the decision feedback version of Emd (r).
+
+11
+
+Definition 6: For a capacity-achieving sequence with erasures, Q, the missed detection exponent achieved on
+sequence of subsets Ms is defined as
+df
+Emd
+,Q (r)
+
+, lim inf
+n→∞
+
+− ln max
+
+i∈Ms(n)
+
+Pr
+
+(n)
+
+[M̂ 6=i,M̂ 6=erasure|M =i]
+n
+
+.
+
+df
+df
+Then for a given r < C , Emd
+,Q (r) is defined as, Emd ,Q (r) , supQ,Ms Emd ,Q,Ms where maximization is over
+(n)
+
+ln |Ms |
+= r.
+Ms ’s such that lim inf
+n→∞
+n
+Next theorem shows allowing erasures increases the missed-detection exponent for r below critical rate, on
+symmetric channels.
+Theorem 4: For symmetric channels
+df
+Emd
+(r) ≥ Esp (r) ∀ r ∈ [0, C).
+
+Coding strategy is similar to the no-erasure case. We first start with an erasure code for ⌈enr ⌉ messages like
+the one in [18]. Then add randomly generated ordinary codewords to it. Again a two-stage decoding is performed
+where the first stage decides between the set of ordinary codewords and the set of special codewords using a
+threshold distance. If this first stage chooses special codewords, the second stage applies the decoding rule in
+[18] amongst special codewords. Otherwise, the second stage uses the ML decoding among ordinary codewords.
+df
+The overall missed detection exponent Emd
+(r) is bottle-necked by the first stage errors. It is because the firststage error exponent Esp (r) is smaller than the second stage error exponent Esp (r) + C − r . This is in contrast
+with the case without erasures.
+IV. UEP
+
+AT
+
+C APACITY: VARIABLE L ENGTH B LOCK C ODES
+
+WITH
+
+F EEDBACK
+
+In the last section, we analyzed bit wise and message wise UEP problems for fixed length block codes
+(without feedback) operating at capacity. In this section, we will revisit the same problems for variable length
+block codes with perfect feedback, operating at capacity. Before going into the discussion of the problems, let
+us recall variable length block codes with feedback briefly.
+A variable length block code with feedback, is composed of a coding algorithm and a decoding rule. Decoding
+rule determines the decoding time and the message that is decoded then. Possible observations of the receiver
+can be seen as leaves of |Y|-ary tree, as in [4]. In this tree, all nodes at length 1 from the root denote all |Y|
+possible outputs at time t = 1. All non-leaf nodes among these split into further |Y| branches in the next time
+t = 2 and the branching of the non-leaf nodes continue like this ever after. Each node of depth t in this tree
+corresponds to a particular sequence, y t , i.e. a history of outputs until time t. The parent of node y t is its prefix
+y t−1 . Leaves of this tree form a prefix free source code, because decision to stop for decoding has to be a casual
+event. In other words the event {τ = t} should be measurable in the σ -field generated by Y t . In addition we
+have Pr [τ < ∞] = 1 thus decoding time τ is Markov stopping time with respect to receivers observation. The
+coding algorithm on the other hand assigns an input letter, Xt+1 (y t ; i), to each message, i ∈ M, at each non-leaf
+node, y t , of this tree. The encoder stops transmission of a message when a leaf is reached i.e. when the decoding
+is complete.
+Codes we consider are block codes in the sense that transmission of each message (packet) starts only after
+the transmission of the previous one ends. The error probability and rate of the code are simply given by
+h
+i
+M
+Pe = Pr M̂ 6= M
+and,
+R = ln
+E[τ ]
+
+A more thorough discussion of variable length block codes with feedback can be found in [9] and [4].
+
+12
+
+Earlier discussion in Section II-B about different kinds of errors is still valid as is but we need to slightly
+modify our discussion about the reliable sequences. A reliable sequence of variable length block codes with
+feedback, Q, is any countably infinite collection of codes indexed by integers, such that
+lim Pe (k) = 0
+
+k→∞
+
+In the rate and exponent definitions for reliable sequences, we replace block-length n by the expected decoding
+time E [τ ]. Then a capacity achieving sequence with feedback is a reliable sequence of variable length block
+codes with feedback whose rate is C
+It is worth noting the importance of our assumption that all the entries of the transition probability matrix,
+WY |X are positive. For any channel with a WY |X which has one or more zero probability transitions, it is possible
+to have error free codes operating at capacity, [9]. Thus all the exponents discussed below are infinite for DMCs
+with one or more zero probability transitions.
+A. Special bit
+(k)
+
+Let us consider a capacity achieving sequence Q whose message sets are of the form M(k) = M1 × M2
+where M1 = {0, 1}. Then the error exponent of the M1 , i.e., the initial bit, is defined as follows.
+Definition 7: For a capacity achieving sequence with feedback, Q, with message sets M(k) of the form
+(k)
+M(k) = M1 × M2 where M1 = {0, 1}, the special bit error exponent is defined as
+− ln Pr (n) [M̂1 6=M1 ]
+E[τ (k) ]
+k→∞
+
+Ebf ,Q , lim inf
+
+Then Ebf is defined as Ebf , supQ Ebf ,Q
+Theorem 5:
+Ebf = C̃.
+Recall that without feedback, even a single bit could not achieve any positive error exponent at capacity, Theorem
+1. But feedback together with variable decoding time connects the message wise UEP and the bit wise UEP and
+results in a positive exponent for bit wise UEP. Below described strategy show how schemes for protecting a
+special message can be used to protect a special bit.
+√
+Optimal strategy: We use a length (k + k) fixed length block code with errors and erasures decoding
+as a
+√
+building block for our code. Transmitter first transmits M1 using a short repetition code of length k. If the
+tentative decision about M1 , M̃1, is correct after this repetition code, transmitter sends M2 with a length k capacity
+achieving code. If M̃1 is incorrect after the repetition code, transmitter sends the symbol xr for k time units where
+√
+
+xr is the input letter i maximizing the D PY∗ (·)k WY |X (·|i) . If the output sequence in the second phase, Y√ k+k ,
+k+1
+is not a typical sequence of PY∗ , an erasure is declared for the block. And the same message is retransmitted by
+repeating the same strategy afresh. Else receiver uses an ML decoder to chose M̂2 and M̂ = (M̃1 , M̂2 ).
+The erasure probability is vanishingly small, as a result the undetected error probability of Mi in fixed length
+erasure code is approximately
+equal to the error probability of Mi in the variable length block code. Furthermore
+√
+E [τ ] is roughly (k + k) despite the retransmissions. A decoding error for M1 happens only when M̃1 6= M1
+and the empirical distribution of the output sequence in the second phase is close to PY∗ . Note that latter event
+.
+happens with probability = e−C̃E[τ ] .
+
+B. Many special bits
+We now analyze the situation where instead of a single special bit, there are approximately E [τ ] r/ ln 2 special
+bits out of the total E [τ ] C/ ln 2 (approx.) bits. Hence we consider the capacity achieving sequences with feedback
+(k)
+(k)
+(k)
+having message sets of the form M(k) = M1 × M2 . Unlike the previous subsection where size of M1
+
+13
+
+was fixed, we now allow its size to vary with the index of the code. We restrict ourselves to the cases where
+|M1(k) |
+lim inf lnE[τ
+= r . This limit gives us the rate of the special bits. It is worth noting at this point that even when
+(k) ]
+k→∞
+
+(k)
+
+the rate r of special bits is zero, the number of special bits might not be bounded, i.e. lim inf |M1 | might be
+k→∞
+
+f
+infinite. The error exponent Ebits
+,Q at a given rate r of special bits is defined as follows,
+Definition 8: For any capacity achieving sequence with feedback Q with the message sets M(k) of the form
+(k)
+(k)
+f
+M(k) = M1 × M2 , rQ and Ebits
+,Q are defined as
+ln |M1(k) |
+(k)
+k→∞ E[τ ]
+
+rQ , lim inf
+f
+f
+Then Ebits
+(r) is defined as Ebits
+(r) ,
+
+− ln Pr (k) [M̂1 6=M1 ]
+E[τ (k) ]
+k→∞
+
+f
+Ebits
+,Q , lim inf
+
+f
+sup Ebits
+,Q
+
+Q:rQ ≥r
+
+Next theorem shows how this exponent decays linearly with rate r of the special bits.
+Theorem 6:
+
+f
+Ebits
+(r) = 1 − Cr C̃
+
+f
+Notice that the exponent Ebits
+(0) = C̃, i.e. it is as high as the exponent in the single bit case, in spite of the
+fact that here the number of bits can be growing to infinity with E [τ ]. This linear trade off between rate and
+reliability reminds us of Burnashev’s result [9].
+
+Optimal strategy: Like the single bit case, we use a fixed length block code with erasures as our building block.
+First transmitter sends M1 using a capacity achieving code of length Cr k. If the tentative decision M̃1 is correct,
+transmitter sends M2 with a capacity achieving code of length (1 − Cr )k. Otherwise transmitter sends the channel
+input xr for (1 − Cr )k time units. If the output sequence in the second phase is not typical with PY∗ an erasure
+is declared and same strategy is repeated afresh. Else receiver uses a ML decoder to decide M̂2 and decodes
+the message M as M̂ = (M̃1 , M̂2 ). A decoding error for M1 happens only when an error happens in the first
+phase and the output sequence in the second phase is typical with PY∗ when the reject codeword is sent. But
+r
+.
+the probability of the later event is = e−(1− C )C̃k . The factor of (1 − Cr ) arises because the relative duration of
+the second phase to the over all communication block. Similar to the single bit case, erasure probability remains
+vanishingly small in this case. Thus not only the expected decoding time of the variable length block code is
+roughly equal to the block length of the fixed length block code, but also its error probabilities are roughly equal
+to the corresponding error probabilities associated with the fixed length block code.
+
+C. Multiple layers of priority
+We can generalize this result to the case when there are multiple levels of priority, where the most important
+layer contains E [τ ] r1 / ln 2 bits, the second-most important layer contains E [τ ] r2 / ln 2 bits and so on. For
+(k)
+(k)
+(k)
+an L-layer situation, message set M(k) is of the form M(k) = M1 × M2 × · · · × ML . We assume
+without loss of generality that the order of importance of the Mi ’s is M1 ≻ M2 ≻ · · · ≻ ML . Hence we
+have Pe M1 ≤ Pe M2 ≤ · · · ≤ Pe ML .
+Then for any L-layer capacity achieving sequence with feedback, we define the error exponent of the sth layer
+as
+− ln Pr (k) [M̂s 6=Ms ]
+f
+Ebits
+.
+,s,Q = lim inf
+E[τ (k) ]
+k→∞
+
+The achievable error exponent region of the L-layered capacity achieving sequences with feedback is the set
+f
+f
+f
+of all achievable exponent vectors (Ebits
+,1,Q , Ebits ,2,Q , . . . , Ebits ,L−1,Q ). The following theorem determines that
+region.
+
+14
+
+Theorem 7: Achievable error exponent region of the L-layered capacity achieving sequences with feedback,
+for rate vector (r1 , r2 , . . . , rL−1 ) is the set of vectors (E1 , E2 , . . . , EL−1 ) satisfying,
+!
+Pi
+r
+j
+j=1
+Ei ≤ 1 −
+C̃
+∀i ∈ {1, 2, . . . , (L − 1)}.
+C
+Note that the least important layer cannot achieve any positive error exponent because we are communicating at
+capacity, i.e. EL = 0.
+Optimal strategy: Transmitter first sends the most important layer, M1 , using a capacity achieving code of length
+r1
+k. If it is decoded correctly, then it sends the next layer with a capacity achieving code of length rC2 k. Else
+C
+it starts sending the input letter xr for not only rC2 k time units but also for all remaining L − 2 phases. Same
+strategy is repeated for M3 , M4 , . . . , ML .
+Once the whole block of channel outputs, Y k , is observed; receivers checks the empirical distribution of the
+output in all of the phases except the first one. If they are all typical with PY∗ receiver uses the tentative decisions
+to decode, M̂ = (M̃1 , M̃2 , . . . M̃L ). If one or more of the output sequences are not typical with PY∗ an erasure is
+declared for the whole block and transmission starts from scratch.
+For each layer i, with the above strategy we can achieve an exponent as if there were only two kinds of bits
+(as in Theorem 6)
+• bits in layer i or in more important layers k < i (i.e. special bits)
+• bits in less important layers (i.e. ordinary bits).
+Hence Theorem 7 does not only specify the optimal performance when there are multiple layers, but also shows
+that the performance we observed in Theorem 6, is successively refinable. Figure 4 shows these simultaneously
+achievable exponents of Theorem 6, for a particular rate vector (r1 , r2 , . . . , rL−1 ).
+
+C )C̃
+r1 +r2
+)C̃
+C
+
+(1 −
+
+(1 −
+(1 −
+
+(1 −
+(1 −
+
+exponent
+6
+C̃ Q
+r1
+
+P3
+
+i=1 ri
+
+P4C
+
+i=1 ri
+
+C
+P5
+
+i=1 ri
+
+C
+
+Q
+
+)C̃
+
+Q
+
+Q
+
+Q
+
+)C̃
+
+Q
+
+)C̃
+r1
+
+Fig. 4.
+
+Q
+
+r2
+
+r3
+
+r4
+
+Q
+
+Q
+
+r5
+
+Q rate
+
+C
+
+Successive refinability for multiple layers of priority, demonstrated on an example with six layers;
+
+P6
+
+i=1
+
+ri = C.
+
+Note that the most important layer can achieve an exponent close to C̃ if its rate is close to zero. As we move
+to the layers with decreasing importance, the achievable error exponent decays gradually.
+D. Special message
+Now consider one particular message, say the first one, which requires small missed-detection probability.
+f
+Similar to the no-feedback case, define Emd
+as its missed-detection exponent at capacity.
+Definition 9: For any capacity achieving sequence with feedback, Q, missed detection exponent is defined as
+f
+Emd
+,Q , lim inf
+k→∞
+
+f
+f
+f
+Then Emd
+is defined as Emd
+, supQ Emd
+,Q .
+
+− ln Pr
+
+[M̂ 6=1|M =1]
+.
+E[τ (k) ]
+
+(k)
+
+15
+
+Theorem 8:
+f
+Emd
+= C̃.
+
+Theorem 2 and 8 implies following corollary,
+f
+Corollary 1: Feedback doesn’t improve the missed detection exponent of a single special message: Emd
+= Emd .
+If red-alert exponent were defined as the best protection of a special message achievable at capacity, then this result
+could have been thought of as an analog the “feedback does not increase capacity” for the red-alert exponent.
+f
+Also note that with feedback, Emd
+for the special message and Ebf for the special bit are equal.
+E. Many special messages
+Now let us consider the problem where the first ⌈eE[τ ]r ⌉ messages are special, i.e. Ms = {1, 2, . . . , ⌈eE[τ ]r ⌉}.
+Unlike previous problems, now we will also impose a uniform expected delay constraint as follows.
+Definition 10: For any reliable variable length block code with feedback,
+Γ ,
+
+maxi∈M E[τ |M =i]
+E[τ ]
+
+A reliable sequence with feedback, Q, is a uniform delay reliable sequence with feedback if and only if
+lim Γ(k) = 1.
+k→∞
+
+This means that the average E [τ | M = i] for every message i is essentially equal to E [τ ] (if not smaller). This
+uniformity constraint reflects a system requirement for ensuring a robust delay performance, which is invariant of
+f
+the transmitted message.8 Let us define the missed-detection exponent Emd
+(r) under this uniform delay constraint.
+Definition 11: For any uniform delay capacity achieving sequence with feedback, Q, the missed detection
+exponent achieved on sequence of subsets Ms is defined as
+f
+Emd
+,Q,Ms
+
+, lim inf
+n→∞
+
+− ln max
+
+[M̂ 6=i|M =i]
+i
+h
+.
+E τ (k)
+(k)
+
+Pr
+
+(k)
+
+i∈Ms
+
+f
+f
+Then for a given r < C , we define Emd
+(r) , supQ,Ms Emd
+,Q,Ms where maximization is over Ms ’s such that
+(k)
+
+ln |Ms |
+
+ = r.
+k→∞ E τ (k)
+The following theorem shows that the special messages can achieve the minimum of the red-alert exponent
+and the Burnashev’s exponent at rate r .
+Theorem 9:
+
+	
+f
+Emd
+(r) = min C̃, (1 − Cr )Dmax , ∀ r < C.
+
+
+where Dmax , max D WY |X (·|i) WY |X (·|j) .
+
+lim inf
+
+i,j∈X
+
+C̃
+)C] each special message achieves the best missed detection exponent C̃ for a single special
+For r ∈ [0, (1 − Dmax
+C̃
+)C, C) special messages achieve
+message, as if the rest of the special messages were absent. For r ∈ [(1 − Dmax
+the Burnashev’s exponent as if the ordinary messages were absent.
+The optimal strategy is based on transmitting a special bit first. This result demonstrates, yet another time,
+how feedback connects bit-wise UEP with message-wise UEP. In the optimal strategy for bit-wise UEP with
+many bits a special message was used, whereas now in message wise UEP with many messages a special bit is
+used. The roles of bits and messages, in two optimal strategies are simply swapped between the two cases.
+
+Optimal strategy: We combine the strategy for achieving C̃ for a special bit and the Yamamoto-Itoh strategy
+for achieving Burnashev’s exponent [40]. In the first phase, a special bit, b, is sent with a repetition code of
+8
+
+Optimal exponents in all previous problems remain unchanged irrespective of this uniform delay constraint.
+
+16
+
+√
+
+k symbols. This is the indicator bit for special messages: it is 1 when a special message is to be sent and 0
+otherwise.
+If b is decoded incorrectly as b̂ = 0, input letter xr is sent for the remaining k time unit. If it is decoded
+correctly as b̂ = 0, then the ordinary message is sent using a codeword from a capacity achieving code. If the
+∗
+output sequence in the second phase is typical with
+√ PY receiver use an ML decoder to chose one of the ordinary
+messages, else an erasure is declared for (k + k) long block.
+If b̂ = 1, then a length k two phase code with errors and erasure decoding, like the one given in [40] by
+Yamamoto and Itoh, is used to send the message. In the communication phase a length Cr k capacity achieving
+code is used to send the message, M , if M ∈ Ms . If M ∈
+/ Ms an arbitrary codeword from the length Cr k
+capacity achieving code is sent. In the control phase, if M ∈ Ms and if it is decoded correctly at the end of
+communication phase, the accept letter xa is sent for (1 − Cr )k time units, else the reject letter, xd , is sent for
+(1 − Cr )k time units. If the empirical distribution in the control phase is typical with WY |X (·|xa ) then special
+message
+√ decoded at the end of the communication phase becomes the final M̂ , else an erasure is declared for
+(k + k) long block.
+Whenever an erasure is declared for the whole block, transmitter and receiver applies above strategy again
+from scratch. This scheme is repeated until a non-erasure decoding is reached.
+
+V. AVOIDING FALSE A LARMS
+In the previous sections while investigating message wise UEP we have only considered the missed detection
+formulation of the problems. In this section we will focus on an alternative formulation of message wise
+UEP problems based on false alarm probabilities.
+A. Block Codes without Feedback
+We first consider the no-feedback case. When hfalse-alarm of ai special message is a critical event, e.g. the
+“reboot” instruction, the false alarm probability Pr M̂ = 1|M 6= 1 for this message should be minimized, rather
+h
+i
+than the missed detection probability Pr M̂ 6= 1|M = 1 .
+Using Bayes’ rule and assuming uniformly chosen messages we get,
+h
+i
+h
+i Pr M̂ = 1, M 6= 1
+Pr M̂ = 1|M 6= 1 =
+Pr [M 6= 1]
+h
+i
+P
+Pr
+M̂
+=
+1|M
+=
+j
+j6=1
+.
+=
+(|M| − 1)
+
+In classical error exponent analysis, [20], the error probability for a given message usually means its missed
+detection probability. However, examples such as the “reboot” message necessitate this notion of false alarm
+probability.
+Definition 12: For a capacity-achieving sequence, Q, such that
+
+h
+i
+
+lim sup Pr (n) M̂ 6= 1 M = 1 = 0,
+n→∞
+
+false alarm exponent is defined as
+
+Efa ,Q , lim inf
+n→∞
+
+Then Efa is defined as Efa , supQ Efa ,Q .
+
+− ln Pr
+
+(n)
+
+[M̂ =1|M 6=1]
+n
+
+.
+
+17
+
+Thus Efa is the best exponential decay rate of false alarm probability with n. Unfortunately we do not have
+the exact expression for Efa . However upper bound given below is sufficient to demonstrate the improvement
+introduced by feedback and variable decoding time.
+Theorem 10:
+Efal ≤ Efa ≤ Efau .
+The upper and lower bounds to the false alarm exponent are given by
+Efal , max
+
+i∈X P
+
+min
+
+j
+
+VY |X :
+∗
+VY |X (·|j)PX
+(j)=WY |X (·|i)
+
+
+
+
+D VY |X (·|X) WY |X (·|X) PX∗
+
+
+
+
+Efau , max D WY |X (·|i) WY |X (·|X) PX∗ .
+i∈X
+
+The maximizers of the optimizations for Efal and Efau are denoted by xfl and xfu
+
+
+
+D VY |X (·|X) WY |X (·|X) PX∗
+Efal =
+min
+P
+
+j
+
+VY |X :
+∗
+(j)=WY |X (·|xfl )
+VY |X (·|j)PX
+
+
+
+
+Efau = D VY |X (·|xfu ) WY |X (·|X) PX∗ .
+
+Strategy to reach lower bound Codeword for the special message M = 1 is a repetition sequence of input letter
+xfl . Its decoding region is the typical ‘noise ball’ around it, the output sequences whose empirical distribution is
+approximately equal to WY |X (·|xfl ). For the ordinary messages, we use a capacity achieving code-book where
+all codewords have the same empirical distribution (approx.) PX∗ . Then for y n whose empirical distribution is
+not in the typical ‘noise ball’ around the special codeword, receiver makes an ML decoding among the ordinary
+codewords.
+Note the contrast between this strategy for achieving Efal and the optimal strategy for achieving Emd . For achieving
+Emd , output sequences of any type other than the ones close to PY∗ were decoded as the special message; whereas
+for achieving Efa , only the output sequences of types that are close to WY |X (·|xfl ) are decoded as the special
+message.
+
+Fig. 5.
+
+Avoiding false-alarm
+
+Intuitive interpretation: A false alarm exponent for the special message corresponds to having the smallest
+possible decoding region for the special message. This ensures that when some ordinary message is transmitted,
+probability of the event {M̂ = 1} is exponentially small. We cannot make it too small though, because when the
+special message is transmitted, the probability of the very same event should be almost one. Hence the decoding
+region of the special message should at least contain the typical noise ball around the special codeword. The
+blue region in Fig. 5 denotes such a region.
+
+18
+
+Note that Efal is larger than channel capacity C due to the convexity of KL divergence.
+
+
+
+D VY |X (·|X) WY |X (·|X) PX∗
+Efal = max
+min
+i∈X P
+
+> max
+
+i∈X P
+
+j
+
+VY |X :
+∗
+VY |X (·|j)PX
+(j)=WY |X (·|i)
+
+min
+
+VY |X :
+∗
+j VY |X (·|j)PX (j)=WY |X (·|i)
+
+D
+
+X
+k
+
+
+
+= max D WY |X (·|i) PY∗ (·)
+i∈X
+
+
+!
+X
+
+P ∗ (k′ )WY |X (·|k′ )
+PX∗ (k)VY |X (·|k)
+ ′ X
+k
+
+=C
+
+where PY∗ denotes the output distribution corresponding to the capacity achieving input distribution PX∗ and the
+last equality follows from KKT condition for achieving capacity we mentioned previously [20, Theorem 4.5.1].
+Now we can compare our result for a special message with the similar result for classical situation where all
+messages are treated equally. It turns out that if every message in a capacity-achieving code demands equally
+good false-alarm exponent, then this uniform exponent cannot be larger than C. This result seems to be directly
+connected with the problem of identification via channels [1]. We can prove the achievability part of their capacity
+theorem using an extension of the achievability part of Efal . Perhaps a new converse of their result is also possible
+using such results. Furthermore we see that reducing the demand of false-alarm exponent to only one message,
+instead of all, enhances it from C to at least Efal .
+B. Variable Length Block Codes with Feedback
+Recall that feedback does not improve the missed-detection exponent for a special message. On the contrary,
+the false-alarm exponent of a special message is improved when feedback is available and variable decoding
+time is allowed. We again restrict to uniform delay capacity achieving sequences with feedback, i.e. capacity
+achieving sequences satisfying lim Γ(k) = 1.
+k→∞
+Definition 13: For a uniform delay capacity-achieving sequence with feedback, Q, such that
+
+h
+i
+
+lim sup Pr (k) M̂ 6= 1 M = 1 = 0,
+k→∞
+
+false alarm exponent is defined as
+
+Efaf ,Q , lim inf
+k→∞
+
+− ln Pr
+
+[M̂ =1|M 6=1]
+.
+E[τ k ]
+
+(k)
+
+Then Efaf is defined as Efaf , supQ Efaf ,Q .
+Theorem 11:
+Efaf = Dmax .
+
+Note that Dmax > Efau . Thus feedback strictly improves the false alarm exponent, Efaf > Efa .
+Optimal strategy: We use
+√ a strategy similar to the one employed in proving Theorem 9 in subsection IV-E. In
+the first phase, a length k code is used to convey whether M = 1 or not, using a special bit b = I{M =1} .
+•
+
+•
+
+If b̂ = 0, a length k capacity achieving code √
+with Emd = C̃ is used. If the decoded message for the length
+k code is 1, an erasure is declared for (k + k) long
+√ block. Else the decoded message of length k code
+becomes the decoded message for the whole (k + k) long block.
+If b̂ = 1,
+– and M = 1, input symbol xa is transmitted for k time units.
+– and M 6= 1, input symbol xd is transmitted for k time units.
+
+19
+√
+
+If the output sequence, Y√ k+k , is typical with WY |X (·|xa ) then M̂ = 1 else an erasure is declared for
+k+1
+√
+(k + k) long block.
+Receiver and transmitter starts from scratch if an erasure is declared at the end of second phase.
+Note that, this strategy simultaneously achieves the optimal missed-detection exponent C̃ and the optimal
+false-alarm exponent Dmax for this special message.
+VI. F UTURE
+
+DIRECTIONS
+
+In this paper we have restricted our investigation of UEP problems to data rates that are essentially equal to
+the channel capacity. Scenarios we have analyzed provides us with a rich class of problems when we consider
+data rates below capacity.
+Most of the UEP problems has a coding theoretic version. In these coding theoretic versions deterministic
+guarantees, in terms of Hamming distances, are demanded instead of the probabilistic guarantees, in terms of
+error exponents. As we have mentioned in section I-A, coding theoretic versions of bit-wise UEP problems have
+been studied for the case of linear codes extensively. But it seems coding theoretic versions of both message-wise
+UEP problems and bit-wise UEP problem for non-linear codes are scarcely investigated [3], [5].
+Throughout this paper, we focused on the channel coding component of communication. However, often times,
+the final objective is to communicate a source within some distortion constraint. Message-wise UEP problem itself
+has first come up within this framework [12]. But the source we are trying to convey can itself be heterogeneous,
+in the sense that some part of its output may demand a smaller distortion than other parts. Understanding optimal
+methods for communicating such sources over noisy channels present many novel joint-source channel coding
+problems.
+At times the final objective of communication is achieving some coordination between various agents [14]. In
+these scenarios channel is used for both communicating data and achieving coordination. A new class of problem
+lends itself to us when we try to figure out the tradeoffs between error exponents of the coordination and data?
+We can also actively use UEP in network protocols. For example, a relay can forward some partial information
+even if it cannot decode everything. This partial information could be characterized in terms of special bits as
+well as special messages. Another example is two-way communication, where UEP can be used for more reliable
+feedback and synchronization.
+Information theoretic understanding of UEP also gives rise to some network optimization problems. With UEP,
+the interface to physical layer is no longer bits. Instead, it is a collection of various levels of error protection.
+The achievable channel resources of reliability and rate need to be efficiently divided amongst these levels, which
+gives rise to many resource allocation problems.
+VII. B LOCK C ODES
+
+WITHOUT
+
+F EEDBACK : P ROOFS
+
+In the following sections, we use the following standard notation for entropy, conditional entropy and mutual
+information,
+X
+H(PX ) =
+PX (j) ln PX1(j)
+j∈X
+
+H(WY |X |PX ) =
+I(P, W ) =
+
+X
+
+j∈X ,k∈Y
+
+X
+
+j∈X ,k∈Y
+
+PX (j)WY |X (k|j) ln WY |X1(k|j)
+PX (j)WY |X (k|j) ln P
+
+i∈X
+
+WY |X (k|j)
+WY |X (k|i)PX (i) .
+
+In addition we denote the decoding region of a message i ∈ M by G(i), i.e.
+G(i) , {y n : M̂ (y n ) = i}.
+
+20
+
+A. Proof of Theorem 1
+Proof:
+We first show that any capacity achieving sequence Q with Eb ,Q can be used to construct another capacity
+E
+achieving sequence, Q′ with Eb ,Q′ = b2,Q , all members of which are fixed composition codes. Then we show
+that Eb ,Q′ = 0 for any capacity achieving sequence, Q′ which only includes fixed composition codes.
+(n)
+Consider a capacity achieving sequence, Q with message sets M(n) = M1 × M2 , where M1 = {0, 1}. As
+4
+a result of Markov inequality, at least 5 |M(n) | of the messages in M(n) satisfy,
+
+h
+i
+h
+i
+
+Pr M̂1 6= M1  M = i ≤ 5 Pr M̂1 6= M1 .
+(1)
+Similarly at least 45 |M(n) | of the messages in M(n) satisfy,
+
+h
+i
+h
+i
+
+Pr M̂ 6= M  M = i ≤ 5 Pr M̂ 6= M .
+
+(2)
+
+1
+|M(n) |
+Thus at least 35 |M(n) | of the messages in M(n) satisfy both (1) and (2). Consequently at least 10
+messages are of the form (0, M2 ) and satisfy equations (1) and (2). If we group them according to their empirical
+|M(n) |
+distribution at least one of the groups will have more than 10(n+1)
+|X | messages because the number of different
+(n)
+
+|M |
+empirical distributions for elements of X n is less than (n + 1)|X | . We keep the first 10(n+1)
+|X | codewords of this
+′
+most populous type, denote them by x̄A (·) and throw away all of other codeword corresponding to the messages
+of the form (0, M2 ). We do the same for the messages of the form M = (1, M2 ) and denote corresponding
+codewords by x̄′B (·).
+Thus we have a length n code with message set M′ of the form M′ = M1 × M′2 where M1 = {0, 1} and
+|M′2 |
+|M′2 | = 10(n+1)
+|X | . Furthermore,
+
+
+h
+i
+h
+i
+h
+i
+i
+h
+
+
+Pr M̂1′ 6= M1′  M ′ = i ≤ 5 Pr M̂1 6= M1
+Pr M̂ ′ 6= M ′  M ′ = i ≤ 5 Pr M̂ 6= M
+∀i ∈ M′ .
+
+Now let us consider following 2n long block code with message set M′′ = M1 × M′′2 × M′′3 where M′′2 =
+M′′3 = M′2 . If M ′′ = (0, M2′′ , M3′′ ) then x̄(M ′′ ) = x̄′A (M2′′ )x̄′B (M3′′ ). If M ′′ = (1, M2′′ , M3′′ ) then x̄(M ′′ ) =
+x̄′B (M2′′ )x̄′A (M3′′ ). Decoder of this new length 2n code uses the decoder of the original length n code first on y n
+2n . If the concatenation of length n codewords corresponding to the decoded halves, is a codeword
+and then on yn+1
+for an i ∈ M′′ then M̂ ′′ = i. Else an arbitrary message is decoded. One can easily see that the error probability
+of the length 2n code is less than the twice the error probability of the length n code, i.e.
+
+
+
+i
+i
+h
+h
+i
+h
+
+
+
+Pr M̂ ′′ 6= M ′′  M ′′ ≤ 1 − (1 − Pr M̂ ′ 6= M ′  M ′ = M2′′ )(1 − Pr M̂ ′ 6= M ′  M ′ = M3′′ )
+h
+i
+≤ 2 Pr M̂ ′ 6= M ′ .
+
+Furthermore bit error probability of the new code is also at most twice the bit error probability of the length n
+code, i.e.
+
+
+
+h
+i
+h
+i
+h
+i
+
+
+
+Pr M̂1′′ 6= M1′′  M1′′ ≤ 1 − (1 − Pr M̂1′ 6= M1′  M1′ = M1′′ )(1 − Pr M̂1′ 6= M1′  M1′ = M1′′ )
+i
+h
+≤ 2 Pr M̂1′ 6= M1′
+E
+
+Thus using these codes one can obtain a capacity achieving sequence Q′ with Eb ,Q′ = b2,Q all members of
+which are fixed composition codes.
+In the following discussion we focus on capacity achieving sequences, Q’s which are composed of fixed
+composition codes only. We will show that Eb ,Q = 0 for all capacity achieving Q’s with fixed composition
+codes. Consequently the discussion above implies that Eb = 0.
+
+21
+
+We call the empirical distribution of a given output sequence, y n , conditioned on the code word, x̄(i), the
+conditional type of y n given the message i and denote it by V(y n , i). Furthermore we call the set of y n ’s whose
+conditional type with message i is V , the V -shell of i and denote it by TV (i). Similarly we denote the set of
+output sequences y n with the empirical distribution UY , by TUY .
+(n)
+We denote the empirical distribution of the codewords of the nth code of the sequence by PX and the
+(n)
+corresponding output distribution by PY , i.e.
+X
+(n)
+(n)
+WY |X (·|i)PX (i).
+PY (·) =
+i∈X
+
+We simply use PX and PY whenever the value of n is unambiguous from the context. Furthermore PnY (·) stands
+for the probability measure on Y n such that
+PnY
+
+n
+
+(y ) =
+
+n
+Y
+
+PY (yk ).
+
+k=1
+(n)
+
+S0,V is the set of y n ’s for which M̂1 = 0 and V(y n , M̂ (y n )) = V .
+(n)
+
+(3)
+S0,V , {y n : V(y n , M̂ (y n )) = V and M̂ (y n ) = (0, j) for some j ∈ M2 }
+
+
+(n)
+In other words, S0,V is the set of y n ’s such that y n ∈ TV M̂ (y n ) and decoded value of the first bit is zero.
+
+Note that since for each y n ∈ Y n there is a unique M̂ (y n ) and for each y n ∈ Y n and message i ∈ M there is
+(n)
+(n)
+(n)
+(n)
+unique V(y n , i); each y n belongs to a unique S0,V or S1,V , i.e. S0,V ’s and S1,V ’s are disjoint sets that collectively
+cover the set Y n .
+Let us define the typical neighborhood of WY |X as [W ]
+p
+(n)
+(n)
+[W ] , {VY |X : |VY |X (j|i)PX (i) − WY |X (j|i)PX (i)| ≤ 4 1/n ∀i, j}
+(4)
+[
+(n)
+(n)
+(n)
+S0,V . We will establish the following
+Let us denote the union of all S0,V ’s for typical V ’s by S0 =
+inequality later. Let us assume for the moment that it holds.
+
+
+
+(n)
+(n)
+≥ en(R −(C+ǫn )) 21 −
+PnY S0
+
+V ∈[W ]
+|X ||Y|
+√
+8 n
+
+− Pe
+
+
+
+(5)
+
+where lim ǫn = 0.
+n→∞
+As a result of bound given in (5) and the blowing up lemma [13, Ch. 1, Lemma 5.4], we can conclude that
+for any capacity achieving sequence Q, there exists a sequence of (ℓn , ηn ) pairs satisfying lim ηn = 1 and
+ℓn
+n→∞ n
+
+lim
+
+n→∞
+
+= 0 such that
+
+
+
+(n)
+PnY Γℓn (S0 ) ≥ ηn
+
+where Γℓn (A) is the set of all y n ’s which differs from an element of A in at most ℓn places. Clearly one can
+(n)
+repeat the same argument for Γℓn (S1 ) to get,
+
+
+(n)
+PnY Γℓn (S1 ) ≥ ηn .
+
+Consequently,
+
+
+
+
+
+
+
+
+[
+\
+(n)
+(n)
+(n)
+(n)
+(n)
+(n)
+PnY Γℓn (S0 ) Γℓn (S1 ) = PnY Γℓn (S0 ) + PnY Γℓn (S1 ) − PnY Γℓn (S0 ) Γℓn (S1 )
+
+
+\
+(n)
+(n)
+PnY Γℓn (S0 ) Γℓn (S1 ) ≥ 2ηn − 1.
+
+22
+(n)
+
+Note that if y n ∈ Γℓn (S1 ), then there exist at least one element ỹ n ∈ TPY which differs from y n in at most
+(|Y||X |n3/4 + ℓn ) places.9 Thus we can upper bound its probability by,
+(n)
+
+y n ∈ Γℓn (S1 ) ⇒ PnY (y n ) ≤ e−nH(PY )−(|Y||X |n
+
+3/4
+
++ℓn ) ln λ
+
+where λ = mini,j WY |X (j|i). Thus we have
+\
+3/4
+(n)
+(n)
+(6)
+|Γℓn (S0 ) Γℓn (S1 )| ≥ (2ηn − 1)enH(PY )+(|Y||X |n +ℓn ) ln λ .
+(n)
+(n) T
+Note that for any y n ∈ Γℓn (S0 ) Γℓn (S1 ), there exist a ỹ n ∈ TW (i) for an i of the form i = (0, M2 ) which
+n
+3/4
+differs from y in at most (|Y||X |n + ℓn ) places.10 Consequently
+Since M2 =
+as follows,
+
+e
+
+nR(n)
+
+2
+
+Pr [y n | M = i] ≥ e−nH(WY |X |PX )+(|Y||X |n
+
+3/4
+
++ℓn ) ln λ
+
+.
+
+(7)
+
+using equation (7) we can lower bound the probability of y n under the hypothesis M1 = 0
+Pr [y n | M1 = 0] =
+
+X
+
+j∈M2
+
+Pr [y n | M = (0, j)] Pr [M = (0, j)| M1 = 0]
+(n)
+
+≥ 2e−n(H(WY |X |PX )+R
+
+)+(|Y||X |n3/4 +ℓn ) ln λ
+
+.
+
+(8)
+
+Clearly same holds for M1 = 1 too, thus
+(n)
+
+Pr [y n | M1 = 1] ≥ 2e−n(H(WY |X |PX )+R
+
+)+(|Y||X |n3/4+ℓn ) ln λ
+
+.
+
+(9)
+
+Consequently,
+h
+i X
+n
+n
+1
+Pr M̂1 6= M1 ≥
+2 min(Pr [y | M1 = 0] , Pr [y | M1 = 1])
+yn
+
+(a)
+
+≥
+(b)
+
+X
+
+y n ∈Γℓn (S0(n) )
+
+T
+
+(n)
+
+e−n(H(WY |X |PX )+R
+
+)+(|Y||X |n3/4 +ℓn ) ln λ
+
+Γℓn (S1(n) )
+
+≥(2ηn − 1)enH(PY )+(|Y||X |n
+(n)
+
+= (2ηn − 1)en(I(PX ,W )−R
+
+3/4
+
++ℓn ) ln λ −n(H(WY |X |PX )+R(n) )+(|Y||X |n3/4+ℓn ) ln λ
+
+e
+
+)+2(|Y||X |n3/4+ℓn ) ln λ
+
+(10)
+
+where (a) follows from equations (8) and (9) and (b) follows from equation (6).
+Using Fano’s inequality we get,
+I (M ; Y n ) − nR(n) ≥ − ln 2 − nR(n) Pe (n)
+
+n)
+
+(11)
+
+where I (M ; Y is the mutual information between the message M and channel output Y
+upper bound I (M ; Y n ) as follows,
+X
+n
+|i]
+I (M ; Y n ) =
+Pr [i, y n ] ln Pr[y
+Pr[y n ]
+i∈M,y n ∈Y n
+
+=
+
+X
+
+n
+
+Pr [i, y n ] ln QnPr[yPY|i](yk ) −
+k=1
+
+X
+
+= nI(PX , W )
+
+In addition we can
+
+n
+
+]
+Pr [y n ] ln QnPr[y
+PY (yk )
+
+y n ∈Y n
+i∈M,y n ∈Y n
+n
+XX
+(a) X
+W
+(y |x̄ (i))
+1
+≤
+WY |X (yk |x̄k (i)) ln Y |XPY (yk k )k
+|M|
+i∈M
+k=1 yk
+
+(a)
+
+n.
+
+k=1
+
+(12)
+
+9
+BecausePof the integer constraints TPY might actually be an empty set. If so we can make a similar argument for the UY∗ which
+minimizes j |UY (j) − PY (j)|. However this technicality is inconsequential.
+10
+Integer constraints here are inconsequential too.
+
+23
+
+P
+where PY (·) = j∈X WY |X (·)PX (j). Step (a) follows the non-negativity of KL divergence and step (b) follows
+from the fact that all the code words are of type PX (·).
+Using equations (10), (11) and (12) we get
+h
+i
+(n)
+(n)
+3/4
+Pr M̂1 6= M1 ≥ (2ηn − 1)e− ln 2−nR Pe +2(|Y||X |n +ℓn ) ln λ
+
+Thus using lim Pe (n) = 0, lim ηn = 1 and lim
+n→∞
+
+ℓn
+n→∞ n
+
+n→∞
+
+lim
+
+n→∞
+
+= 0 we conclude that,
+
+− ln Pr
+
+(n)
+
+[M̂1 6=M1 ]
+
+=0
+
+n
+
+Now only think left, for proving Eb = 0, is to establish inequality (5). One can write the error probability of the
+nth code of Q as
+X
+X
+1
+(1 − I{M̂ (yn )=i} ) Pr [y n | M = i]
+Pe (n) =
+M
+n
+n
+y ∈Y
+i∈M(n)
+X
+X X
+−nR(n)
+=
+(1 − I{M̂ (yn )=i} )e−n(D(VY |X (·|X)kWY |X (·|X)|PX )+H(VY |X |PX ))
+e
+V
+
+i∈M(n)
+
+=
+
+X
+
+y n ∈TV (i)
+
+(n)
+
+e−n(D(VY |X (·|X)kWY |X (·|X)|PX )+H(VY |X |PX )+R
+
+)
+
+V
+
+=
+
+X
+
+X
+
+i∈M(n)
+−n(D(VY |X (·|X)kWY |X (·|X)|PX )+H(VY |X |PX )+R(n) )
+
+e
+
+X
+
+y n ∈TV
+
+(i)
+
+(1 − I{M̂ (yn )=i} )
+
+(Q0,V + Q1,V )
+
+(13)
+
+V
+
+where Qk,V =
+
+X
+
+X
+
+i=(k,j) y n ∈TV (i)
+j∈M2
+
+(1 − I{M̂ (yn )=i} ) for k = 0, 1.
+
+Note that Qk,V is the sum, over the messages i for which M1 = k, of the number of the elements in TV (i)
+that are not decoded to message i. In a sense it is a measure of the contribution of the V -shells
+ of different
+(n)
+n
+codewords to the error probability. We will use equation (13) to establish lower bounds on PY S0,V ’s.
+(n)
+
+Note that all elements of S0,V have the same probability under PnY (·) and
+
+
+X
+(n)
+(n)
+where ζ =
+PX (x)VY |X (y|x) ln PY1(y) .
+PnY S0,V = |S0,V |e−ζn
+
+(14)
+
+x,y
+
+Note that
+ζ=
+
+X
+x,y
+
+PX (x)VY |X (y|x) ln
+
+WY |X (y|x)
+PY (y)
+
++
+
+X
+x,y
+
+PX (x)VY |X (y|x) ln WY |X1(y|x)
+
+
+
+
+= I(PX , WY |X ) + D VY |X (·|X) WY |X (·|X) PX + H(VY |X |PX )
+X
++
+PX (x)(VY |X (y|x) − WY |X (y|x)) ln
+
+WY |X (y|x)
+PY (y)
+
+x,y
+
+Recall that I(PX , WY |X ) ≤ C and min WY |X (i|j) = λ. Thus using the definition of [WY |X ] given in equation
+i,j
+
+(4) we get,
+
+where ǫn =
+Note that
+
+
+
+
+ζ ≤ C + ǫn + D VY |X (·|X) WY |X (·|X) PX + H(VY |X |PX )
+
+|X ||Y|
+√
+4
+n
+
+∀VY |X ∈ [WY |X ]
+
+(15)
+
+ln λ1 .
+
+(n)
+
+(n)
+
+(n)
+
+|S0,V | = |M2 | · |TV (i) | − Q0,V = 12 |TV (i) |enR
+
+− Q0,V .
+
+(16)
+
+24
+(n)
+
+Recalling that S0,V ’s are disjoint and using equations (14), (15) and (16) we get
+
+
+
+
+X
+(n)
+(n)
+PnY S0
+≥
+PnY S0,V
+V ∈[W ]
+
+≥
+
+X
+
+e−n(C+ǫn )
+
+V ∈[W ]
+
+(a)
+
+(n)
+
+≥ en(R
+
+(n)
+
+= en(R
+(b)
+
+(n)
+
+≥ en(R
+
+
+
+
+
+−(C+ǫn )) 
+−(C+ǫn ))
+
+−(C+ǫn ))
+
+
+
+1
+2 |TV
+
+X
+
+V ∈[W ]
+
+1
+
+
+
+2
+
+1
+2
+
+(n)
+
+(i) |enR
+1
+2 |TV
+
+X
+
+
+
+(i) |e−n(D(VY |X (·|X)kWY |X (·|X)|PX )+H(VY |X |PX )) − Pe 
+
+X
+
+V ∈[W ] y n ∈TV (i)
+
+−
+
+|X√
+||Y|
+8 n
+
+
+− Q0,V e−n(D(VY |X (·|X)kWY |X (·|X)|PX )+H(VY |X |PX ))
+
+− Pe
+
+
+
+
+
+Pr [y n | M = i] − Pe 
+
+where (a) follows the equation (13) and (b) follows from the Chebyshev’s inequality.11
+
+•
+
+B. Proof of Theorem 2
+1) Achievability: Emd ≥ C̃:
+Proof:
+For each block length n, the special message is sent with the length n repetition sequence x̄n (1) = (xr , xr · · · , xr )
+where xr is the input letter satisfying
+
+
+D PY∗ (·)k WY |X (·|xr ) = max D PY∗ (·)k WY |X (·|i) .
+i
+
+The remaining |M| − 1 ordinary codewords are generated randomly and independently of each other using
+capacity achieving input distribution PX∗ i.i.d. over time.
+Let us denote the empirical distribution of a particular output sequence y n by Q(yn ) . The receiver decodes to
+the special message only when the output distribution is not close to PY∗ . Being more precise, the set of output
+sequences close to PY∗ , [PY∗ ], and decoding region of the special message, G(1), are given as follows,
+p
+[PY∗ ] = {PY (·) : kPY (i) − PY∗ (i)k ≤ 4 1/n ∀i ∈ Y}
+G(1) = {y n : Q(yn ) ∈ [PY∗ ]}.
+Since there are at most (n + 1)|Y| different empirical output distribution for elements of Y n we get,
+
+[y n ∈
+/ G(1)| M = 1] ≤ (n + 1)|Y| e−n minQY ∈[PY ] D(QY (·)kWY |X (·|xr ))
+
+(n) n
+/
+=1]
+= D PY∗ (·)k WY |X (·|xr ) = C̃.
+Thus lim − ln Pr [y n∈G(1)|M
+n→∞
+Now the only thing we are left with to prove is that we can have low enough probability for the remaining
+messages. For doing that we will first calculate the average error probability of the following random code
+ensemble.
+Entries of the codebook, other than the ones corresponding to the special message, are generated independently
+using a capacity achieving input distribution PX∗ . Because of the symmetry average error probability is same for
+all i 6= 1 in M. Let us calculate the error probability of the message M = 2.
+Assuming that the second message was transmitted, Pr [y n ∈ G(1)| M = 2] is vanishingly small. It is because,
+the output distribution for the random ensemble for ordinary codewords is i.i.d. PY∗ . Chebyshev’s inequality
+Pr
+
+11
+
+(n)
+
+The claim in (b) is identical to the one in [13][Remark on page 34]
+
+∗
+
+25
+
+p
+4
+guarantees
+that
+probability
+of
+the
+output
+type
+being
+outside
+a
+1/n ball around PY∗ , i.e. [PY∗ ], is of the order
+p
+1/n.
+Assuming that the second message was transmitted, Pr [y n ∈ ∪i>2 G(i)| M = 2] is vanishingly small due to
+the standard random coding argument for achieving capacity [35].
+Thus for any Pe > 0 for all large enough n average error probability of the code ensemble is smaller than Pe
+thus we have at least one code with that Pe . For that code at least half of the codewords have an error probability
+less then 2Pe .
+•
+
+2) Converse: Emd ≤ C̃: In the section VIII-D.2, we will prove that even with feedback and variable decoding
+time, the missed-detection exponent of a single special message is at most C̃. Thus Emd ≤ C̃.
+C. Proof of Theorem 3
+1) Achievability: Emd ≥ E(r):
+Proof:
+Special codewords: At any given block length n, we start with a optimum codebook (say Cspecial ) for ⌈enr ⌉
+messages. Such optimum codebook achieves error exponent E(r) for every message in it.
+h
+i
+.
+Pr M̂ 6= i|M = i = e−nE(r)
+∀i ∈ Ms ≡ {1, 2, · · · , ⌈enr ⌉}
+nr
+
+⌈e ⌉
+Since there are at most (n + 1)|X | different types, there is at least one type TPX which has (1+n)
+|X | or more
+codewords. Throw away all other codewords from Cspecial and lets call the remaining fixed composition codebook
+as Cs′pecial . Codebook Cs′pecial is used for transmitting the special messages.
+As shown in Fig. 3(a), let the noise ball around the codeword for the special message i be Bi . These balls
+need not be disjoint. Let B denote the union of these balls of all special messages.
+[
+Bi
+B=
+i∈Ms
+
+yn
+
+If the output sequence
+∈ B , the first stage of the decoder decides a special message was transmitted. The
+second stage then chooses the ML candidate amongst the messages in Ms .
+Let us define Bi precisely now.
+
+Bi = {y n : V(y n , i) ∈ W(r + ǫ, PX )}
+
+
+
+where W(r + ǫ, PX ) = {VY |X : D VY |X (·|X) WY |X (·|X) PX ≤ Esp (r + ǫ; PX )}. Recall that the spherepacking exponent for input type PX at rate r , Esp (r; PX ) is given by,
+
+
+
+Esp (r; PX ) =
+min
+D VY |X (·|X) WY |X (·|X) PX
+VY |X :I(PX ,VY |X )≤r
+
+Ordinary codewords: The ordinary codewords are generated randomly using a capacity achieving input distribution PX∗ . This is the same as Shannon’s construction for achieving capacity. The random coding construction
+provides a simple way to show that in the cavity B c (complement of B ), we can essentially fit enough typical
+noise-balls to achieve capacity. This avoids the complicated task of carefully choosing the ordinary codewords
+and their decoding regions in the cavity, B c .
+If the output sequence y n ∈ B c , the first stage of the decoder decides an ordinary message was transmitted.
+The second stage then chooses the ML candidate from ordinary codewords.
+Error analysis: First, consider the case when a special codeword x̄n (i) is transmitted. By Stein’s lemma and
+definition of Bi , the probability of y n ∈
+/ Bi has exponent Esp (r + ǫ; PX ). Hence the first stage error exponent is
+at least Esp (r + ǫ; PX ).
+
+26
+
+Assuming correct first stage decoding, the second stage error exponent for special messages equals E(r).
+Hence the effective error exponent for special messages is
+min{E(r), Esp (r + ǫ; PX )}
+
+Since E(r) is at most the sphere-packing exponent Esp (r; PX ), [19], choosing arbitrarily small ǫ ensures that
+missed-detection exponent of each special message equals E(r).
+Now consider the situation of a uniformly chosen ordinary codeword being transmitted. We have to make sure
+that the error probability is vanishingly small now. In this case, the output sequence
+distribution is i.i.d. PY∗ for
+S
+the random coding ensemble. The first stage decoding error happens when y n ∈ Bi . Again by Stein’s lemma,
+this exponent for any particular Bi equals Eo :
+
+
+Eo =
+min
+D VY |X (·|X) PY∗ (·)| PX
+VY |X ∈W(r+ǫ,PX )
+
+(a)
+
+=
+
+(b)
+
+≥
+
+min
+
+I(PX , VY |X ) + D ((P V )Y (·)k PY∗ (·))
+
+min
+
+I(PX , VY |X )
+
+VY |X ∈W(r+ǫ,PX )
+VY |X ∈W(r+ǫ,PX )
+
+(c)
+
+≥r+ǫ
+
+P
+where in (P V )Y in (a) is given by (P V )Y (j) = i PX (i)VY |X (j|i), (b) follows from the non-negativity of the
+KL divergence and (c) follows from the definition of sphere-packing exponent and W(r + ǫ, PX ).
+Applying union bound over the special messages, the probability of first stage decoding error after sending
+.
+an ordinary message is at most = exp(nr − nEo ). We have already shown that Eo ≥ r + ǫ, which ensures that
+.
+probability of first stage decoding error for ordinary messages is at most = e−nǫ for the random coding ensemble.
+Recall that for the random coding ensemble, average error probability of the second-stage decoding also vanishes
+below capacity. To summarize, we have shown these two properties of the random coding ensemble:
+.
+1) Error probability of first stage decoding vanishes as a(n) = exp(−nǫ) with n when a uniformly chosen
+ordinary message is transmitted.
+2) Error probability of second stage decoding (say b(n) ) vanishes with n when a uniformly chosen ordinary
+message is transmitted.
+Since the first error probability is at most 4a(n) for some 3/4 fraction of codes in the random ensemble, and the
+second error probability is at most 4b(n) for some 3/4 fraction, there exists a particular code which satisfies both
+these properties. The overall error probability for ordinary messages is at most 4(a(n) +b(n) ), which vanishes with
+n. We will use this particular code for the ordinary codewords. This de-randomization completes our construction
+of a reliable code for ordinary messages to be combined with the code Cspecial for special messages.
+•
+
+2) Converse: Emd ≤ E(r): The converse argument for this result is obvious. Removing the ordinary messages
+from the code can only improve the error probability of the special messages. Even then, (by definition) the best
+missed detection exponent for the special messages equals E(r).
+D. Proof of Theorem 4
+Let us now address the case with erasures. In this achievability result, the first stage of decoding remains
+unchanged from the no-erasure case.
+Proof:
+We use essentially the same strategy as before. Let us start with a good code for ⌈enr ⌉ messages allowing erasure
+decoding. Forney had shown in [18] that, for symmetric channels an error exponent equal to Esp (r) + C − r
+is achievable while ensuring that erasure probability vanishes with n. We can use that code for these ⌈enr ⌉
+
+27
+
+S
+codewords. As before, for y n ∈ i Bi , the first stage decides a special codeword was sent. Then the second stage
+applies the erasure decoding method in [18] amongst the special codewords.
+With this decoding rule, when a special message is transmitted, error probability of the two-stage decoding is
+bottle-necked by the first stage: its error exponent Esp (r+ǫ) is smaller than that of the second stage (Esp (r)+C−r ).
+By choosing arbitrarily small ǫ, the special messages can achieve Esp (r) as their missed-detection exponent.
+The ordinary codewords are again generated i.i.d. PX∗ . If the first stage decides in favor of the ordinary
+messages, ML decoding is implemented among ordinary codewords. If an ordinary message was transmitted, we
+can ensure a vanishing error probability as before by repeating earlier arguments for no-erasure case.
+•
+
+VIII. VARIABLE L ENGTH B LOCK C ODES
+
+WITH
+
+F EEDBACK : P ROOFS
+
+In this section we will present a more detailed discussion of bit-wise and message wise UEP for variable
+length block codes with feedback by proving the Theorems 5, 6, 7, 8 and 9. In the proofs of converse results we
+need to discuss issues related with the conditional entropy of the messages given the observation of the receiver.
+In those discussion we use the following notation for conditional entropy and conditional mutual information,
+X
+H(M |Y n ) = −
+Pr [M = i| Y n ] ln Pr [M = i| Y n ]
+i∈M
+
+n
+
+ 
+
+I (M ; Yn+1 |Y ) = H(M |Y n ) − E H(M |Y n+1 ) Y n .
+
+It is worth noting that this notation is different from widely used one, which includes a further expectation
+over the the conditioned variable. “H(M |Y n )” in the conventional notation, stands for the E [H(M |Y n )] and
+“H(M |Y n = y n )” stands for H(M |Y n ).
+A. Proof of Theorem 5
+1) Achievability: Ebf ≥ C̃:
+This single special bit exponent is achieved using the missed detection exponent of a single special message,
+indicating a decoding error for the special bit. The decoding error for the bit goes unnoticed when this special
+message is not detected. This shows how feedback connects bit-wise UEP to message-wise UEP in a fundamental
+manner.
+Proof:
+We will prove that Ebf ≥ C̃ by constructing a capacity achieving sequence with feedback, Q, such that Ebf ,Q = C̃.
+For that let Q′ be a capacity achieving sequence such that Emd ,Q′ = C̃. Note that existence of such a Q′ is
+guaranteed as a result of Theorem 2. We first construct a two phase fixed length block code with feedback and
+erasures. Then using this we obtain the kth element of Q.
+x0 and x1 , with distinct output distributions12 is send for
+√In the first phase one of the two input symbols,
+√
+⌈ k⌉ time units depending on M1 . At time ⌈ k⌉ receiver makes tentative decision M̃1 on message M1 . Using
+Chernoff bound it can easily be shown that, [36, Theorem 5]
+h
+i
+√
+where µ > 0
+Pr M̃1 6= M1 ≤ e−µ k
+h
+i
+Actual value of µ, however, is immaterial to us we are merely interested in finding an upper bound on Pr M̃1 6= M1
+which goes to zero as k increases.
+In the second phase transmitter uses the kth member of Q′ . The message in the second phase, M′ , is determined
+by M2 depending on whether M1 is decoded correctly or not at the end of the first phase.
+M̃1 6= M1 ⇒ M′ = 1
+
+M̃1 = M1 and M2 = i ⇒ M′ = i + 1 ∀i
+12
+
+Two input symbols x0 and x1 are such that W (·|x1 ) 6= W (·|x0 )
+
+28
+
+At the end of the second phase decoder decodes M′ using the decoder of Q′ . If the decoded message is one, i.e.
+M̂′ = 1 then receiver declares an erasure, else M̂1 = M̃1 and M̂2 = M̂′ − 1.
+Note that erasure probability of the two phase fixed length block code is upper bounded as
+h
+i
+h
+i
+
+
+
+Pr M̂′ = 1 ≤ Pr M̃1 6= M1 + Pr M′ = 1 M′ 6= 1
+√
+
+≤ e−µ
+
+k
+
++
+
+′
+
+M (k)
+P ′(k)
+M′ (k) −1 e
+
+(17)
+
+where Pe ′(k) is the error probability of the kth member of Q′ .
+Similarly we can upper bound the probabilities of two error events associated with the two phase fixed length
+block code as follows
+h
+i
+Pr M̂1 6= M1 , M̂′ 6= 1 ≤ Pe ′(k) (1)
+(18)
+h
+i
+ˆ ′ 6= 1 ≤ M′ ′ (k) P ′(k) + P ′(k) (1)
+Pr M̂ 6= M , M
+(19)
+e
+M (k) −1 e
+where Pe ′(k) (1) is the conditional error probability of the 1st message in the kth element of Q′ .
+If there is an erasure the transmitter and the receiver will repeat what they have done again, until they get
+ˆ ′ 6= 1. If we sum the probabilities of all the error events, including error events in the possible repetitions we
+M
+get;
+h
+i Pr M̂ 6=M , M̂′ 6=1
+]
+[ 1 1
+(20)
+Pr M̂1 6= M1 =
+1−Pr[M̂′ =1]
+h
+i Pr M̂ 6=M , M̂′ 6=1
+]
+[
+Pr M̂ 6= M =
+(21)
+1−Pr[M̂′ =1]
+Note that expected decoding time of the code is
+
+E [τ ] =
+
+√
+k+⌈ k⌉
+1−Pr[M̂′ =1]
+
+(22)
+
+Using equations (17), (18), (19), (20), (21) and (22) one can conclude that the resulting sequence of variable
+length block codes with feedback, Q, is reliable. Furthermore RQ = C and Ebf ,Q = C̃.
+•
+2) Converse: Ebf ≤ C̃:
+f
+We will use a converse result we have not proved yet, namely converse part of Theorem 8, i.e. Emd
+≤ C̃.
+Proof:
+(k)
+Consider a capacity achieving sequence, Q, with message set sequence M(k) = {0, 1} × M2 . Using Q we
+construct another capacity achieving sequence Q′ with a special message 0, with message set sequence M′ (k) =
+(k)
+f
+f
+f
+f
+f
+{0} ∪ M2 such that Emd
+,Q′ = Eb ,Q . This implies Eb ≤ Emd , which together with Theorem 8, Emd ≤ C̃, gives
+us Ebf ≤ C̃.
+Let us denote the message of Q by M and that of Q′ by M′ . The kth code of Q′ is as follow. At time 0 receiver
+chooses randomly an M1 for kth element of Q and send its choice through feedback channel to transmitter. If
+the message of Q′ is not 0, i.e. M′ 6= 0 then the transmitter uses the codeword for M = (M1 , M′ ) to convey M′ .
+If M′ = 0 receiver pick a M2 with uniform distribution on M2 and uses the code word for M = (1 − M1 , M2 )
+to convey that M′ = 0.
+ˆ ′ = i, if M̂ = (1 − M , i) then
+Receiver makes decoding using the decoder of Q: if M̂ = (M1 , i) then M
+1
+′
+M̂ = 0. One can easily show that expected decoding time and error probability of both of the codes are same.
+Furthermore error probability of M1 in Q is equal to conditional error probability of message M′ = 0 in Q′ thus,
+f
+f
+•
+Emd
+,Q′ = Eb ,Q .
+
+29
+
+B. Proof of Theorem 6
+
+f
+1) Achievability: Ebits
+(r) ≥ 1 − Cr C̃:
+Proof:
+We will construct the capacity achieving sequence with feedback Q using a capacity achieving sequence Q′
+satisfying Emd ,Q′ = C̃, as we did in the proof of theorem 5. We know that such a sequence exists, because of
+Theorem 8.
+For kth member of Q, consider the following two phase errors and erasures code. In the first phase transmitter
+uses the ⌊rk⌋th element of Q′ to convey M1 . Receiver makes a tentative decision M̃1 . In the second phase
+transmitter uses the ⌊(C − r)k⌋th element of Q′ to convey M2 and whether M̃1 = M1 or not, with a mapping
+similar to the one we had in the proof of theorem 5.
+M̃1 6= M1 ⇒ M′ = 1
+
+M̃1 = M1 and M2 = i ⇒ M′ = i + 1 ∀i
+(k)
+
+(k)
+
+(k)
+
+Thus M1 = M′ (⌊rk⌋) and M2 ∪ {|M2 | + 1} = M′ (⌊(C−r)k⌋) . If we apply a decoding algorithm, like the
+one we had in the proof of theorem 5; going through essentially the same analysis
+with proof of Theorem 5, we
+
+f
+r
+C̃
+and
+rQ = r .
+•
+can conclude that Q is a capacity achieving sequence and Ebits
+=
+1
+−
+C
+,Q
+
+f
+2) Converse: Ebits
+(r) ≤ 1 − Cr C̃:
+In establishing the converse we will use a technique that was used previously in [4], together with lemma 1
+which we will prove in the converse part Theorem 8.
+Proof:
+Consider any variable length block code with feedback whose message set M is of the form M = M1 × M2 .
+Let tδ be the first time instance that an i ∈ M1 becomes more likely than (1 − δ) and let τδ = tδ ∧ τ .
+Recall that min WY |X (j|i) = λ consequently definition of τδ implies that min (1 − Pr [M1 = i| y τδ ]) ≥ λδ .
+i,j
+
+i∈M1
+
+Thus using Markov inequality for Pe we get,
+
+Pr [τδ = τ ] ≤
+
+Pe
+λδ
+
+(23)
+
+We use equation (23) to bound expected value of the entropy of first part of the message at time τδ as follows,
+
+
+
+
+E [H(M1 |Y τδ )] = E H(M1 |Y τδ )I{τδ =τ } + E H(M1 |Y τδ )I{τδ <τ }
+≤
+
+Pe
+λδ
+
+ln |M1 | + (ln 2 + δ ln |M1 |)
+
+= ln 2 + ( Pλδe + δ) ln |M1 |)
+
+It has already been established in, [4],
+
+E[H(M )−H(M |Y τδ )]
+E[τδ ]
+
+≤C
+
+(24)
+
+Thus,
+E [τδ ] ≥ C1 (E [H(M ) − H(M1 |Y τδ ) − H(M2 |M1 , Y τδ )])
+≥ C1 (− ln 2 + (1 −
+
+Pe
+λδ
+
+− δ) ln |M1 |)
+
+(25)
+
+Bound given in inequality (25) specifies the time needed for getting a likely candidate, M̃1 . Like it was the case
+in [4], remaining time is the time spend for confirmation. But unlike [4] transmitter needs to convey also M2
+during this time.
+For each realization of Y τδ divide the message set into disjoint subsets, Θ0 , Θ1 , . . . , Θ|M2 | as follows,
+Θ0 = {l : l ∈ M, l = (i, j) where i 6= M̃1 (Y τδ )}
+Θj = {l : l ∈ M, l = (M̃1 (Y τδ ), j)}
+
+∀j ∈ {1, 2, . . . |M2 |}
+
+30
+
+where M̃1 (Y τδ ) is the most likely message given Y τδ . Furthermore let the auxiliary-message, M′ , be the index
+of the set that M belongs to, i.e. M ∈ ΘM′ .
+The decoder for the auxiliary message decodes the index of the decoded message at the decoding time τ , i.e
+M̂′ (Y τ ) = j ⇔ M̂ (Y τ ) ∈ Θj .
+With these definition we have;
+
+
+h
+i
+h
+i
+
+ˆ ′ (Y τ ) 6= M′  Y τδ
+Pr M̂ (Y τ ) 6= M  Y τδ ≥ Pr M
+
+
+i 
+i
+h
+h
+
+
+
+
+Pr M̂1 (Y τ ) 6= M1  Y τδ ≥ Pr M̂′ (Y τ ) 6= 0 Y τδ , M′ = 0 Pr M′ = 0 Y τδ .
+
+Now, we apply Lemma 1, which will be proved in section VIII-D.2. To ease the notation we use following
+shorthand;
+
+h
+i
+′
+
+PeM {Y τδ } = Pr M̂′ (Y τ ) 6= M′  Y τδ
+
+h
+i
+′
+ˆ ′ (Y τ ) 6= 0 Y τδ , M′ = 0
+PeM {0, Y τδ } = Pr M
+
+
+
+ξ(Y τδ ) = Pr M′ (Y τδ ) = 0 Y τδ .
+As a result of Lemma 1, for each realization of y τδ ∈ Y τδ such that τδ < τ , we have
+
+
+′
+′
+H(M′ |Y τδ )−ln 2−PeM {Y τδ } ln |M2 |
+τδ
+1
+]
+J
+≤
+ln
+2
++
+E
+[τ
+−
+τ
+|
+Y
+(1 − ξ(Y τδ ) − PeM {Y τδ }) ln P M′ {0,Y
+τδ
+τδ
+δ
+E[τ −τδ |Y ]
+}
+e
+
+By multiplying both sides of the inequality with I{τδ <τ } , we get an expression that holds for all Y τδ .
+′
+
+1
+≤
+I{τδ <τ } (1 − ξ(Y τδ ) − PeM {Y τδ }) ln P M′ {0,Y
+τδ
+}
+e
+i
+h
+
+′
+′
+τδ
+2−PeM {Y τδ } ln |M2 |
+I{τδ <τ } ln 2 + E [τ − τδ | Y τδ ] J H(M |Y )−ln
+E[τ −τδ |Y τδ ]
+
+Now we take the expectation of both sides over Y τδ . For the right hand side we have,
+
+h
+i
+
+′
+′
+τδ
+2−PeM {Y τδ } ln |M2 |
+R.H.S. = E ln 2 + E [τ − τδ | Y τδ ] J H(M |Y )−ln
+I
+{τδ <τ }
+E[τ −τδ |Y τδ ]
+
+i
+h
+
+′
+τδ
+M′
+τδ
+2−Pe {Y } ln |M2 |
+≤ ln 2 + E E [τ − τδ | Y τδ ] J H(M |Y )−ln
+I
+{τδ <τ }
+E[τ −τδ |Y τδ ]
+
+h
+i
+′
+(a)
+′
+τδ
+2−PeM {Y τδ } ln |M2 |
+≤ ln 2 + E [τ − τδ ] J E I{τδ <τ } H(M |Y )−lnE[τ
+−τδ ]
+!
+i
+h
+(b)
+
+≤ ln 2 + E [τ − τδ ] J
+
+E I{τ <τ } H(M′ |Y τδ ) −ln 2−Pe ln |M2 |
+δ
+E[τ −τδ ]
+
+E[τ −τδ |Y τδ ]I
+
+{
+where (a) follows the concavity of J (·) and Jensen’s inequality when we interpret
+E[τ −τδ ]
+bility distribution over Y τδ and (b) follows the fact that J (·) is a decreasing function.
+Now we lower bound E I{τδ <τ } H(M′ |Y τδ ) in terms of E [H(M |Y τδ )]. Note that
+
+i
+h
+
+H(M |Y τδ ) = H(M′ |Y τδ ) + Pr M1 6= M̃1 (Y τδ ) Y τδ H(M |M1 6= M̃1 (Y τδ ), Y τδ )
+
+i
+h
+
+≤ H(M′ |Y τδ ) + Pr M1 6= M̃1 (Y τδ ) Y τδ ln |M1 ||M2 |
+
+τδ <τ }
+
+(26)
+
+(27)
+as proba-
+
+31
+
+
+i
+h
+
+Furthermore for all Y τδ such that τ > τδ , Pr M̃1 (Y τδ ) 6= M1  Y τδ ≤ δ. Thus
+
+
+
+
+E I{τδ <τ } H(M′ |Y τδ ) ≥ E I{τδ <τ } (H(M |Y τδ ) − δ ln |M1 ||M2 |)
+
+
+= E (1 − I{τδ =τ } )H(M |Y τδ ) − δ ln |M1 ||M2 |
+
+≥ E [H(M |Y τδ )] − Pr [τδ = τ ] ln |M1 ||M2 | − δ ln |M1 ||M2 |
+
+(a)
+
+≥ E [H(M |Y τδ )] − ( Pλδe + δ) ln |M1 ||M2 |
+
+(b)
+
+≥(1 −
+
+Pe
+λδ
+
+− δ) ln |M1 ||M2 | − CE [τδ ]
+
+(28)
+
+where (a) follows from the inequality (23), (b) follows from the inequality (24). Since J (·) is decreasing in its
+argument, inserting (28) in (27) we get
+
+
+«
+„
+R.H.S. ≤ ln 2 + E [τ − τδ ] J 
+
+P
+ln |M1 ||M2 | 1− λδe −δ−Pe −E[τδ ]C−ln 2
+
+E[τ −τδ ]
+
+Note that ∀a > 0, b > 0, C > 0,
+
+
+ 
+
+a−Cx0
+a−Cx
+d
+|
+=
+−J
+− C−
+(b
+−
+x)J
+x=x0
+dx
+b−x
+b−x0
+
+a−Cx0
+b−x0
+
+(a)
+
+
+
+d
+dx J
+
+(29)
+
+(x) |
+
+a−Cx
+x= b−x 0
+0
+
+≤ −J (C)
+
+where (a) follows the concavity of J (·). Thus upper bound given in equation (29) is decreasing in E [τδ ]. Thus
+using the lower bound on E [τδ ], given in (23) we get,
+„
+
+«
+P
+
+
+1− λδe −δ−Pe ln |M2 |−Pe ln |M1 |−2 ln 2
+1|
+
++ lnC2 J 
+(30)
+R.H.S. ≤ ln 2 + E [τ ] − (1 − δ − Pλδe ) ln |M
+C
+P ln |M1 | ln 2
+E[τ ]−(1−δ− λδe )
+
+C
+
++ C
+
+Now let us consider the L.H.S. we get by taking the expectation of the inequality given in (26).
+i
+h
+′
+1
+L.H.S. = E I{τδ <τ } (1 − ξ(Y τδ ) − PeM {Y τδ }) ln P M′ {0,Y
+τδ
+}
+e
+h
+i
+′
+i
+h
+(a)
+E
+I{τ <τ } (1−ξ(Y τδ )−PeM {Y τδ })
+M′
+τδ
+τδ
+δ
+i
+≥ E I{τδ <τ } (1 − ξ(Y ) − Pe {Y }) ln h
+τ
+τ
+τ
+M′
+M′
+(b)
+
+E I{τ <τ } (1−ξ(Y
+δ
+
+h
+
+δ )−P
+e
+
+{Y
+
+δ })P
+e
+
+{0,Y
+
+δ}
+
+i
+
+′
+
+1
+i
+≥ −e−1 + E I{τδ <τ } (1 − ξ(Y τδ ) − PeM {Y τδ }) ln h
+E I{τ <τ } (1−ξ(Y τδ )−PeM′ {Y τδ )}PeM′ {0,Y τδ }
+δ
+i
+h
+′
+1
+i
+≥ −e−1 + E I{τδ <τ } (1 − ξ(Y τδ ) − PeM {Y τδ }) ln h
+τ
+M′
+E I{τ <τ } Pe {0,Y
+δ
+
+δ}
+
+where (a) follows log sum inequality and (b) follows from the fact that x ln x ≥ −e−1 .
+Note that
+i
+h ′
+i
+h
+
+
+′
+E I{τδ <τ } (1 − ξ(Y τδ ) − PeM {Y τδ }) ≥ E I{τδ <τ } (1 − ξ(Y τδ )) − E PeM {Y τδ }
+
+
+≥ E I{τδ <τ } (1 − δ) − Pe
+≥1−
+
+Pe
+λδ
+
+−δ
+
+where in last step we have used the equation (23). Furthermore
+
+ii
+i
+h
+h
+h
+′
+
+E I{τδ <τ } PeM {0, Y τδ } = E I{τδ <τ } Pr M̂1 = M̃1  Y τδ , M̃1 6= M1
+
+
+ii
+i h
+h
+h
+
+
+1
+E I{τδ <τ } Pr M̂1 = M̃1  Y τδ , M̃1 6= M1 Pr M̃1 6= M1  Y τδ
+≤ δλ
+≤
+
+Pe M1
+δλ
+
+(31)
+
+(32)
+
+(33)
+
+32
+
+Thus using equations (31), (32) and (33) we get
+M1
+
+e
+L.H.S. ≥ −e−1 − (1 − Pλδe − δ) ln Pλδ
+√
+f
+Using the inequalities (30), (34) and choosing δ = Pe we get Ebits
+,Q ≤ 1 −
+
+f
+r
+implies Ebits (r) ≤ 1 − C C̃.
+
+(34)
+rQ 
+C
+
+J (C). Since J (C) = C̃ this
+•
+
+C. Proof of of Theorem 7
+1) Achievability:
+Proof:
+Proof is very similar to the achievability proof for Theorem 6. Choose a capacity achieving sequence Q′ such
+that Ebf ,Q′ = C̃. The capacity achieving sequence with feedback, Q uses L elements of Q′ as follows.
+For the kth element of code Q, transmitter uses the ⌊k · r1 ⌋th element of Q′ to send the first part of the
+message, M . In the remaining phases, l ≥ 2 transmitter uses ⌊k · r ⌋th element of Q′ . The special message of
+1
+
+l
+
+the code for phase l is allocated to the error event in previous phases.
+
+(M̃1 , . . . , M̃(l−1) ) 6= (M1 , . . . , M(l−1) ) ⇒ M′l = 1
+
+(M̃1 , . . . , M̃(l−1) ) = (M1 , . . . , M(l−1) ) ⇒
+(k)
+
+(k)
+
+M′l
+
+∀l
+
+= Ml + 1
+
+∀l
+
+(k)
+
+Thus M1 = M′ (⌊rk⌋) and for all l ≥ 1 Ml ∪ {|Ml | + 1} = M′ (⌊rl k⌋) . If for all l ∈ {2, 3, . . . , L}, M̂′ l 6= 1,
+receiver decodes all parts of the information, else it declares an erasure. We skip the error analysis because it is
+essentially the same with Theorem 6.
+•
+2) Converse:
+Proof:
+We prove the converse of Theorem 7 by contradiction. Evidently
+max{Pe M1 , Pe M2 , . . . , Pe Mj } ≤ Pe M1 ,M2 ,...,Mj ≤ Pe M1 + Pe M2 + · · · + Pe Mj
+
+∀j ∈ {1, 2, . . . L}
+
+Thus if there exists a scheme that can reachPan error exponent vector outside the region given in Theorem 7,
+i
+rj
+there is at least one Ei such that Ei ≥ (1 − j=1
+)C̃. Then we can have two super messages as follows,
+C
+M′1 = (M1 , M2 , . . . , Mi )
+
+and M′2 = (Mi+1 , Mi+2 , . . . , Ml )
+
+Recall that Pe M1 ≤ Pe M2 ≤ · · · ≤ Pe Ml . Thus this new code is a capacity achieving code, whose special bits
+f
+f
+′
+have rate rQ′ and Ebits
+,Q′ > Ebits (rQ ). This is contradicting with the Theorem 6 we have already proved. Thus
+all the achievable error exponent regions should lie in the region given in Theorem 7.
+•
+D. Proof of of Theorem 8
+f
+1) Achievability: Emd
+≥ C̃:
+Note that any fixed length block code without feedback, is also variable-length block code with feedback, thus
+f
+Emd
+≥ Emd . Using the capacity achieving sequence we have used in the achievability proof of Theorem 2, we
+f
+get Emd
+≥ C̃.
+
+33
+f
+2) Converse: Emd
+≤ C̃:
+Now we prove that even with feedback and variable decoding time, the best missed detection exponent of a single
+f
+special message is less then or equal to C̃, i.e. Emd
+≤ C̃. Since the set of capacity achieving sequences is a subset
+of capacity achieving sequences with feedback and variable decoding time, this also implies that Emd ≤ C̃.
+Instead of directly proving the converse part of Theorem 8 we first prove the following lemma.
+Lemma 1: For any variable length block code with feedback, message set M, initial entropy H(M ) and
+average error probability Pe , the conditional error probability of each message is lower bounded as follows,
+«
+«
+„ „
+H(M )−h(Pe )−Pe ln(|M|−1)
+1
+
+h
+i
+E[τ ]+ln 2
+− 1−Pr[M =i]−P J
+
+E[τ
+]
+e
+∀i
+(35)
+Pr M̂ 6= i M = i ≥ e
+
+where J (R) is given by the following optimization over probability distributions on X
+
+
+
+
+J (R) =
+max1 2
+αD (P 1 W )Y (·) W (·|x1 ) + (1 − α)D (P 2 W )Y (·) W (·|x2 ) (36)
+α,x1 ,x2 ,PX ,PX :
+1
+2
+αI(PX
+,WY |X )+(1−α)I(PX
+,WY |X )≥R
+
+It is worthwhile remembering the notation we introduced previously that
+X
+X
+(P i W )Y (·) =
+PXi (j)WY |X (·|j) and I(PXi , WY |X ) =
+j∈X
+
+j∈X ,k∈Y
+
+W
+
+(k|i)
+
+|X
+PXi (j)WY |X (k|i) ln (P iYW
+)Y (k)
+
+First thing to note about Lemma 1 is that it is not necessarily for the case of uniform probability
+on
+ distribution
+h
+i
+
+the message set M. Furthermore as long as Pr [M = i] << 1 the lower bound on Pr M̂ 6= i M = i depends
+on the a priori probability distribution of the messages only through the entropy of it, H(M ).
+In equation (36) α is simply a time sharing variable, which allows us to use a (xi , PXi ) pair with low mutual
+information and high divergence together with another (xi , PXi ) pair with high mutual information and low
+divergence. As a result of Carathéodory’s Theorem we see that time sharing between two points of the form
+(xi , PXi ) is sufficient for obtaining optimal performance, i.e. allowing time sharing between more than two points
+of the form (xi , PXi ) will not improve the value of J (R).
+Indeed for any R ∈ [0, C] one can use the optimizing values of α, x1 , x2 , PX1 and PX2 in a scheme like the one
+in Theorem 2 with time sharing and prove that missed detection exponent of J (R) is achievable for a reliable
+sequence of rate R. In that α determines how long the input letter x1 ∈ X is used for the special message while
+PX1 is being used for the ordinary codewords. Furthermore arguments very similar to those of Theorem 8 can
+be used to prove no missed detection exponent higher than J (R) is achievable for reliable sequences of rate R.
+Thus J (R) is the best exponent a message can get in a rate R reliable sequence.
+One can show that J (R) is a concave function of R over its support [0, C]. Furthermore J (0) = Dmax and
+J (C) = C̃. Thus J (R) is a concave strictly decreasing function of R for 0 ≤ R ≤ C.
+Proof (of Lemma 1):
+Recall that G(i) is the decoding region for M = i i.e. G(i) = {y τ : M̂ (y τ ) = i}. Then as a result of data
+processing inequality for KL divergence we have
+i
+h
+i
+h
+Pr[G(i)]
+Pr[Y τ ]
+Pr[G(i)]
+G(i)
+ln
+E ln Pr[Y
+≥
+Pr
+[G(i)]
+ln
++
+Pr
+τ |M =i]
+Pr[G(i)|M =i]
+Pr[G(i)|M =i]
+h
+i
+1
+≥ −h(Pr [G(i)]) + Pr G(i) ln
+Pr[G(i)|M =i]
+h
+i
+1
+(37)
+≥ − ln 2 + Pr G(i) ln
+Pr[G(i)|M =i]
+where in the last step we have used, the fact that h(Pr [G(i)]) ≤ ln 2. In addition
+
+i
+i
+h
+h
+
+Pr G(i) ≥ Pr G(i) M 6= i Pr [M 6= i]
+X
+≥
+Pr [G(j)| M = j] Pr [M = j]
+j6=i
+
+≥ (1 − Pe − Pr [M = i]) .
+
+(38)
+
+34
+
+Thus using the equations (37) and (38) we get
+„
+»
+–«
+Pr[Y τ ]
+
+h
+i
+1
+− 1−P −Pr[M
+ln 2+E ln Pr[Y τ |M =i]
+
+=i]
+e
+Pr G(i) M = i ≥ e
+.
+
+(39)
+h
+
+τ
+
+i
+
+Pr[Y ]
+Now we lower bound the error probability of the special message by upper bounding E ln Pr[Y
+τ |M =i] . For that
+let us consider the following stochastic sequence,
+n
+
+h
+i
+X
+Pr[Yt |Y t−1 ]  t−1
+Pr[Y n ]
+E
+ln
+−
+Sn = ln Pr[Y
+Y
+
+n |M =i]
+Pr[Yt |M =i,Y t−1 ]
+t=1
+
+Note that E [Sn+1 | Y = Sn and since min Wi,j = λ we have E [|Sn+1 − Sn || Y n ] ≤ 2 ln λ1 . Thus Sn is a
+martingale, furthermore since E [τ ] < ∞ we can use [37, Theorem 2 p 487], to get
+n]
+
+E [Sτ ] = S0 = 0.
+
+Thus
+h
+
+τ
+
+i
+
+]
+=E
+E ln Pr[YPr[Y
+τ |M =1]
+
+Note that
+
+" τ
+X
+t=1
+
+#
+
+h
+i
+t−1
+ t−1
+]
+t |Y
+E ln Pr[YPr[Y
+.
+t−1 ]  Y
+t |M =1,Y
+
+(40)
+
+
+
+h
+i
+h
+i
+t−1
+ t−1
+]
+Pr[Yt |Y t−1 ]  t−1
+t |Y
+E ln Pr[YPr[Y
+=
+E
+ln
+.
+Y
+Y
+
+
+t−1 ]
+WY |X (Yt |x̄t (1))
+t |M =1,Y
+
+As a result of definition of J (·) given in equation (36) we have,
+
+i
+h
+
+
+
+Pr[Yt |Y t−1 ]
+E ln Pr[Yt |M =1,Y t−1 ]  Y t−1 ≤ J I Xt ; Yt Y t−1
+
+
+where I Xt ; Yt Y t−1 is given by13
+
+i
+h
+ t−1 
+
+Pr[Xt ,Yt |Y t−1 ]
+
+I Xt ; Yt Y
+= E ln Pr[Xt |Y t−1 ] Pr[Yt |Y t−1 ]  Y t−1
+
+(41)
+
+Given Y t−1 random variables M − Xt − Yt forms a Markov chain. Thus
+
+
+
+
+I Xt ; Yt Y t−1 ≥ I M ; Yt Y t−1 .
+
+(42)
+
+Since J (·) is a decreasing function, equations (40), (41) and (42) lead to
+" τ
+#
+i
+h
+X
+ t−1 
+Pr[Y τ ]
+J I M ; Yt Y
+E ln Pr[Y τ |M =1] ≤ E
+
+(43)
+
+t=1
+
+Note that
+
+E
+
+" τ
+X
+t=1
+
+#
+#
+" τ
+X
+ t−1 
+ t−1 
+1
+
+J I M ; Yt Y
+=E τ
+τ J I M ; Yt Y
+t=1
+
+(a)
+
+"
+
+≤ E τJ
+
+= E [τ ] E
+
+τ
+X
+
+" t=1
+
+τ
+E[τ ] J
+
+(b)
+
+≤ E [τ ] J
+
+1
+τI
+
+E
+
+"
+
+τ
+E[τ ]
+
+
+
+M ; Yt Y t−1
+
+τ
+X
+
+t=1
+τ
+X
+
+!#
+
+ t−1 
+1
+Y
+I
+M
+;
+Y
+t
+τ
+
+!#
+
+#!
+
+
+1
+ t−1
+τ I M ; Yt Y
+
+i
+ h Pτ t=1
+t−1
+)
+t=i I(M ;Yt |Y
+= E [τ ] J E
+E[τ ]
+
+(44)
+
+˛
+`
+´
+Note that unlike the conventional definition of conditional mutual information, I Xt ; Yt ˛Y t−1 is not averaged over the conditioned
+t−1
+random variable Y
+.
+13
+
+35
+
+where in both (a) and (b) we use the the concavity of the J (·) function together with Jensen’s inequality. Thus
+using equations (39), (43) and (44) we get,
+1
+
+h
+i
+− 1−P −Pr[M =i]
+
+e
+Pr M̂ 6= i M = i ≥ e
+
+„ „ Pτ
+«
+«
+E[ t=i I(M ;Yt |Y t−1 )]
+J
+E[τ ]+ln 2
+E[τ ]
+
+Since J (R) is decreasing in R, the only thing we are left to show is that
+#
+" τ
+X
+ t−1 
+I M ; Yt  Y
+≥ H(M ) − h(Pe ) − Pe ln(|M| − 1)
+E
+
+(45)
+
+t=i
+
+For that consider the stochastic sequence,
+
+n
+
+Vn = H(M |Y ) +
+n]
+
+n
+X
+t=1
+
+
+
+I M ; Yt Y t−1 .
+
+Clearly E [Vn+1 | Y = Vn and E [|Vn |] < ∞, thus {Vn } is a martingale. Furthermore E [|Vn+1 − Vn || Y n ] ≤ K
+and E [τ ] < ∞ thus using a version of Doob’s optional stopping theorem, [37, Theorem 2 p 487], we get,
+V0 = E [Vτ ]
+τ
+
+= E [H(M |Y )] + E
+
+" τ
+X
+t=1
+
+#
+ t−1 
+I M ; Yt Y
+.
+
+(46)
+
+One can write Fano’s inequality as follows,
+ i
+ i
+ h
+h
+
+
+H(M |Y τ ) ≤ h Pr M̂ (Y τ ) 6= M  Y τ + Pr M̂ (Y τ ) 6= M  Y τ ln(|M| − 1).
+
+Consequently
+
+ ii
+ ii
+h h
+h  h
+
+
++ E Pr M̂ (Y τ ) 6= M  Y τ ln(|M| − 1).
+E [H(M |Y τ )] ≤ E h Pr M̂ (Y τ ) 6= M  Y τ
+
+Using the concavity of binary entropy,
+
+E [H(M |Y τ )] ≤ h(Pe ) + Pe ln(|M| − 1).
+
+(47)
+
+Using equation (46) together with equation (47) we get the desired condition given in the equation (45).
+•
+Above proof is for encoding schemes which does not have any randomization (time sharing), but same ideas can
+be used to establish the exact same result for general variable length block codes with randomization. Now we
+are ready to prove the converse part of the Theorem 8.
+Proof (of Converse part of Theorem 8):
+f
+In order to prove Emd
+≤ C̃, first note that for capacity achieving sequences we consider Pr [M = i] = |M1(k) | .
+Thus
+
+
+ 
+M
+(k)
+ln |M(k) |−h(Pe (k))−Pe (k) ln(|M(k)|−1)
+e (i))
+ln 2
+1
++
+(48)
+≤
+J
+− ln(PE[τ
+(k) ]
+1
+E[τ (k) ]
+E[τ (k) ] .
+(k)
+1−Pe
+
+− |M(k) |
+
+Thus for any capacity achieving sequence with feedback,
+M
+
+(k)
+
+e (i))
+lim − ln(PE[τ
+(k) ]
+
+k→∞
+
+≤ J (C) = C̃.
+•
+
+36
+
+E. Proof of of Theorem 9
+In this subsection we will show how the strategy for sending a special bit can be combined with the YamamotoItoh strategy when many special messages demand a missed-detection exponent. However unlike previous results
+about capacity achieving sequences, Theorems 5, 6, 7, 8, we will have and additional uniform delay assumption.
+We will restrict ourself to uniform delay capacity achieving sequences.14 Clearly capacity achieving sequences
+in general need not to be uniform delay. Indeed many messages, i ∈ M, can get an expected delay, E [τ | M = i]
+much larger than the average delay, E [τ ]. This in return can decrease the error probability of these messages.
+The potential drawback of such codes, is that their average delay is sensitive to assumption of messages being
+chosen according to a uniform probability distribution. Expected decoding time, E [τ ], can increase a lot if the
+code is used in a system in which the messages are not chosen uniformly.
+f
+It is worth emphasizing that all previously discussed exponents (single message exponent Emd
+, single bit
+f
+f
+exponent Eb , many bits exponent Eb (r) and achievable multi-layer exponent regions) remain unchanged whether
+or not this uniform delay constraint is imposed. Thus the flexibility to provide different expected delays to different
+messages does not improve those exponents.
+However, this is not true for the message-wise UEP with exponentially many messages. Removing the uniform
+C̃
+delay constraint can considerably enhance the protection of special messages at rate higher than (1 − Dmax
+)C.
+Indeed one can make the exponent of all special messages, C̃. The flexibility of providing more resources
+(decoding delay) to special messages achieves this enhancement. However, we will not discuss those cases in
+this article and stick to uniform delay codes.
+f
+1) Achievability: Emd
+(r) ≥ min{C̃, (1 − Cr )Dmax }:
+The optimal scheme here reverses the trick for achieving Ebf : first a special bit tells to the receiver whether the
+message being transmitted is special one or not. After the decoding of this bit the message itself is transmitted. This
+further emphasizes how feedback connects bit-wise and message-wise UEP, when used with variable decoding
+time.
+Proof:
+Like all the previous achievability results, we construct a capacity achieving sequence, Q, with the desired
+asymptotic behavior. A sequence of multi phase fixed length errors and erasures codes, Q′ is used as the building
+block of Q. Let us consider the kth member √
+of Q′ . In the first phase transmitter sends one of the two input
+(k)
+symbols with distinct output distributions for ⌊ k⌋ time units in order to tell whether M ∈ Ms or not. Let b
+be b = I{M ∈Ms(k) } .Then, as it was mentioned in subsection VIII-A.1, with a threshold decoding we can achieve
+
+
+h
+i
+h
+i
+√
+
+
+Pr b̂ 6= 1 b = 1 = Pr b̂ 6= 0 b = 0 ≤ e− kµ
+where µ > 0.
+(49)
+Actual value of µ is not important for us, we are merely interested in an upper bound vanishing with increasing
+k.
+In the second phase one of two length k codes is used depending on b̂.
+• If b̂ = 0, in the second phase, transmitter uses the k th member of a capacity achieving sequence, Q′′ such
+that Eb ,Q′′ = C̃. We know that such a sequence exists because of Theorem 2. The message, M′ of the Q′′
+is determined using the following mapping
+M ∈ Ms ⇒ M′ = 1
+
+M ∈
+/ Ms ⇒ M′ = M − |Ms | + 1
+ˆ ′ = 1, then receivers declares an erasure, M̃ =
+At the end of the second phase, receiver decodes M′ . If M
+erasure. If M̂′ 6= 1, then M̂ = M̃ = M̂′ + |Ms | − 1.
+14
+
+Recall that for any reliable variable length block code with feedback Γ is defined as Γ =
+
+reliable sequences are the ones that satisfy
+
+(k)
+limk→∞ ΓQ
+
+= 1.
+
+maxi∈M E[τ |M =i]
+E[τ ]
+
+and uniform delay
+
+37
+
+•
+
+If b̂ = 1, transmitter uses a two phase code with errors and erasures in the second phase, like the one
+described by Yamamoto and Itoh in [40]. The two phases of this code are called communication and control
+phases, respectively.
+In communication phase transmitter uses ⌈rk⌉th member of a capacity achieving sequence, Q′′ with Eb ,Q′′ =
+C̃, to convey its message, M′ . The auxiliary message M′ is determined as follows,
+M ∈
+/ Ms ⇒ M′ = 1
+
+M ∈ Ms ⇒ M′ = M + 1
+
+The decoded message of the ⌈rk⌉th member of Q′′ is called the tentative decision of communication phase
+and denoted by M̃′ . In the control phase,
+– if M̃′ = M′ tentative decision is confirmed by sending accept symbol xa for ℓ(k) = k − ⌈ Cr k⌉ time
+units.
+˜ ′ 6= M′ tentative decision is rejected by sending reject symbol x for ℓ(k) = k − ⌈ r k⌉ time units.
+– if M
+d
+C
+where xa and xd are the maximizers in the following optimization problem.
+
+
+
+
+Dmax = max D WY |x (·|i) WY |X (·|j) = D WY |x (·|xa ) WY |X (·|xd )
+i,j
+
+If the output sequence in last k − ⌈ Cr k⌉ time steps is typical with WY |X (·|xa ) then M̂′ = M̃′ else erasure is
+declared for M′ . Note that the total probability of WY |X (·|xa ) typical sequences are less than e−ℓ(k)(Dmax −δℓ(k) )
+when M̃′ 6= M′ and more than 1 − δℓ(k) when M̃′ = M′ where lim δℓ(k) = 0, [13, Corrollary 1.2, p19].
+ℓ(k)→∞
+
+ˆ ′ = erasure or if M
+ˆ ′ = 1 then receiver declares erasure for M , M̃ = erasure. If M
+ˆ ′ ∈ {2, 3, . . . , |M |+1},
+If M
+s
+then M̂ = M̃ = M̂ − 1.
+Now we can calculate the error and erasure probabilities of the two phase fixed length block code. Let us denote
+the erasures by M̃ = erasure for each k.
+For i ∈ Ms using the equation (49) and Bayes rule we get
+
+h
+i
+√
+
+(k−ℓ(k))
++ δℓ(k) )
+(50)
+Pr M̃ = erasure M = i ≤ e−µ k + (Pe ,Q′
+
+i
+h
+√
+
+(k−ℓ(k)) −ℓ(k)(Dmax −δℓ(k) )
+Pr M̃ 6= i, M̃ 6= erasure M = i ≤ e−µ k Pe kQ′ (1) + Pe ,Q′
+e
+.
+(51)
+
+For i ∈
+/ Ms using the equation (49) and Bayes rule we get
+
+h
+i
+√
+
+(k)
+Pr M̃ = erasure M = i ≤ e−µ k + Pe ,Q′
+
+h
+i
+√
+
+(k)
+Pr M̃ 6= i, M̃ 6= erasure M = i ≤ e−µ k + Pe ,Q′ .
+
+(52)
+(53)
+
+Whenever M̃ = erasure than transmitter and receiver try to send the message once again from scratch using
+same strategy. Then for any i ∈ M
+
+h
+i Pr M̃ 6=i,M̃ 6=erasure M =i
+|
+]
+[
+
+(54)
+Pr M̂ 6= i M = i = 1−Pr M̃ =erasure M =i
+|
+]
+[
+E [τ | M = i] =
+
+√
+k+ k
+1−Pr[M̃ =erasure|M =i]
+
+(55)
+
+Using equations (50), (51), (52), (53), (54) and (55) we conclude that that Q is capacity achieving sequence such
+that
+ln maxi∈Ms Pr[M̃ 6=i,M̂ 6=erasure|M =i]
+= min{C̃, (1 − Cr )Dmax }
+lim −
+E[τ ]
+k→∞
+
+ln |Ms(k) |
+k→∞ E[τ ]
+
+lim
+
+=r
+•
+
+38
+f
+2) Converse: Emd
+(r) ≤ min{C̃, (1 − Cr )Dmax }:
+Proof:
+(k)
+Consider any uniform delay capacity achieving sequence, Q. Note that by excluding all i ∈
+/ Ms we get a
+reliable sequence, Q′ such that
+
+i
+h
+′
+
+Pe (k) ≤ Pr (k) M̂ 6= M  M ∈ Ms
+h ′ i
+h
+i
+E τ (k) ≤ Γ(k) E τ (k)
+
+Thus
+
+(k)
+
+− ln Pr[M̂ 6=M |M ∈Ms ]
+E[τ (k) ]
+
+′ (k)
+
+Pe
+≤ − ln
+Γ(k)
+E [τ ′ (k) ]
+
+f
+Consequently Emd
+(r) ≤ (1 − Cr )Dmax . Similarly by excluding all but one of the elements of Ms we can prove
+f
+that Emd
+(r) ≤ C̃, using Theorem 8 and uniform delay condition.
+•
+
+IX. AVOIDING FALSE A LARMS : P ROOFS
+A. Block Codes without Feedback: Proof of Theorem 10
+1) Lower Bound: Efa ≥ Efal :
+Proof:
+As a result of the coding theorem [13, Ch. 2 Corollary 1.3, page 102 ] we know that there exits a reliable
+(n)
+sequence Q′ of fixed composition codes whose rate is C and whose nth elements composition PX satisfies,
+q
+X (n)
+|PX (i) − PX∗ (i)| ≤ 4 n1 .
+i∈X
+
+We use the codewords of the nth element of Q′ as the codewords of the ordinary messages in the nth code in
+Q. For the special message we use a length-n repetition sequence x̄n (1) = (xfl , xfl , · · · , xfl ).
+The decoding region for the special message is essentially the bare minimum. We include the typical channel
+outputs within the decoding region of the special message to ensure small missed detection probability for the
+special message, but we exclude all other output sequence y n .
+X
+p
+G(1) = {y n :
+|Q(yn ) (i) − WY |X (i|xfl )| ≤ 4 1/n}
+i∈Y
+
+Note that this
+of G(1)
+itself ensures that special message is transmitted reliably whenever it is sent,
+
+h definition
+i
+
+(n)
+lim Pr
+M̂ 6= 1 M = 1 = 0.
+n→∞
+
+The decoding regions of the ordinary messages, j = {2, 3, . . . M(n) }, is the intersection of the corresponding
+decoding region in Q′ with the complement of G(1). Thus the fact that Q′ is a reliable sequence implies that,
+
+
+
+
+[
+
+lim Pr (n) y n ∈
+G(j) M = i = 0
+n→∞
+
+j ∈{1,i}
+/
+
+Consequently we have reliable communication for ordinary messages as long as lim Pr (n) [G(1)| M = j] = 0,
+ n→∞i
+h
+
+∀j 6= 1. But we prove a much stronger result to ensure that Pr (n) M̂ = 1 M 6= 1 is decaying fast enough.
+Before doing that let us note that in the second stage of the decoding, when we are choosing a message among
+the ordinary ones, ML decoder can be used instead of the decoding rule of the original code. Doing that will
+only decrease the average error probability.
+
+39
+
+Note the probability of a V -shell of a message i is equal to,
+Pr
+
+(n)
+
+(n)
+[TV (i)| M = i] = e−nD(VY |X (·|X)kWY |X (·|X)|PX )
+
+Note that also that G(1) can be written as the union of V -shells of a message i as follow.
+[
+G(1) =
+TV (i)
+∀i 6= 1
+VY |X ∈V (n)
+
+where V (n) = {VY |X : j | k VY |X (j|k)PXn (k) − WY |X (j|xfl )| ≤
+(1 + n)|X ||Y| different conditional types.
+P
+
+Pr
+
+P
+
+(n)
+
+[G(1)| M = i] ≤ (1 + n)|X ||Y|
+
+max
+
+VY |X ∈V (n)
+
+p
+4
+
+1/n}. Note that since there are at most
+
+Pr [TV (i)| M = i]
+
+Thus for all i > 1
+lim
+
+n→∞
+
+− ln Pr
+
+(n)
+
+[G(1)|M =i]
+n
+
+=
+
+VY |X :
+
+P
+
+min
+
+∗
+j PX (j)VY |X (·|j)=WY |X (·|xfl )
+
+
+
+
+D VY |X (·|X) WY |X (·|X) PX∗
+
+2) Upper Bound: Efa ≤ Efau :
+Proof:
+As a result of data processing inequality for KL divergence we have
+
+i Pr G(1) M =1
+h
+X
+[ |
+]
+
+Pr[y n |M =1]
+Pr[G(1)|M =1]
+n
+Pr [y | M = 1] ln Pr[yn |M 6=1] ≥ Pr [G(1)| M = 1] ln Pr[G(1)|M 6=1] Pr G(1) M = 1 ln
+Pr[G(1)|M 6=1]
+n
+n
+y ∈Y
+
+≥ − ln 2 − Pr [G(1)| M = 1] ln Pr [G(1)| M 6= 1]
+
+•
+
+(56)
+
+Using the convexity of the KL divergence we get
+X
+
+y n ∈Y n
+
+n
+
+Pr [y | M = 1] ln
+
+Pr[y n |M =1]
+Pr[y n |M 6=1]
+
+≤
+=
+
+|M|
+X
+i=2
+
+|M|
+
+X
+i=2
+
+=
+
+1
+|M|−1
+1
+|M|−1
+
+|M|
+n X
+X
+k=1 i=2
+
+n
+
+X
+
+|M =1]
+Pr [y n | M = 1] ln Pr[y
+Pr[y n |M =i]
+
+X
+
+Pr [y n | M = 1]
+
+y n ∈Y n
+
+y n ∈Y n
+
+1
+|M|−1 D
+
+n
+X
+k=1
+
+k−1
+
+]
+k |M =1,y
+ln Pr[y
+Pr[yk |M =i,y k−1 ]
+
+
+
+WY |X (·|x̄k (1)) WY |X (·|x̄k (i))
+
+(57)
+
+where x̄k (i) denotes the input letter for codeword of message i, at time k.
+Let us denote the empirical distribution of the x̄k (i) for time k, by PXk .
+PXk (i) =
+
+P
+
+I{x̄ (j)=i}
+k
+|M|
+
+j∈M
+
+∀i ∈ X
+
+Using equation (56) and (57) we get
+1
+− Pr[G(1)|M =1]
+
+Pr [G(1)| M 6= 1] ≥ e
+
+„
+
+«
+|M| P
+D
+W
+(
+Y |X (·|x̄k (1))kWY |X (·|Xk )|PXk )+ln 2
+k
+|M|−1
+
+(58)
+
+We show below that for all capacity achieving codes, almost all of the k’s has a PXk which is essentially equal
+to PX∗ . For doing that let us first define the set P (ǫ) and δ(ǫ)
+X
+P (ǫ) , {PX : I(PX , WY |X ) ≥ C − ǫ} and δ(ǫ) , max
+|PX (i) − PX∗ (i)|
+PX ∈P(ǫ)
+
+i
+
+40
+
+Note that lim δ(ǫ) = 0. As a result of Fano’s inequality we have,
+ǫ→0
+
+I (M ; Y n ) ≥ nR(n) (1 − Pe ) − ln 2
+
+(59)
+
+On the other hand using standard manipulations on mutual information we get
+I (M ; Y n ) =
+
+n
+X
+k=1
+
+I(PXk , WY |X )
+
+≤ Cn − ǫ
+
+Using equation (60) in equation (59) we get,
+n
+X
+k=1
+
+Let ǫ(n) be ǫ(n) =
+
+q
+
+n
+X
+k=1
+
+I{PX ∈P(ǫ)
+/
+}
+k
+
+(n)
+
+(C−R
+I{PX ∈P(ǫ)
+/
+}≤n
+k
+
+C − R(n) (1 − Pe ) −
+
+ln 2
+n ,
+n
+X
+k=1
+
+(60)
+
+(1−Pe )−ln 2/n)
+ǫ
+
+then lim ǫ(n) = 0 and
+n→∞
+
+(n)
+I{PX ∈P(ǫ
+(n) )
+/
+} ≤ nǫ .
+k
+
+
+Note for any PX ∈ P ǫ(n) we have
+
+
+
+
+
+
+D WY |X (·|xk (1)) WY |X (·|Xk ) PX ≤ D WY |X (·|xk (1)) WY |X (·|X) PX∗ + δ(ǫ(n) )Dmax
+
+≤ Efau + δ(ǫ(n) )Dmax
+
+
+
+where Efau = maxi∈X D WY |X (·|i) WY |X (·|X) PX∗
+Using equations (61) and (62)
+X
+
+
+
+D WY |X (·|xk (1)) WY |X (·|Xk ) PXk ≤ n(Efau + δ(ǫ(n) )Dmax + ǫ(n) Dmax )
+
+(61)
+
+(62)
+
+k
+
+Inserting this in equation (58) we get
+
+lim
+
+n→∞
+
+
+
+− ln Pr
+
+(n)
+
+[G(1)|M 6=1]
+n
+
+
+
+≤ Efau
+•
+
+B. Variable Length Block Codes with Feedback: Proof of Theorem 11
+1) Achievability: Efaf ≥ Dmax :
+Proof:
+We construct a capacity achieving sequence with feedback, Q, by using a construction like the one we have for
+f
+Emd
+(r). In fact, this scheme achieves the false alarm exponent simultaneously with the best missed detection
+exponent, C̃, for the special message.
+We use a fixed length multi-phase errors and erasure √
+code as the building block for the kth member of Q. In
+the first phase, b = I{M =1} is conveyed using a length ⌈ k⌉ repetition code, like we did in subsections VIII-A.1
+and VIII-E.1. Recall that
+
+
+h
+i
+h
+i
+√
+
+
+µ>0
+(63)
+Pr b̂ 6= 1 b = 1 = Pr b̂ 6= 0 b = 0 ≤ e−µ k
+
+In the second phase one of the two length k codes is used depending on b̂.
+
+41
+
+•
+
+If b̂ = 0, transmitter uses the kth member of a capacity achieving sequence, Q′ such that Emd ,Q′ = C̃ to
+convey the message. We know that such a sequence exists because of Theorem 2. Let the message of Q be
+the message of Q′ , i.e. the auxiliary message,
+M′ = M .
+
+•
+
+ˆ ′ = 1, receiver declares an erasure, M̃ = erasure, else M is decoded
+If at the end of the second phase M
+′
+ˆ
+M̂ = M̃ = M .
+If b̂ = 1, transmitter uses a length k repetition code to convey whether M = 1 or not.
+– If M = 1, M′ = 1 and transmitter sends the codeword (xa , xa , . . . , xa ).
+– If M 6= 1, M′ = 0 and transmitter sends the codeword (xd , xd , . . . , xd ).
+where xa and xd are the maximizers achieving Dmax :
+
+
+
+
+Dmax = max D WY |x (·|i) WY |X (·|j) = D WY |x (·|xa ) WY |X (·|xd )
+i,j
+
+ˆ ′ = 1 only when output sequence is typical with W
+Receiver decodes M
+Y |X (·|xa ). Evidently as before we
+have, [13, Corrollary 1.2, p19].
+
+h
+i
+ˆ ′ = 0 M = 1 ≤ δ
+Pr M
+(64)
+k
+
+h
+i
+
+Pr M̂′ = 1 M = 0 ≤ e−k(Dmax −δk )
+(65)
+
+where lim δk = 0.
+k→∞
+
+If M̂′ = 1 then M̂ = 1, else receiver declares erasure for the whole block, i.e. M̃ = erasure.
+Now we can calculate the error and erasure probabilities for (⌈k⌉ + k) long block code. Using the equations
+(63), (64), (65) and Bayes’ rule we get
+
+h
+i
+√
+
+Pr M̃ = erasure M = 1 ≤ e−µ k + δk
+(66)
+
+h
+i
+√
+
+(k)
+i 6= 1
+(67)
+Pr M̃ = erasure M = i ≤ e−µ k + Pe Q′
+
+h
+i
+√
+
+(k)
+Pr M̃ ∈ M \ {1} M = 1 ≤ e−µ k Pe Q′ (1)
+(68)
+
+h
+i
+
+(k)
+Pr M̃ ∈ M \ {1, i} M = i ≤ Pe Q′
+i 6= 1
+(69)
+
+i
+h
+√
+
+Pr M̃ = 1 M = i ≤ e−µ k e−k(Dmax −δk )
+i 6= 1
+(70)
+
+Whenever M̃ = erasure than transmitter tries to send the message again from scratch, using same strategy.
+1
+when we consider
+Consequently all of the above error probabilities are scaled by a factor of 1−Pr M̃ =erasure
+|M =i]
+[
+the corresponding error probabilities for the variable decoding time code. Furthermore
+E [τ | M = i] =
+
+√
+k+ k
+1−Pr[M̃ =erasure|M =i]
+
+(71)
+
+Using equations (66), (67), (68), (69), (70) and (71) we conclude that Q is a capacity achieving code with
+f
+f
+Emd
+•
+,Q = C̃ and Efa ,Q = Dmax .
+
+42
+
+2) Converse: Efaf ≤ Dmax :
+Proof:
+Note that as result of convexity of KL divergence we have
+
+
+h
+h
+i
+i Pr G(1) M =1
+]
+[ |
+
+Pr[Y τ |M =1] 
+Pr[G(1)|M =1]
+E ln Pr[Y τ |M 6=1]  M = 1 ≥ Pr [G(1)| M = 1] ln Pr[G(1)|M 6=1] + Pr G(1) M = 1 ln
+Pr[G(1)|M 6=1]
+1
+≥ − ln 2 + Pr [G(1)| M = 1] ln Pr[G(1)|M
+6=1]
+It has already been proved in [4] that,
+
+h
+i
+Pr[Y τ |M =1] 
+E ln Pr[Y
+≤ Dmax E [τ | M = 1]
+τ |M 6=1]  M = 1
+
+(72)
+
+(73)
+
+Note that as a result of definition of Γ we have E [τ | M = 1] ≤ E [τ ] Γ using this together with equations (72)
+and (73) the we get,
+ln 2+ΓDmax E[τ ]
+− Pr[G(1)|M =1]
+
+Pr [G(1)| M 6= 1] ≥ e
+
+Thus for any uniform delay reliable sequence, Q, we have Efaf ,Q ≤ Dmax .
+
+•
+
+A PPENDIX
+A. Equivalent definitions of UEP exponents
+We could have defined all the UEP exponents in this paper without using the notion of capacity achieving
+sequences. As an example in this section we define the single-bit exponent in this alternate manner and show
+that both definitions leads to identical results. In this alternative first Ēb (R) is defined as the best exponent for
+the special bit at a given data-rate R and then it is minimized over all R < C to obtain Ēb .
+Definition 14: For any R ≥ 0, Z(R) is the set of sequence of codes, Q, with message sets M(n) such that
+|M(n) | ≥ eRn
+
+and
+
+(n)
+
+M(n) = M1 × M2
+
+where M1 = {0, 1}.
+h
+i
+Definition 15: For a sequence of codes, Q, such that lim Pr (n) M̂ 6= M = 0, singe bit exponent Eb ,Q
+n→∞
+equals
+− ln Pr (n) [M̂1 6=M1 ]
+Eb ,Q , lim inf
+.
+(74)
+n
+n→∞
+
+Definition 16: Ēb (R) and the single bit exponent Ēb are defined as
+Ēb (R) ,
+
+sup Eb ,Q
+
+Q∈Z(R)
+
+Ēb , inf Ēb (R).
+R<C
+
+Note that according to this definition the special bit can achieve the exponent Ēb , no matter how close the rate is
+to capacity. We now show why this definition is equivalent to the earlier definition in terms of capacity achieving
+sequences given in section III.
+Lemma 2: Ēb = Eb
+Proof:
+Eb ≤ E¯b :
+By definition of Eb , for any given δ > 0, there exists a capacity-achieving sequence Q such that Eb Q = Eb and
+for large enough n, R(n) ≥ C − δ. If we replace first n members of Q with codes whose rate are (C − δ) or
+higher we get another sequence Q′ such that Q′ ∈ Z(C − δ) where Eb Q′ = Eb . Thus Ēb (C − δ) ≥ Eb for all
+δ > 0. Consequently
+Ēb ≥ Eb
+
+43
+
+Eb ≥ E¯b :
+Let us first fix an arbitrarily small δ > 0. In the table in Figure 6, row k represents a code-sequence Q̄k ∈
+Z(C − 1/k), whose single-bit exponent
+Eb ,Q̄k ≥ Ēb (R) − δ
+
+Let Q̄k (l) represent length-l code in this sequence. We construct a capacity achieving sequence Q from this table
+by sequentially choosing elements of Q from rows 1, 2, · · · as follows .
+1
+Q̄1 (1)
+
+2
+Q̄1 (2)
+
+Block Length
+3 · · · · · · · · · · · · · · n1 · · · n2 · · · · · · · · n3 · · · · · ·
+· · · · · · · · · · · · · · · · · ·
+Q̄1 (3) Q̄1 (4) · · · · · · · ·
+
+Q̄2 Q̄2 (1)
+
+Q̄2 (2)
+
+Q̄2 (3) · · · · · · · · · · · · · · · · · ·
+
+Q̄3 Q̄3 (1)
+
+Q̄3 (2) · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · ·
+
+Q̄1
+
+Q̄4
+·
+·
+·
+·
+·
+·
+·
+·
+·
+·
+·
+Fig. 6.
+•
+
+· · · · · · ·
+
+-
+
+Q̄4 (1) · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · ·
+· · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · ·
+· · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · ·
+· · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · ·
+
+Row k denotes a reliable code sequence at rate C − 1/k. Bold path shows capacity achieving sequence Q.
+
+For each sequence Q̄i , let ni denote the smallest block length n at which,
+1) The single bit error probability satisfies
+h
+i
+Pr (n) M̂1 6= M1 ≤ e−n(Ēb (R)−2δ))
+2) The over all error probability satisfies
+
+Pr
+•
+
+(n)
+
+h
+
+i
+M̂ 6= M ≤ 1/i
+
+3) ni ≥ ni−1
+Given the sequence, n1 , n2 , · · · , we choose the members of our capacity achieving code from the code-table
+shown in Figure 6 as follows.
+– Initialize: We use first n2 − 1 members of Q̄1 as the first n2 − 1 members of the new code.
+– Iterate: We choose codes of length ni to ni+1 − 1 from the code sequence Q̄i+1 , i.e.,
+
+Q̄i (ni ), Q̄i (ni + 1) · · · , Q̄i (ni+1 − 1)
+
+Thus Q is a sampling of the code-table as shown by the bold path in Figure 6. Note that this choice of Q is a
+capacity achieving sequence, moreover it will also achieve a single bit exponent
+Eb ,Q = inf {Ēb (R) − 2δ} = Ēb − 2δ
+R<C
+
+Choosing arbitrarily small δ proves Eb ≥ Ēb .
+
+•
+
+ACKNOWLEDGMENT
+The authors are indebted to Bob Gallager for his insights and encouragement for this work in general. In
+particular, Theorem 3 was mainly inspired from his remarks. Helpful discussions with David Forney and Emre
+Telatar are also gratefully acknowledged.
+
+44
+
+R EFERENCES
+[1] R. Ahlswede and G. Dueck. Identification via channels. IEEE Transactions on Information Theory, 35(1):15–29, 1989.
+[2] A. Albanese, J. Blomer, J. Edmonds, M. Luby, and M. Sudan. Priority encoding transmission. IEEE Transactions on Information
+Theory, 42(6):1737–1744, Nov 1996.
+[3] L. A. Bassalygo, V. A. Zinoviev, V. V. Zyablov, M. S. Pinsker, and G. Sh. Poltyrev. Bounds for codes with unequal protection of
+two sets of messages. Problemy Perdachi Informatsii, 15(3):44–49, July-Sept 1979.
+[4] P. Berlin, B. Nakiboğlu, B. Rimoldi, and E. Telatar. A simple converse of burnashev’s reliability function. Information Theory, IEEE
+Transactions on, 55(7):3074–3080, July 2009.
+[5] S. Borade and S. Sanghavi. Some fundamental coding theoretic limits of unequal error protection. In Information Theory, 2009.
+ISIT 2009. IEEE International Symposium on, pages 2231–2235, 28 2009-July 3 2009.
+[6] S. Borade and L. Zheng. Euclidean information theory. In Forty-Fifth Annual Allerton Conference, pages 633–640, September 26-28,
+2007.
+[7] I. Boyarinov and G. Katsman. Linear unequal error protection codes. IEEE Transactions on Information Theory, 27(2):168–175,
+Mar 1981.
+[8] S.I. Bross and S. Litsyn. Improved upper bounds for codes with unequal error protection. IEEE Transactions on Information Theory,
+52(7):3329–3333, July 2006.
+[9] M. V. Burnashev. Data transmission over a discrete channel with feedback, random transmission time. Problemy Perdachi Informatsii,
+12(4):10–30, 1976.
+[10] A. R. Calderbank and N. Seshadri. Multilevel codes for unequal error protection. IEEE Transactions on Information Theory,
+39(4):1234–1248, 1968.
+[11] Thomas M. Cover and Joy A. Thomas. Elements of information theory. Wiley-Interscience, New York, NY, USA, 1991.
+[12] I. Csiszár. Joint source-channel error exponent. Problems of Control and Information Theory, Vol. 9, Iss.5:315–328, 1980.
+[13] Imre Csiszár and János Körner. Information Theory: Coding Theorems for Discrete Memoryless Systems. Academic Press, Inc.,
+Orlando, FL, USA, 1982.
+[14] P. Cuff. Communication requirements for generating correlated random variables. In Information Theory, 2008. ISIT 2008. IEEE
+International Symposium on, pages 1393–1397, July 2008.
+[15] S. Diggavi and D. Tse. On successive refinement of diversity. In Forty-Second Annual Allerton Conference, pages 1641–1650,
+September 29- October 1, 2004.
+[16] V. N. Dynkin and V. A. Togonidze. Cyclic codes with unequal protection of symbols. Problemy Perdachi Informatsii, 12(1):24–28,
+Jan-Mar 1976.
+[17] G. D. Forney Jr. On exponential error bounds for random codes on the bsc. unpublished manuscript.
+[18] G. D. Forney Jr. Exponential error bounds for erasure, list, and decision feedback schemes. IEEE Transactions on Information
+Theory, 14(2):206–220, 1968.
+[19] R. G. Gallager.
+Fixed composition arguments and lower bounds to error probability.
+unpublished
+manuscript, http://web.mit.edu/gallager/www/notes/notes5.pdf.
+[20] Robert G. Gallager. Information Theory and Reliable Communication. John Wiley & Sons, Inc., New York, NY, USA, 1968.
+[21] W. J. van Gils. Two topics on linear unequal error protection codes: Bounds and their lengths and cyclic code classes. IEEE
+Transactions on Information Theory, 29(9):866876, Sep 1983.
+[22] C. Kilgus and W. Gore. A class of cyclic unequal error protection codes. IEEE Transactions on Information Theory, 18(5):687–690,
+Sep 1972.
+[23] B. D. Kudryashov. On message transmission over a discrete channel with noiseless feedback. Problemy Perdachi Informatsii,
+15(1):3–13, 1973.
+[24] B. Masnick and J. Wolf. On linear unequal error protection codes. IEEE Transactions on Information Theory, 13(4):600–607, Oct
+1967.
+[25] A. Montanari and G. D. Forney Jr.
+On exponential error bounds for random codes on the dmc.
+unpublished
+manuscript, http://www.stanford.edu/˜montanar/PAPERS/FILEPAP/dmc.ps.
+[26] R. H. Morelos-Zaragoza and Lin S. On a class of optimal nonbinary linear unequal error protection codes for two sets of messages.
+IEEE Transactions on Information Theory, 40(1):196–200, Jan 1994.
+[27] F. Ozbudak and H. Stichtenoth. Constructing linear unequal error protection codes from algebraic curves. IEEE Transactions on
+Information Theory, 49(6):1523–1527, Jun 2003.
+[28] H. Pishro-Nik, N. Rahnavard, and F. Fekri. Nonuniform error correction using low-density parity-check codes. IEEE Transactions
+on Information Theory, 51(7):2702–2714, July 2005.
+[29] C. Poulliat, D. Declercq, and I. Fijalkow. Optimization of ldpc codes for uep channels. In Information Theory, 2004. ISIT 2004.
+Proceedings. International Symposium on, pages 450–, June-2 July 2004.
+[30] C. Poulliat, D. Declercq, and I. Fijalkow. Enhancement of unequal error protection properties of ldpc codes. EURASIP J. Wirel.
+Commun. Netw., 2007(3):1–13, 2007.
+[31] N. Rahnavard and F. Fekri. Unequal error protection using low-density parity-check codes. In Information Theory, 2004. ISIT 2004.
+Proceedings. International Symposium on, pages 449–, June-2 July 2004.
+[32] N. Rahnavard, H. Pishro-Nik, and F. Fekri. Unequal error protection using partially regular ldpc codes. Communications, IEEE
+Transactions on, 55(3):387–391, March 2007.
+
+45
+
+[33] A. Sahai and S. Mitter. The necessity and sufficiency of anytime capacity for control over a noisy communication link: Part ii:
+vector systems. arXiv:cs/0610146v2 [cs.IT], http://arxiv.org/abs/cs/0610146.
+[34] A. Sahai and S. Mitter.
+Source coding and channel requirements for unstable processes.
+arXiv:cs/0610143v2
+[cs.IT], http://arxiv.org/abs/cs/0610143.
+[35] C. E. Shannon. A mathematical theory of communication. Bell System Technical Journal, Vol. 27:379–423 and 623–656, July and
+October 1948.
+[36] C.E. Shannon, R.G. Gallager, and E.R. Berlekamp. Lower bounds to error probability for coding on discrete memoryless channels.
+Information and Control, 10(1):65–103, 1967.
+[37] Albert N. Shiriaev. Probability. Springer-Verlag Inc., New York, NY, USA, 1996.
+[38] M. Trott. Unequal error protection codes: theory and practice. In Proc. IEEE Information Theory Workshop, Haifa, June 1996.
+[39] B. Vasic, A. Cvetkovic, S. Sankaranarayanan, and M. Marcellin. Adaptive error protection low-density parity-check codes for joint
+source-channel coding schemes. In Information Theory, 2003. Proceedings. IEEE International Symposium on, pages 267–267,
+June-4 July 2003.
+[40] H. Yamamoto and K. Itoh. Asymptotic performance of a modified schalkwijk-barron scheme for channels with noiseless feedback.
+IEEE Transactions on Information Theory, 25(6):729–733, 1979.
+
+

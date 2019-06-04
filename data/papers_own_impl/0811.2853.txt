@@ -1,0 +1,3607 @@
+Generating Random Networks Without Short Cycles
+Mohsen Bayati
+Graduate School of Business, Stanford University, Stanford, CA 94305, bayati@stanford.edu
+
+Andrea Montanari
+Departments of Electrical Engineering and Statistics, Stanford, CA 94305, montanar@stanford.edu
+
+arXiv:0811.2853v2 [cs.DS] 29 Dec 2017
+
+Amin Saberi
+Departments of Management Science and Engineering and Institute for Computational and Mathematical Engineering,
+Stanford, CA 94305, saberi@stanford.edu
+
+Random graph generation is an important tool for studying large complex networks. Despite abundance
+of random graph models, constructing models with application-driven constraints is poorly understood. In
+order to advance state-of-the-art in this area, we focus on random graphs without short cycles as a stylized
+family of graphs, and propose the RandGraph algorithm for randomly generating them. For any constant k,
+when m = O(n1+1/[2k(k+3)] ), RandGraph generates an asymptotically uniform random graph with n vertices,
+m edges, and no cycle of length at most k using O(n2 m) operations. We also characterize the approximation
+error for finite values of n. To the best of our knowledge, this is the first polynomial-time algorithm for the
+problem. RandGraph works by sequentially adding m edges to an empty graph with n vertices. Recently,
+such sequential algorithms have been successful for random sampling problems. Our main contributions
+to this line of research includes introducing a new approach for sequentially approximating edge-specific
+probabilities at each step of the algorithm, and providing a new method for analyzing such algorithms.
+Key words : Network models, Poisson approximation, Random graphs
+
+1. Introduction
+Recently, a common objective in many application areas has been extracting information from data
+sets that contain a network structure. Examples of such data are the Internet, social networks,
+biological networks, or healthcare networks such as network of physician referrals. In the last
+example, consider the question “how is the network of physician referrals formed?”. Answering this
+question could allow policy makers to influence the formation of the network with the objective of
+improving quality of care. This could be achieved by rewarding referrals to higher quality physicians
+and penalizing referrals to lower performing physicians. Unfortunately, empirical analysis of such
+network related questions is challenging since in most cases researchers have access to a single
+network or a few snapshots of it over time. Specifically, the small number of samples renders the
+estimation part of any parametric network formation model unreliable (Chandrasekhar 2015).
+A popular approach in statistical data analysis, when facing small number of observations, is
+bootstrap (Efron 1979) which increases the number of observations by creating random re-samples
+1
+
+2
+
+of the original data. However, creating random copies of networks can be computationally expensive. For example, if the aim is to create a random copy of the physician referral network while
+keeping the number of neighbors (degree) of each node fixed, the problem becomes NP hard in
+general (Wormald 1999). The property of fixing the number of neighbors is relevant when it is
+desired to control for variations in abilities of the physicians to form working relationships. Similarly, one could be interested in creating random copies of a network when certain sub-structures
+should be preserved or avoided. This problem in general is unsolved from a theoretical point of
+view except for few examples where efficient algorithms are proposed (Wormald 1999). Therefore,
+practitioners use non-rigorous heuristic models of random networks which may lead to incorrect
+(biased) estimates, see (Milo et al. 2002) for such a heuristic.
+The objective of this paper is to advance state-of-the-art in this line of research by proposing a
+new algorithm and analysis technique. We present the approach for a stylized subclass of problems,
+generating random graphs without short cycles, and leave extensions to other substructures for
+future research. While our emphasis in this paper is on advancing the methodology, and the family
+of graphs without short cycles is selected as an example of open problems in this area, we note that
+randomly generating graphs from this family has practical implications in information theory. Such
+graphs are used in designing low density parity check (LDPC) codes that can achieve Shannon
+capacity for transmitting messages in a noisy environment (Richardson and Urbanke 2008).
+1.1. Contributions
+We present a simple and efficient algorithm, RandGraph, for randomly generating simple graphs
+without short cycles. For any constant k, α ≤ 1/[2k(k + 3)], and m = O(n1+α ), RandGraph generates
+an asymptotically uniform random graph with n vertices, m edges, and no cycle of length k or
+smaller. RandGraph uses O(n2 m) operations in expectation. In addition, for finite values of n, we
+calculate the approximation error. To the best of our knowledge, this is the first polynomial-time
+algorithm for the problem.
+RandGraph starts with an empty graph and sequentially adds m edges between pairs of nonadjacent vertices. In every step, two distinct vertices i, j with distance at least k are selected with
+probability pij , and the edge (ij) is added to the graph. The most crucial step, computing pij ,
+is obtained by finding a sharp estimate for the number of extensions of the partially constructed
+graph, Gt , that contain (ij) and have no cycle of length at most k. This estimation is done by
+computing the expected number of small cycles produced if the rest of the edges are added uniformly
+at random, using a Poisson approximation.
+Our analysis of RandGraph involes three approximation steps. First we approximate random
+graphs that have m edges and n vertices with Erdös-Rényi (ER) graphs where each edge appears
+
+3
+
+independently with probability m/
+
+n
+2
+
+
+
+. The second approximation uses Janson inequality (Janson
+
+1990) for estimating the probability1 that random ER graphs have no cycle of length at most k.
+These two approximations provide us with an estimate for the uniform distribution on the family of
+graphs without cycles of length at most k. In the final and third step, we approximate Gt with ER
+graphs with edge density t/m to estimate the output distribution of RandGraph, and to show that
+it is asymptotically equal to the uniform distribution. We emphasize that these approximations
+are easy when m = O(n), and our main contribution is to show that they are sharp even when the
+number of edges is super-linear in n, namely when m = O(n1+α ) for small values of α.
+We also provide a theoretical and empirical comparison between RandGraph and the well-known
+triangle-free process that has recently been shown to produce triangle-free graphs (our problem
+when k = 3) with an almost uniform distribution (Pontiveros et al. 2013, Bohman and Keevash
+2013). The comparison shows that the output distribution of RandGraph is much closer to the
+uniform distribution.
+1.2. Organization of the Paper
+The rest of the paper is organized as follows. §2 discusses related research. Description of RandGraph
+and the main result are presented in §3. §4 provides the main idea behind RandGraph followed by
+its analysis in §5. An efficient implementation of RandGraph is presented in §6 and a comparison
+with the triangle-free process is given in §7. Finallly, an extension of RandGraph to bipartite graphs
+with given degrees is discussed in §8.
+
+2. Related Literature
+Random graph models have been used in a wide variety of research areas. For example they are
+used in determining the effect of having overweight friends in adolescent obesity (Valente et al.
+2009), in studying social networks that result from uncoordinated random connections created
+by individuals (Jackson and Watts 2002), in modeling emergence of the world wide web as an
+endogenous phenomena (Papadimitriou 2001) with certain topological properties (Kleinberg 2000,
+Newman 2003), and in simulating networking protocols on the Internet topology (Tangmunarunkit
+et al. 2002, Faloutsos et al. 1999, Medina et al. 2000, Bu and Towsley 2002).
+In information theory, random graphs are used to construct LDPC codes that can approach
+Shannon capacity (Richardson and Urbanke 2008), specifically, when the graphs representing the
+codes are selected uniformly at random from the set of bipartite graphs with given degree sequences
+1
+
+We note that using the Poisson approximation method in §6.2 of (Janson et al. 2000) one can estimate this probability
+with an additive error that converges to 0 with a rate that is inversely polynomial in n. However, here we require a
+stronger approximation since we need a multiplicative error that converges to 1. This would require the additive error
+to converge to zero faster than the probability of the event itself which is exponentially small in n when m = O(n1+α ).
+
+4
+
+(Amraoui et al. 2007, Chung et al. 2001, Luby et al. 1997). While these random graphs guarantee
+optimal performances asymptotically, in practice the LDPC graph has between 103 and 105 nodes
+where it is shown that the existence of a small number of subgraphs spoil the code performances (Di
+et al. 2002, Richardson 2003, Koetter and Vontobel 2003). The present paper studies a specific class
+of such subgraphs (short cycles), but we expect our approach to be applicable to other subgraphs
+as well. In addition, for the sake of simplicity, we present the relevant proofs only for the problem
+of generating random graphs without short cycles (not necessarily bipartite nor with prescribed
+degrees). Then we will adapt the algorithm for generating random bipartite graphs with given
+degree sequences that have no short cycles2 . Generalizing proofs to this case is cumbersome but
+we expect that to be conceptually straightforward.
+Random graph generation has also been studied extensively as an important theoretical problem
+(Wormald 1999, Ioannides 2006). From a theoretical perspective, our work is related to the following
+problem. Consider a graph property P that is preserved by removal of any edge from the graph. It
+is a standard problem in extremal graph theory to determine the largest m such that there exists
+a graph with n vertices and m edges having property P . Lower bounds on m can be obtained
+through the analysis of greedy algorithms. Such algorithms proceed by sequentially choosing an
+edge uniformly from edges whose inclusion would not destroy property P , adding that to the
+graph, and repeating the procedure until no further edge can be added. The resulting graph is a
+random maximal P -graph. The question of finding the number of edges of a random maximal P graph for several properties P has attracted considerable attention (Rucinski and Wormald 1992,
+Erdős et al. 1995, Spencer 1995, Bollobás and Riordan 2000, Osthus and Taraz 2001, Bohman and
+Keevash 2010, Wolfovitz 2011, Pontiveros et al. 2013, Bohman and Keevash 2013, Warnke 2014).
+In particular, when P is the property that the graph has no cycles of length k, the above process of
+sequentially growing the graph is called Ck -free process. Bohman and Keevash (2010) showed that
+the process asymptotically leads to graphs with at least some constant times n(n log n)1/(k−1) edges
+which improved earlier results of Bollobás and Riordan (2000) and Osthus and Taraz (2001). For
+the case of k = 3, Pontiveros et al. (2013), Bohman and Keevash (2013) proved a sharper result that
+p
+with high probability (as n goes to ∞) the number of edges m would be [1 + o(1)]n n log(n)/8
+which is of order n1.5 up to logarithmic factors.
+In addition to the bound on m, and related to the topic of this paper, the analyses by Pontiveros
+et al. (2013), Bohman and Keevash (2013) show that certain graph parameters in the C3 -free
+process (also known as triangle-free process) concentrate around their value in uniformly random
+C3 -free graphs. But these papers do not provide any formal statement on closeness of the two
+2
+
+Implementation details of the application to LDPC codes can be found in this conference paper (Bayati et al. 2009a).
+
+5
+
+distributions. In contrast, we prove that RandGraph with k = 3, which is a variant of the C3 -free
+process, generates graphs with a distribution that converges in total-variation distance to uniform
+C3 -free graphs, early in the process; i.e., when m is of order n1+1/36 . We also provide the rate of
+this convergence. We note that this range of m is a small subset of the range studied by (Pontiveros
+et al. 2013, Bohman and Keevash 2013), but in §7 we show that our convergence results are sharper
+and provide stronger concentration for the graph parameters. In §7, we also emprically demonstrate
+that the output distribution of RandGraph is much closer to uniform than the C3 -process.
+However, we believe the value of RandGraph and its analysis is when the objective is a more
+general problem; generating graphs with a given degree sequence that do not have small cycles. In
+this setting we expect the natural extension of the Ck -free process would lead to Ck -free graphs with
+a highly non-uniform distribution. This is motivated by (Bayati et al. 2010) that showed, when the
+degree sequence is irregular, the process of adding edges uniformly at random in the configuration
+model, while avoiding creation of double-edges or self-loops, generates graphs with a distribution
+that is asymptotically equal to the uniform distribution multiplied by an exponentially large bias3 .
+However, providing such a rigorous analysis, when the constraint of avoiding small cycles is added,
+is still an open problem. We view the present paper as a first step in this direction since it suggests
+a design approach for the problem (see §4 for details). But to simplify the presentation, we focus
+the rigorous analysis to the case where the degree sequence constraint is relaxed to just having a
+fixed number of edges. And in §8, we demonstrate how the approach translates to an algorithm
+when the degree sequence is prescribed and the graph is bipartite.
+This paper is also closely related to the literature on designing sequential algorithms for counting
+and generating random graphs with given degrees (Chen et al. 2005, Blitzstein and Diaconis 2010,
+Steger and Wormald 1999, Kim and Vu 2007, Bayati et al. 2010, Blanchet 2009). In fact, the current
+paper builds on this line of research and develops two mainly new techniques: (1) for obtaining
+probabilities pij , instead of starting from a biased algorithm, characterizing its bias, and selecting
+pij that can cancel the bias, we use Poisson approximation to directly estimate correct probabilities
+pij that leads to an unbiased algorithm, and (2) for the analysis, we use graph approximation
+methods, Janson inequality, and a combinatorial argument to track the accumulated error from
+sequentially approximating pij in each round.
+Finally, we note that a preliminary and weaker version of our main result has appeared in
+proceedings of annual ACM-SIAM Symposium on Discrete Algorithms (Bayati et al. 2009b). In
+particular, Theorem 3.1 of Bayati et al. (2009b) only shows that the total variation distance
+between the output distribution (for a different version) of RandGraph and the uniform distribution
+3
+
+For regular graphs (Steger and Wormald 1999, Kim and Vu 2007, Bayati et al. 2010)
+√ provide a positive result; the
+output distribution becomes asymptotically uniform when the degrees of are order n.
+
+6
+
+converges to 0 as size of the graphs goes to ∞. But here, we characterize size of the total variation
+distance for any finite n, that is of order n−1/2+k(k+3)α . In addition, the aforementioned discussion
+on Ck -free process and its comparison with RandGraph, in §7, are new.
+
+3. Algorithm RandGraph and Main Result
+In this section we start by introducing some notation and then present our algorithm (RandGraph)
+followed by the main theorem on its asymptotic performance.
+The girth of a graph G is defined to be the length of its shortest cycle. Let Gn,m denote the set
+of all simple graphs with m edges over n vertices and let Gn,m,k be the subset of graphs in Gn,m
+with girth greater than k. Throughout the paper k is a constant and is independent of n and m.
+For any positive integer s, the set of integers 1, 2, . . . , s is denoted by [s]. The complete graph with
+vertex set [n] is denoted by Kn . For a graph G with n vertices, we label its vertices by integers in
+[n]. For each pair of distinct integers i, j ∈ [n], an edge that connects node i to node j is denoted
+by (ij). All graphs considered in this paper are undirected which means (ij) and (ji) refer to the
+same edge.
+RandGraph starts with an empty graph G0 on n vertices and at each step t, t ∈ {0, 1, . . . , m − 1},
+an edge (ij) is added to Gt from Q(Gt ), the set of edges that their addition to Gt does not create a
+cycle of length at most k. Then Gt+1 will be Gt ∪ (ij). If Q(Gt ) is the empty set for some t < m then
+RandGraph reports FAIL and terminates. The main technical step in RandGraph is that the edge
+(ij) is selected randomly from Q(Gt ), according to a carefully constructed probability distribution
+that is denoted by p(ij |Gt ) and is given by
+p(ij |Gt ) ≡
+Here Z(Gt ) ≡
+
+P
+
+(ij)∈Q(Gt ) e
+
+−Ek (Gt ,ij)
+
+1
+e−Ek (Gt ,ij) .
+Z(Gt )
+
+(1)
+
+is a normalizing term,
+
+Ek (Gt , ij) ≡
+
+k X
+r−2
+X
+
+Gt ,ij r−1−`
+Nr,`
+qt
+,
+
+r=3 `=0
+Gt ,ij
+m−t
+, and Nr,`
+is the number of simple cycles (cycles that do not repeat a vertex) in Kn that
+(n2 )−t
+have length r, include (ij), and include exactly ` edges of Gt . We will provide the intuition behind
+
+qt ≡
+
+this complex-looking formula in §4. In addition, in §6 we will provide an efficient way of calculating
+p(ij |Gt ) using sparse matrix multiplication. Throughout the paper, to simplify the notation, in
+mathematical formula we will refer to RandGraph by the short notation RG.
+By construction, if RandGraph outputs a graph G then G is a member of Gn,m,k . If RandGraph
+outputs FAIL the algorithm will be repeated till it produces a graph. We will show later that the
+probability of FAIL output vanishes asymptotically. Let PRG (G) be the probability that RandGraph
+
+7
+
+Algorithm 1 RandGraph.
+Input: n, m, k
+Output: An element of Gn,m,k or FAIL
+set G0 to be a graph over vertex set [n] and with no edges
+for each t in {0, . . . , m − 1} do
+if |Q(Gt )| = 0 then
+stop and return FAIL
+else
+sample an edge (ij) with probability p(ij |Gt ), defined by Eq. (1)
+set Gt+1 = Gt ∪ (ij)
+end if
+end for
+if the algorithm does not FAIL before t = m − 1 then
+return Gm
+end if
+does not FAIL and returns graph G. Let also PU be the uniform probability on the set Gn,m,k ; that
+is PU (G) = 1/|Gn,m,k |. Our goal is to show that PRG (G) and PU (G) are very close in total variation
+distance. The total variation distance between two probability measures P and Q on a set X is
+n
+o
+defined by dT V (P, Q) ≡ sup |P(A) − Q(A)| : A ⊂ X . Now, we are ready to state the main result
+of the paper. Its proof is provided in §5.
+Theorem 1. For m = O(n1+α ), m ≥ n, and a constant k ≥ 3 such that α ≤ 1/[2k(k + 3)], the
+failure probability of RandGraph asymptotically vanishes and the graphs generated by RandGraph
+are approximately uniform. In particular,
+PRG (FAIL) = O(n−1/2+k(k+3)α )
+
+and
+
+dT V (PRG , PU ) = O(n−1/2+k(k+3)α ) .
+
+The next result shows a run-time guarantee for RandGraph and is proved in §6.
+Theorem 2. Let n, m, and k satisfy the conditions of Theorem 1. For all n large enough, there
+exist an implementation of RandGraph that uses asymptotically O(n2 m) operations in expectation.
+
+4. The Intuition Behind RandGraph
+In order to understand RandGraph, and in particular the calculations for [p(ij |Gt )], it is instructive
+to examine the execution tree T of a simpler version of RandGraph that sequentially adds m random
+edges to an empty graph on n vertices to obtain an element of Gn,m (without any attention to
+whether a short cycle is generated or not). Consider a rooted m-level tree where the root (the vertex
+in level zero) corresponds to the empty graph at the beginning of this sequential algorithm and
+level t vertices correspond to all pairs (Gt , πt ) where Gt is a partial graph that can be constructed
+after t steps, and πt is an ordering of its t edges. There is a link (edge) in T between a partial
+graph (Gt , πt ) from level t to a partial graph (Gt+1 , πt+1 ) from level t + 1 if Gt ⊂ Gt+1 and the first
+
+8
+
+t edges of πt and πt+1 are equal. Any path from the root to a leaf at level m of T corresponds to
+one possible way of sequentially generating a random graph in Gn,m .
+Let us denote those partial graphs Gt that have girth greater than k by valid graphs. Our goal
+is to reach a valid leaf in T, uniformly at random, by starting from the root and going down the
+tree. A myopic approach could be repeating the above sequential algorithm many times until its
+output in step m is a valid leaf of T. However, when m = O(n1+α ), the fraction of valid leaves is of
+α
+
+order e−n (see §5 for details). Therefore, this myopic approach has an exponentially small chance
+of success. Note that the myopic approach works well when m = O(n) since a constant fraction of
+leaves of T are valid. Therefore, our focus is when m is super linear in n.
+In contrast to the myopic approach, RandGraph is designed based on a general strategy for
+uniformly randomly generating valid leaves of T (Sinclair 1993); at any step t, it chooses (ij) with
+probability proportional to the number of valid leaves of T among descendant of (Gt+1 , πt+1 ) where
+Gt+1 = Gt ∪ (ij). Denote this probability by ptrue (Gt+1 , πt+1 ). The main challenge for implementing
+this strategy is calculating ptrue (Gt+1 , πt+1 ). In RandGraph we will approximate ptrue (Gt+1 , πt+1 ) with
+p(Gt+1 , πt+1 ) as follows. Let nk (Gt+1 , πt+1 ) denote the number of cycles of length at most k in a leaf
+chosen uniformly at random among descendants of (Gt+1 , πt+1 ) in T. Note that ptrue (Gt+1 , πt+1 ) is
+by definition equal to P {nk (Gt+1 , πt+1 ) = 0}. Using Poisson approximation, see (Alon and Spencer
+1992) for details, one expects the distribution of nk (Gt+1 , πt+1 ) to be approximately Poisson. In
+particular,
+P{nk (Gt+1 , πt+1 ) = 0} ≈ exp (−E[nk (Gt+1 , πt+1 )]) .
+
+(2)
+
+Therefore, our approximation p(Gt+1 , πt+1 ) will be chosen to be proportional to the right hand side
+of Eq. (2). This is the main intuition behind Eq. (1).
+A crucial step in the analysis of RandGraph, provided in §5, is to control the accumulated error
+m−1
+Y
+t=0
+
+
+p(Gt+1 , πt+1 )
+.
+ptrue (Gt+1 , πt+1 )
+
+Prior work (Kim and Vu 2007, Bayati et al. 2010) used sharp concentration inequalities to find a
+separate upper bound, for each t, on the error term [p(Gt+1 , πt+1 )/ptrue (Gt+1 , πt+1 )]. Instead, in this
+Qm−1
+paper we simplify the final product t=0 [p(Gt+1 , πt+1 )/ptrue (Gt+1 , πt+1 )] and will approximate it
+directly which leads to a tighter bound.
+
+5. Analysis of RandGraph and Proof of Theorem 1
+The aim of this section is to prove Theorem 1. The core of the proof is to show that PRG (G),
+probability of generating a graph G by RandGraph, is asymptotically larger than PU (G), the uniform
+probability over Gn,m,k . After this result is stated in Lemma 1, it is used to prove Theorem 1. The
+
+9
+
+rest of the section is divided to four subsections. In particular, §5.1 describes the main steps for
+proving Lemma 1 which rely on auxiliary Lemmas 2 and 3. These auxiliary lemmas are stated in
+§5.1 and proved in §5.2 and §5.3 respectively. Throughout this section we will introduce a large
+
+number of new notations. For convenience, we have repeated all notations with their definition in
+Table 1 of Appendix B.
+Lemma 1. There exist positive constants c1 and c2 such that
+
+
+PRG (G) ≥ 1 − c1 n−1/2+k(k+3)α PU (G) ,
+for every n, m, k satisfying the conditions of Theorem 1, and all G ∈ Gn,m,k except for a subset of
+graphs in Gn,m,k of size c2 exp(−nkα )|Gn,m,k |.
+In other words, Lemma 1 shows that for all but o(|Gn,m,k |) graphs G in Gn,m,k inequality PRG (G) ≥
+[1 − o(1)]PU (G), holds where the term o(1) goes to zero as n goes to infinity uniformly in the graph
+G. Next, we prove Theorem 1 using Lemma 1.
+Proof of Theorem 1
+
+From the definition of dT V (PRG , PU ), using triangle inequality, we obtain
+X
+
+dT V (PRG , PU ) ≤
+
+|PRG (G) − PU (G)| .
+
+G∈Gn,m,k
+
+Then, depending on whether PRG (G) ≥ PU (G) or PRG (G) < [1 − c1 n−1/2+k(k+3)α ]PU (G) we bound the
+term |PRG (G) − PU (G)| differently. Let Bn,m,k ⊂ Gn,m,k be the set of all graphs G with PRG (G) ≤
+PU (G) and let the subset Dn,m,k ⊆ Bn,m,k to be those graphs G in Bn,m,k with PRG (G) < [1 −
+c1 n−1/2+k(k+3)α ]PU (G). To simplify the notation, for the rest of the proof we drop the subscripts
+n, m, k from Bn,m,k , Dn,m,k and Gn,m,k . Assuming Lemma 1 holds then |D| = c2 e−n
+
+kα
+
+|G| and for
+
+G ∈ B\D
+|PRG (G) − PU (G)| = PU (G) − PRG (G) ≤ c1 n−1/2+k(k+3)α PU (G) .
+
+(3)
+
+Therefore,
+
+ Xh
+i
+X 
+X 
+
+
+PRG (G) − PU (G) + 2
+PRG (G) − PU (G) =
+PRG (G) − PU (G)
+G∈G
+
+G∈G
+
+=
+
+Xh
+
+
+
+X 
+X 
+
+
+PRG (G) − PU (G) + 2
+PRG (G) − PU (G)
+PRG (G) − PU (G) + 2
+i
+
+G∈G
+(a)
+
+≤
+
+X
+G∈G
+
+(4)
+
+G∈B
+
+G∈D
+
+G∈B\D
+
+PRG (G) −
+
+X
+
+PU (G) + 2c1 n−1/2+k(k+3)α
+
+G∈G
+
+G∈B\D
+
+|D|
+≤ 1 − PRG (FAIL) − 1 + 2c1 n−1/2+k(k+3)α + 4
+|G|
+≤ 2c1 n−1/2+k(k+3)α + 4c2 e−n
+
+X
+
+kα
+
+− PRG (FAIL) ,
+
+PU (G) + 4
+
+X
+G∈D
+
+PU (G)
+
+10
+
+where (a) uses Eq. (3) and triangle inequality. Also, PRG (FAIL) is the probability of failure of
+RandGraph. In summary, we proved
+dT V (PRG , PU ) + PRG (FAIL) ≤
+
+X
+
+|PRG (G) − PU (G)| + PRG (FAIL) = O(n−1/2+k(k+3)α ) ,
+
+G∈G
+
+which finishes the proof 
+Throughout the rest of this section our focus will be on proving Lemma 1.
+5.1. Lower Bound For PRG (G): Proof of Lemma 1
+We break proof of Lemma 1 into four main steps. Two of these steps (steps 1 and 3 below) will be
+major and involve proving additional Lemmas that will be later proved in §5.2 and §5.3.
+Step 1 in Proof of Lemma 1: Approximating PU via Jansen inequality.
+
+Since PU = 1/|Gn,m,k |,
+
+we will find an asymptotic estimate for |Gn,m,k | using Janson inequality (Janson 1990) that shows
+the number of cycles of constant length in Gn,m is approximately a Poisson random variable. The
+result is summarized in the following lemma that is proved in §5.2. Before stating the lemma, we
+define Cr to be the set of all simple cycles of length r in Kn and introduce notation N for total
+
+number of edges in Kn which is equal to n2 .
+Lemma 2. Let m = O(n1+α ) with α < 1/(2k − 1), k ≥ 3, and m ≥ n, then
+PU (G)
+n 
+h P
+k
+N
+exp − r=3 |Cr |
+m
+
+
+m r
+N
+
+io−1 = e
+
+ 3kα−1 
+O n 2
+
+.
+
+(5)
+
+In other words, the number of graphs with n vertices, m edges, and no cycle of length up to k is
+
+Pk
+3kα−1
+N
+(1 + o(1)) m
+exp[− r=3 |Cr |(m/N )r ] where the o(1) term is of order n 2 .
+The remaining steps will provide necessary approximations and algebraic simplifications to find an
+asymptotic lower bound for PRG which will be equal to the denominator term in Eq. (5).
+Step 2 in Proof of Lemma 1: Using convexity and Jensen Inequality.
+
+Let us start by writing
+
+an expression for PRG (G) when G is a fixed element of Gn,m,k . Note that RandGraph sequentially
+adds edges to an empty graph to produce a graph with m edges. Hence for the fixed graph G, there
+are m! permutations of the edges of G that can be generated by RandGraph and each permutation
+can be output with a different probability. Let π be any permutation of edges of G (i.e. a one-to-one
+mapping from {1, . . . , m} to the edges of G), and let Gπt be the graph having [n] as vertex set and
+{π(1), . . . , π(t)} as edge set. This is the partial graph that is generated after t steps of RandGraph
+
+conditioned on having π as output. Now we can write
+PRG (G) =
+
+X m−1
+Y
+π
+
+t=0
+
+p(π(t + 1)|Gπt ) .
+
+11
+
+Additionally, consider the uniform distribution on the set of all m! permutations π. Then,
+
+P
+π
+
+can
+
+be replaced by m! Eπ where Eπ is expectation with respect to a random permutation π. Hence,
+(m−1
+)
+(m−1
+)
+Y
+X
+π
+π
+PRG (G) = m! Eπ
+p(π(t + 1)|Gt ) = m! Eπ exp
+log p(π(t + 1)|Gt )
+t=0
+
+(m−1t=0
+)
+X
+π
+≥ m! exp
+Eπ log p(π(t + 1)|Gt ) ,
+
+(6)
+
+t=0
+
+where the inequality is by Jensen inequality for the convex function ex . Next, applying the definition
+of p(π(t + 1)|Gt ) from Eq. (1) we get
+" m−1
+#
+m−1
+X
+X
+PRG (G) ≥ m! exp −
+Eπ Ek (Gπt , π(t + 1)) −
+Eπ log Z(Gπt ) .
+t=0
+
+(7)
+
+t=0
+
+Now, we define F (Gπt ) to be the set of all forbidden pairs at step t, pairs of nodes i and j that
+adding (ij) to Gπt creates a cycle of length at most k, and set Z0 (Gπt ) ≡ N − t − |F (Gπt )|. Note that,
+Z(Gπt )
+log Z(Gπt ) = log Z0 (Gπt ) + log
+Z0 (Gπt )
+
+
+|F (Gπt )|
+Z(Gπt )
+= log (N − t)(1 −
+) + log
+N −t
+Z0 (Gπt )
+|F (Gπt )|
+Z(Gπt )
+≤ log(N − t) −
++ log
+,
+N −t
+Z0 (Gπt )
+
+(8)
+
+using inequality log(1 − x) ≤ −x for x ∈ (−∞, 1] that holds since |F (Gπt )| ≤ N − t. Combining Eqs.
+(7) and (8) and using 1/(N − t) ≥ 1/N , we arrive at the following modified lower bound for PRG (G)
+
+
+
+
+
+
+
+" m−1
+#
+# " m−1
+# " m−1
+
+
+
+
+π
+X
+X
+X
+1
+Z(G
+)
+1
+t
+π
+π
+−
+Eπ log
+.
+PRG (G) ≥ N  exp
+Eπ Ek (Gt , π(t + 1)) +
+Eπ |F (Gt )| + −
+
+N t=0
+Z0 (Gπt ) 
+
+
+m
+t=0
+t=0
+
+
+
+{z
+} |
+{z
+} |
+{z
+}
+
+|
+S1 (G)
+
+S2 (G)
+
+S3 (G)
+
+(9)
+The next step is the most important part of our effort in the journey to prove Lemma 1.
+Step 3 in Proof of Lemma 1: Simplifying S1 (G) + S2 (G) + S3 (G).
+
+This step shows the main
+
+benefit of deferring the calculation of approximation errors for p(ij |Gπt ) to the final step. We will
+show that even though the terms Si (G) for i = 1, 2, 3 can be large and dependent on G, many
+terms in their combined sum cancel out and the resulting expression will be independent of G. In
+particular, we will show that the only negative term4 , S1 (G), will completely cancel S2 (G) and all
+graph dependent parts of S3 (G). Throughout the rest, since G is fixed, we often drop the references
+to G in Si : i = 1, 2, 3.
+The main result of this step is summarized in the following lemma. First we define Cr,` (G) to be
+the set of all simple cycles of length r, belonging to Kn , that include exactly ` edges of G.
+4
+
+S3 (G) will be positive since Z(Gπt ) < Z0 (Gπt ).
+
+12
+
+Lemma 3. Let m be larger than n and also satisfy m = O(n1+α ) where α ≤ 1/[2k(k + 3)] for a
+kα
+
+constant k ≥ 3. Then for all but O(e−n ) fraction of graphs G in Gn,m,k the three inequalities below
+hold. In other words, the number of graphs in Gn,m,k that violate at least one of the inequalities has
+kα
+
+size of order e−n |Gn,m,k |.
+r−` R 1 `−1
+ Pk Pr−1
+(a) S1 (G) ≥ −O n(k−1)(k+3)α−1 − r=3 `=1 |Cr,` (G)| m
+` 0 θ (1 − θ)r−` dθ.
+N
+
+ P
+ R 1 r−1
+k
+(b) S2 (G) ≥ −O nk(k+3)α−1/2 + r=3 |Cr,r−1 (G)| m
+θ dθ.
+N
+0
+R1
+Pk Pr−2
+(c) S3 (G) ≥ −O(nk(k+3)α−1/2 ) + r=3 `=0 |Cr,` (G)|( m
+)r−` (r − `) 0 θ` (1 − θ)r−`−1 dθ.
+N
+We defer proof of Lemma 3 to §5.3.
+Step 4 and the Final Step in Proof of Lemma 1.
+
+Next we will show how the different terms in
+
+lower bounds for Si ’s from Lemma 3 cancel each other. The main idea in relating the terms in the
+lower bounds is the following equation which is obtained using integration by parts for r − 1 ≥ ` > 1,
+Z 1
+Z 1
+`−1
+r−`
+`
+θ (1 − θ) dθ = (r − `)
+θ` (1 − θ)r−`−1 dθ .
+(10)
+0
+
+0
+
+Using (10) we can see that, when adding the right hand sides of the three inequalities in Lemma
+3, all terms in the lower bound for S1 with 1 ≤ ` ≤ r − 2 are canceled with the corresponding terms
+in the lower bound for S3 . In addition, the ` = r − 1 terms in the lower bound of S1 are canceled
+with the lower bound of S2 . Therefore, the uncanceled terms are ` = 0 terms from the lower bound
+of S3 which we will see below to be asymptotically independent of G. More formally, combining
+kα
+
+Eq. (9) and Lemma 3, for all graphs G in Gn,m,k except a subset of size O(e−n |Gn,m,k |),
+PRG (G) ≥
+≥
+
+=
+
+1
+N
+m
+
+1
+N
+m
+
+1
+N
+m
+
+ exp [S1 (G) + S2 (G) + S3 (G)]
+"
+ exp −O(nk(k+3)α−1/2 ) +
+
+k
+X
+
+|Cr,0 (G)|
+
+r=3
+
+"
+ exp −O(nk(k+3)α−1/2 ) +
+
+k
+X
+r=3
+
+|Cr,0 (G)|
+
+ m r
+N
+ m r
+N
+
+#
+
+1
+
+Z
+
+(1 − θ)r−1 dθ
+
+r
+0
+
+#
+.
+
+(11)
+
+We note that even though the equality (10) is just an algebraic fact, it can be viewed as doublecounting a combinatorial quantity using two different approaches. The quantity would be number
+of times a cycle in Kn would be considered in calculation of probability terms p(π(t + 1)|Gπt ).
+In §5.3 we perform both counting arguments and then approximate the result of each counting
+argument with integration with respect to θ = t/m.
+Comparing (11) and the asymptotic expression for PU (G) given by the denominator in left hand
+side of Eq. (5), we see that the only difference in the exponent is the use of |Cr,0 (G)| instead of |Cr |
+and the following lemma, proved in §A, provides the final piece.
+
+13
+
+Lemma 4. If m = O(n1+α ) and k is constant then |Cr \Cr,0 (G)|/|Cr | = O(nα−1 ).
+Using Lemma 4 we have
+k
+X
+r=3
+
+|Cr,0 (G)|
+
+ m r
+N
+
+≥
+
+k
+X
+
+k
+ m r
+X
+
+  m r
+|Cr | 1 − O(nα−1 )
+≥ −O(n(k+1)α−1 ) +
+|Cr |
+,
+N
+N
+r=3
+r=3
+
+where the last inequality uses |Cr | = O(nr ) and m = O(n1+α ). Summarizing, using Lemmas 2-3, for
+kα
+
+all graphs G in Gn,m,k except a subset of size O(e−n |Gn,m,k |) we have
+h
+ i
+Pk
+m r
+k(k+3)α−1/2
+exp −O(n
+) + r=3 |Cr | N
+
+PRG (G) ≥
+N
+m
+k(k+3)α−1/2
+
+
+≥ exp −O(n
+) − O(n(3kα−1)/2 ) PU (G)
+
+
+= exp −O(nk(k+3)α−1/2 ) PU (G)
+
+
+≥ 1 − O(nk(k+3)α−1/2 ) PU (G) .
+
+
+Here the last inequality uses ex ≥ 1 + x. The above equation means that there is a constant c1
+where PRG (G) ≥ [1 − c1 nk(k+3)α−1/2 )]PU (G) for the same family of graphs which finishes proof of
+Lemma 1. Therefore, all we need now is proving Lemmas 2-3 
+5.2. Approximating |Gn,m,k | and Proof of Lemma 2
+Before delving into the details, we provide a high-level overview of the proof. The main idea is
+to look at the random graph model Gn,m and estimate the probability of the event of having
+a graph with girth larger than k using Janson inequality. However, we will do all of this on an
+approximation to the random graph model Gn,m , namely random graph model Gn,p where each
+edge on vertices of [n] appears independently randomly with probability p = m/N . This type of
+approximation is well-known in random graph literature (Janson et al. 2000). Any graph in Gn,p
+would have on average m edges, making Gn,p a natural approximation to Gn,m .
+5.2.1. Approximating Pn,p (Ak ) via Janson Inequality. First we define Janson inequality.
+Definition 1 (Janson Inequality). Let I be a set of graphs on the vertex set [n]. Now consider
+a random graph G from Gn,p , for any i ∈ I we define a “bad event” Bi to be when G contains i
+as a subgraph. Janson inequality aims to estimate the probability that G does not contain any
+(c) 
+(c)
+subgraph in I, that is equal to P ∩i∈I Bi , when the events {Bi }i∈I are almost independent.
+More formally, let η, ξ be real numbers such that and for all i in I,
+P(Bi ) ≤ η < 1
+
+and
+
+X
+Bj ∼Bi
+
+P(Bi ∩ Bj ) = ξ .
+
+14
+
+Here Bi ∼ Bj means that Bi , Bj are dependent which means the subgraphs i and j have at least
+one common edge. Then Janson inequality is
+Y
+
+(c)
+P(Bi )
+
+≤P
+
+(c) 
+∩i∈I Bi
+
+i∈I
+(c) 
+
+In particular, for ξ = o(1) we have P ∩i∈I Bi
+
+
+
+Y
+ξ
+(c)
+≤ exp
+P(Bi ) .
+2(1 − η) i∈I
+= (1 + o(1))
+
+Q
+
+(12)
+
+(c)
+i∈I P(Bi ).
+
+Remark 1. Janson inequality is not necessarily about subgraphs of a random graph and is more
+general. For brevity we stated the inequality in the above form and defer the reader to (Janson
+1990) or (Alon and Spencer 1992) for the more general version.
+Let us denote the probability with respect to the randomness in Gn,p and Gn,m by Pn,p and Pn,m
+respectively. Let Ak be the event that a random graph, selected from G(n, p) or G(m, n), has girth
+greater than k. Our next step is to calculate Pn,p (Ak ).
+For every cycle i of length at most k on vertices of [n] we consider a bad event Bi that is the
+event that a random graph G from Gn,p contains cycle i. In particular, I = ∪kr=3 Cr . It is not difficult
+Pk Pk
+to see that P(Bi ) = O(pk ) and ξ = O( r1 =3 r2 =3 nr1 +r2 −2 pr1 +r2 −1 ). And since p = O(nα−1 ) then
+using Janson inequality (12),
+Y
+
+P(Bi ) ≤ Pn,p (Ak ) ≤ eO(n
+(c)
+
+(2k−1)α−1
+
+i∈I
+
+)
+
+Y
+
+(c)
+
+P(Bi )
+
+i∈I
+
+which gives the following for α < 1/(2k − 1),
+Pn,p (Ak ) = eO(n
+
+(2k−1)α−1
+
+)
+
+Y
+
+O (n(2k−1)α−1 )
+
+Y
+
+(c)
+
+P(Bi )
+
+i∈I
+
+=e
+
+1 − plength(i)
+
+
+
+i∈I
+
+"
+= exp O n
+
+(2k−1)α−1
+
+
+
++
+
+k
+X
+
+#
+r
+
+|Cr | log(1 − p )
+
+r=3
+
+"
+= exp O n
+
+
+(2k−1)α−1
+
+−
+
+k
+X
+
+#
+|Cr |p
+
+r
+
+.
+
+(13)
+
+r=3
+
+The last step uses log(1 − x) = −x + O(x2 ) and |Cr |p2r = O(n2rα−r ) = O(n(2k−1)α−1 ).
+5.2.2. Approximating Pn,m (Ak ) with Pn,p (Ak ). We start by stating the following result on
+monotone properties of Gn,p and Gn,m . However, we only state it for the specific event Ak but it
+applies to more general events that satisfy the following property. If G is in Ak then any graph G0 ,
+obtained by removal of an edge from G, would also be contained in Ak . Such events are known as
+monotone graph properties.
+
+15
+
+Proposition 1 (Lemma 1.10 in (Janson et al. 2000)). For 0 ≤ p ≤ p0 ≤ 1 and 0 ≤ m ≤ m0 ≤
+N we have Pn,p (Ak ) ≥ Pn,p0 (Ak ) and Pn,m (Ak ) ≥ Pn,m0 (Ak ).
+Proof of Lemma 2.
+
+First define m(G) to be the number of edges for any graph G. Now we state
+
+the following lemma for comparing Pn,p (Ak ) and Pn,m (Ak ) that is proved in Appendix A.
+Lemma 5. For any 0 < p < 1, 1 < m < N , and the monotone event Ak described above we have
+
+
+Pn,p (Ak ) ≤ Pn,m (Ak ) + Pn,p m(G) < m ,
+(14)
+
+
+Pn,p (Ak ) ≥ Pn,m (Ak ) − Pn,p m(G) > m .
+(15)
+Next, we state a lemma, proved in §A using Hoeffding inequality, that provides a sharp upper
+bound for the probability of the event that a graph G in Gn,p does not have exactly m edges when
+p is close to m/N .
+Lemma 6. For β with 0 < β < 1 if m is large enough and p1 ≡ m−mN
+
+
+β
+Pn,p1 m(G) > m ≤ e−m /8 ,
+
+
+β
+Pn,p2 m(G) < m ≤ e−m /8 .
+
+1+β
+2
+
+1+β
+
+and p2 ≡
+
+m+m 2
+N
+
+, we have
+(16)
+(17)
+
+Now we can use (15) for m and p1 together with (16) to obtain
+
+
+mβ
+Pn,m (Ak ) ≤ Pn,p1 (Ak ) + Pn,p1 m(G) > m ≤ Pn,p1 (Ak ) + e− 8 .
+
+(18)
+
+Similarly, (14) for m and p2 combined with (17) gives
+
+
+mβ
+Pn,m (Ak ) ≥ Pn,p2 (Ak ) − Pn,p2 m(G) < m ≥ Pn,p2 (Ak ) − e− 8 .
+
+(19)
+
+5.2.3. Finalizing Proof of Lemma 2. First, to simplify the formulas we introduce new
+notation that will only be used in §5.2.3 . Recall from (13) that Pn,p = exp[−H(p) + O(n(2k−1)α−1 )]
+Pk
+where H(p) = r=3 |Cr |pr . Combining (18) and (19) and using this new notation we have,
+eH(p)−H(p2 )+O(n
+
+(2k−1)α−1
+
+)
+
+− e−
+
+mβ +H(p)
+8
+
+≤
+
+(2k−1)α−1
+Pn,m (Ak )
+mβ
+)
+≤ eH(p)−H(p1 )+O(n
++ e− 8 +H(p) . (20)
+exp[−H(p)]
+
+Note that the condition pi = O(nα−1 ) needed for (13) holds since β < 1. Now, using the mean value
+theorem, for each i ∈ {1, 2} there is a p∗i between p and pi such that
+!
+(1+β)
+ (1+α)(1+β)
+
+
+m 2
+0 ∗
++(k−1)α−1
+2
+|H(p) − H(pi )| = |pi − p| · |H (pi )| = O
+O n(k−1)α+1 = O n
+.
+N
+Now, for β < (k + 1)α/(1 + α), the right hand side in the above will be O(n(3kα−1)/2 ). On the other
+β
+
+hand, using H(p) = O(nkα ), when β > kα/(1 + α) the term e−m /8+H(p) will be o(1). Combining
+
+
+kα (k+1)α
+, 1+α
+we have
+these with Eq. (20), and choosing β in the interval 1+α
+n
+o
+n
+o
+3kα−1
+3kα−1
+Pn,m (Ak )
+= exp O(n 2 ) + O(n(2k−1)α−1 ) = exp O(n 2 ) .
+exp [−H(m/N )]
+
+16
+
+Note that, since α < 1/(2k − 1) then such β would be in (0, 1) which is needed by Lemma 6.
+Therefore,
+PU (G) =
+
+1
+|Gn,m,k |
+
+=
+
+1
+N
+m
+
+
+
+Pn,m (Ak )
+
+=
+
+
+N
+m
+
+1
+n  3kα−1  P
+k
+exp O n 2
+− r=3 |Cr |
+
+
+m r
+N
+
+o.
+
+which finishes proof of Lemma 2 
+5.3. Proof of Lemma 3
+Before going into the details we will provide a high level overview of the proof, focusing on S1 (G).
+5.3.1. A High-level Overview of the Proof. By definition
+S1 (G) = −
+
+m−1
+X
+t=0
+
+Eπ Ek (Gπt , π(t + 1))
+
+=−
+
+m−1
+k X
+r−2
+XX
+
+h
+i
+G
+Eπ Nr,`t,ij qtr−1−` .
+
+t=0 r=3 `=0
+
+The first approximation we use is to change the randomness given by π. Since the partial graph Gπt
+is a uniformly random subgraph of G that has exactly t edges, we can look at Gθ which is a random
+subgraph of G that has each edge of G independently with probability θ = t/m. The subgraph
+Gθ has t edges in expectation which makes it a good approximation for Gπt . We use this to show
+R1
+Pm−1
+that − t=0 Eπ Ek (Gπt , π(t + 1)) is approximately equal to −m Eθ 0 Ek (Gθ , (ij)) dθ where (ij) is a
+uniformly random edge of G. This step is carried out algebraically via Lemma 9. Next, note that
+Ek (Gt , ij) would be approximately sum of the terms qtr−`−1 for all pairs (γ, ij) where γ is in Cr,` (G),
+and (ij) is an edge in (G\Gθ ) ∩ γ. For any fixed r, ` we will see that the sum of all qtr−`−1 terms
+corresponding to such (γ, ij) pair is dominated by the cases where |γ ∩ Gθ | = |γ ∩ G| − 1 = `; in other
+words when (ij) is the only edge of G ∩ γ that is not in Gθ . This means each cycle γ ∈ Cr,`+1 (G)
+would have a (fixed) contribution of qtr−`−1 which is why a term |Cr,`+1 | appears on the right hand
+side for S1 in Lemma 3(a) (in fact it is |Cr,` | for a shifted range 1 ≤ ` ≤ r − 1).
+5.3.2. Additional Definitions and Lemmas. Next, we will state three axillary lemmas
+that will be used for the proof. But first we introduce an important subset of Gn,m,k . For any graph
+G, denote its maximum degree by ∆(G). Also, note that Cr,r (G) counts the number of simple cycles
+of length r that are contained in G. Define the set of graphs Hn,m,k by,
+ 
+ 
+ 
+
+
+
+2k−2
+(k+3)α
+(2k−1)(k+1)α
+
+
+Hn,m,k ≡ Gn,m,k ∩ G  ∆(G) ≤ n
+∩ ∩s=k+1 G  |Cs,s (G)| ≤ n
+The next lemma will show that Hn,m,k contains almost all of Gn,m,k and its proof is given in
+Appendix A
+h
+i
+kα
+Lemma 7. If m, n, k satisfy conditions of Lemma 3 then |Hn,m,k | ≥ 1 − O(e−n ) |Gn,m,k |.
+
+17
+Gt ,ij
+We also need to state the following useful upper bound, proved in Appendix A, on the terms Nr,`
+
+appearing in Si ’s.
+Lemma 8. If m, n, k satisfy conditions of Lemma 3 then for all 3 ≤ r ≤ k and G ∈ Hn,m,k we have
+
+Gπ ,ij
+(a) If 0 ≤ ` < r − 1 then Nr,`t = O (∆(G)` nr−2−` ) = O nr−2−`+`(k+3)α .
+
+(b) If 0 ≤ s < r then |Cr,s (G)| = O (∆(G)s−1 nr−s+α ) = O nr−s+s(k+3)α .
+Before stating the last auxiliary lemma we need to define the following.
+Definition 2. Let e1 , . . . , es be a set of s edges of G. Define At,π
+e1 ,...,es to be the event that for all
+1 ≤ i ≤ s : ei ∈ Gπt . Similarly, define Bet,π
+to be the event that for all 1 ≤ i ≤ s : ei ∈
+/ Gπt . Let
+1 ,...,es
+also Cet,π
+be the event that π(t + 1) = ei . Also, as a convention (when the index s = 0 is used) the
+i
+t,π
+two sets At,π
+contain everything hand have probability 1.
+∅ B∅
+
+Lemma 9. If m, n, k satisfy conditions of Lemma 3 then for any three integers a, b, c in {0, 1, . . . , k }
+and any set of edges e1 , e2 , . . . , ea+b+1 of G the following hold
+
+R1 a
+Pm−1  t,π
+t c
+b+c
+t,π
+dθ.
+∩
+B
+(a)
+P
+A
+π
+ea+1 ,...,ea+b (1 − m ) ≤ O(1) + m 0 θ (1 − θ)
+e1 ,...,ea
+t=0
+
+
+R
+Pm−1
+1
+1
+t c
+t,π
+t,π
+t,π
+a
+b+c
+(b)
+dθ.
+t=0 Pπ Ae1 ,...,ea ∩ Bea+1 ,...,ea+b ∩ Cea+b+1 (1 − m ) ≤ O( m ) + 0 θ (1 − θ)
+
+
+R
+Pm−1
+√
+1
+t c
+t,π
+t,π
+a
+b+c
+(c)
+dθ.
+t=0 Pπ Ae1 ,...,ea ∩ Bea+1 ,...,ea+b (1 − m ) ≥ −O( m) + m 0 θ (1 − θ)
+Proof of Lemma 9 is provided in Appendix A. Next, we prove Lemma 3.
+5.3.3. Finalizing Proof of Lemma 3.
+Proof of Lemma 3 (a).
+Gπ
+t ,π(t+1)
+
+Nr,`
+
+Recall that S1 (G) = −
+
+Pm−1 Pk
+t=0
+
+r=3
+
+Pr−2
+`=0
+
+Gπ ,π(t+1) r−1−`
+qt
+,
+
+Eπ Nr,`t
+
+where
+
+is number of cycles of length r in Kn that include edge π(t + 1) and have exactly `
+
+edges belonging to Gπt . Every such cycle, will contain at least ` + 1 edges of G so it belongs to
+Cr,s (G) for some s with r − 1 ≥ s ≥ ` + 1. This suggests another way to calculate S1 (G). For every
+
+cycle that belongs to Cr,s (G) we can calculate its contribution in S1 (G). Precisely, fix a cycle
+γr,s ∈ Cr,s (G). Let s1 (γr,s ) be sum of all terms in S1 (G) that are contributed by this cycle. Let
+Gπ ,π(t+1)
+
+{e1 , . . . , es } be the set of all s edges in γr,s ∩ G. In order for γr,s to be considered in Nr,`t
+
+we
+
+need to have ` + 1 distinct indices i1 , . . . , i`+1 in [s] such that {ei1 , . . . , ei` } ∈ Gπt , ei`+1 = π(t + 1)
+
+and {e1 , . . . , es }\{ei1 , . . . , ei`+1 } ∈ G\(Gπt ∪ {e`+1 }). There are s` ways to pick the first ` indices
+and (s − `) ways to pick e`+1 from the remaining ones. Therefore,
+s−1  
+m−1
+X
+X
+s
+t,π
+t,π
+s1 (γr,s ) = −
+(s − `)
+P(At,π
+∩ B{e
+)qtr−1−` .
+ei1 ,...,ei ∩ Cei
+1 ,...,es }\{ei1 ,...,ei`+1 }
+`
+`+1
+`
+t=0
+`=0
+Now, using qt =
+
+m−t
+N −t
+
+(21)
+
+= ( NN−t )( m
+)( m−t
+) ≤ ( NN
+)( m
+)( m−t
+), Eq. (21), Lemma 9(b) for a = `, b =
+N
+m
+−m
+N
+m
+
+s − (` + 1), c = r − ` − 1, and that N/(N − m) ≥ 1, we have
+
+r−1 X
+
+Z 1
+s−1  
+ m r−1−`  1
+N
+s
+`
+r+s−2`−2
+s1 (γr,s ) ≥ −
+(s − `)
+O( ) +
+θ (1 − θ)
+dθ .
+N −m
+`
+N
+m
+0
+`=0
+
+18
+
+It is easy to see that the summation is dominated by the term ` = s − 1 since other terms are
+an extra factor m/N smaller. The same way, all of the terms involving O(1/m) are smaller by a
+factor m. Therefore, using [1 + m/(N − m)]r−1 = 1 + O(m/N ), the largest order term is equal to
+R1
+−(m/N )r−s s 0 θs−1 (1 − θ)r−s dθ and everything else is dominated by a constant times (m/N )r−s+1 ;
+i.e.,
+m i  m r−s
+s1 (γr,s ) ≥ − 1 + O( )
+s
+N
+N
+h
+
+Z
+
+1
+
+θs−1 (1 − θ)r−s dθ .
+
+0
+
+Now, considering all possible cycles γr,s we obtain
+k
+
+r−1
+
+ m r−s
+m iXX
+S1 (G) ≥ − 1 + O( )
+s
+|Cr,s (G)|
+N r=3 s=1
+N
+h
+
+Z
+
+1
+
+θs−1 (1 − θ)r−s dθ .
+
+0
+
+The last step involves simplifying the terms that involve an extra O(m/N ) term. In particular,
+using Lemma 8(b) we have
+k r−1
+k X
+r−1
+ m r−s Z 1
+X
+m XX
+s−1
+r−s
+O( )
+|Cr,s (G)|
+s
+θ (1 − θ) dθ = O
+n(r−s)+s(k+3)α+(r−s+1)α−(r−s+1)
+N r=3 s=1
+N
+0
+r=3 s=1
+
+= O nα(k+3)(k−1)−1 .
+
+!
+
+This finishes proof of part (a).
+Proof of Lemma 3 (b).
+|F (Gπt )| =
+
+k
+X X
+Gπ
+t ,ij
+I(
+Nr,r−1
+> 0)
+(ij)
+
+≥
+
+First we need to approximate the number of forbidden pairs |F (Gπt )|.
+
+k
+X
+
+(22)
+
+r=3
+
+" k
+#
+k
+
+ X X
+X
+
+π
+G
+,ij
+Gπ
+π
+t
+t ,ij
+I γ ∈ Cr,r−1 (Gt ) −
+Nr,r−1 I
+Nr,r−1
+>1 ,
+
+X
+
+r=3 γ∈Cr,r−1 (G)
+
+(ij)
+
+r=3
+
+r=3
+
+where the inequality is based on a version of inclusion-exclusion formula. In particular, each edge
+Pk
+Gπ
+t ,ij
+(ij) with r=3 Nr,r−1
+= 1 is counted exactly once in both sides of the inequality. But the edges
+Pk
+Pk
+Gπ
+,ij
+Gπ
+t
+t ,ij
+(ij) with r=3 Nr,r−1
+> 1 could be counted at most r=3 Nr,r−1
+times in the first summation of
+the right hand side. Next, we are going to show that the second term on the right hand side can
+be ignored. In particular, the second term is less than the number of times two vertices i and j are
+connected by two paths of length at most k − 1 in Gπt . This means i and j are two vertices of a
+cycle of length between k + 1 to 2k − 2 in Gπt (note that by design Gπt has no cycle of length up to
+k). Since the number of vertices in such cycles is still a constant, we have
+" k
+#
+!
+k
+2k−2
+X
+
+X X
+X
+π
+Gπ
+,ij
+G
+,ij
+t
+t
+Nr,r−1
+I
+Nr,r−1
+>1 =O
+|Cs,s (G)| = O(n(2k−1)(k+1)α ) ,
+(ij)
+
+r=3
+
+r=3
+
+where the last equality uses G ∈ Hn,m,k .
+
+s=k+1
+
+(23)
+
+19
+
+On the other hand, for any cycle γ ∈ Cr,r−1 (G), using Lemma 9(c) for a = r − 1, b = c = 0, we
+have
+
+m−1
+X
+
+
+
+Eπ I γ ∈
+
+√
+
+
+
+Cr,r−1 (Gπt )
+
+1
+
+Z
+
+θr−1 dθ .
+
+≥ −O( m) + m
+θ=0
+
+t=0
+
+Thus,
+m−1
+1 X
+Eπ F (Gπt )
+S2 (G) =
+N t=0
+
+
+
+≥ −O n
+
+
+
+≥ −O n
+
+
+
+≥ −O n
+
+√
+
+(2k−1)(k+1)α+α−1
+
+2k(k+2)α−1
+
+
+
+k(k+3)α−1/2
+
+
+
+k
+
+k
+
+mX
+mX
+−
+|Cr,r−1 (G)| +
+|Cr,r−1 (G)|
+N r=3
+N r=3
+k
+
+− O(n
+
+
+
+α−1
+2
+2
+
+)O(n
+
+1+(k−1)(k+3)α
+
+k
+
+Z
+
+mX
+|Cr,r−1 (G)|
++
+N r=3
+
+Z
+
+1
+
+θr−1 dθ
+
+θ=0
+
+mX
+)+
+|Cr,r−1 (G)|
+N r=3
+
+Z
+
+1
+
+θr−1 dθ (24)
+
+θ=0
+
+1
+
+θr−1 dθ .
+θ=0
+
+Here Eq. (24) uses Lemma 8(b). This concludes proof of part (b).
+Recall the set Q(Gt ) from §3. First note that by definition of Z(Gπt )
+
+Proof of Lemma 3 (c).
+and Z0 (Gπt ) we obtain
+S3 (G) = −
+
+m−1
+X
+
+ P P
+
+Gπ ,ij
+k
+r−2
+− r=3 `=0 Nr,`t qtr−1−`
+.
+P
+(ij)∈Q(Gπ ) 1
+
+P
+Eπ log 
+
+exp
+(ij)∈Q(Gπ
+t)
+
+t=0
+
+t
+
+2
+
+Now using e−x ≤ 1 − x + x2 for x > 0 we have
+
+P P
+P P
+
+2 
+Gπ
+Gπ
+k
+r−2
+k
+r−2
+1
+t ,ij r−1−`
+t ,ij r−1−`
+m−1
+qt
+qt
+X
+X
+r=3
+`=0 Nr,`
+r=3
+`=0 Nr,`
+2
+
+
+S3 (G) ≥ −
+Eπ log 1 −
+−
+.
+π
+π
+|Q(Gt )|
+|Q(Gt )|
+π
+t=0
+(ij)∈Q(Gt )
+
+Also note that, using Lemma 8(a), we have
+P P
+2
+Gπ
+k
+r−2
+t ,ij r−1−`
+N
+q
+X
+t
+r,`
+r=3
+`=0
+(ij)∈Q(Gπ
+t)
+
+|Q(Gπt )|
+
+"
+=O
+
+k X
+r−2
+X
+
+#2 
+nr−`−2+`(k+3)α n(r−1−`)(α−1)
+
+
+
+r=3 `=0
+
+=O n
+and, using a similar argument, each term
+
+Pk
+
+2(k+3)(k−1)α−2
+
+Pr−2
+
+r=3
+
+`=0
+
+
+
+Gπ ,ij r−1−`
+qt
+
+Nr,`t
+
+,
+is of order n(k+3)(k−1)α−1 . There-
+
+fore, this term and its squared are asymptotically very small (in particular, added together, they
+are less than 1). This means we can use − log(1 − x) ≥ x for x < 1 and |Q(Gπt )| ≤ N to obtain
+
+
+m−1
+k X
+r−2
+X
+X
+X
+
+π
+1
+G ,ij
+S3 (G) ≥ Eπ 
+Nr,`t qtr−1−`  − m O n2(k+3)(k−1)α−2
+N t=0
+(ij)∈Q(Gπ
+) r=3 `=0
+t
+
+m−1 k r−2
+
+π
+1 X XX  X
+G ,ij
+≥
+Eπ
+Nr,`t qtr−1−`  − O n2k(k+3)α−1 .
+(25)
+N t=0 r=3 `=0
+π
+(ij)∈Q(Gt )
+
+20
+
+Also, in Eq. (25), the summation
+
+P
+
+(ij)∈Q(Gπ
+t)
+
+can be broken to two parts; when (ij) ∈ Q(Gπt ) \ G
+
+and when (ij) ∈ Q(Gπt ) ∩ G. The latter group is small since, using the same bounds as above, those
+terms satisfy
+
+
+
+m−1 k r−2
+1 X XX 
+Eπ
+N t=0 r=3 `=0
+
+Gπ
+t ,ij
+
+X
+
+Nr,`
+
+qtr−1−` 
+
+
+=O
+
+(ij)∈Q(Gπ
+t )∩G
+
+m2 n(k+3)(k−1)α−1
+N
+
+
+
+= O(n(k+3)kα−1 )
+
+
+that can be absorbed in the O n2(k+3)kα−1 term of Eq. (25).
+Now, similar to the proof of (a) we will find contribution of a cycle γr,s ∈ Cr,s (G) that is denoted
+by s3 (γr,s ). The only difference is that this time the edge (ij) should be part of the (r − s) edges
+γr,s \{e1 , . . . , es } that are not in G. Then we use part (c) of Lemma 9 for a = `, b = (s − `), c =
+r − ` − 1, and qt ≥ (m/N )(1 − t/m) to obtain,
+s  
+m−1
+X
+1 X s
+t,π
+r−1−`
+(r − s)
+P(At,π
+s3 (γr,s ) =
+ei1 ,...,ei ∩ B{e1 ,...,es }\{ei ,...,ei } )qt
+`
+1
+`
+N `=0 `
+t=1
+ 
+ Z 1
+
+s 
+
+X
+r−1−`
+√
+m
+s
+1
+s
+r+s−2`−1
+(r − s) m
+θ (1 − θ)
+dθ − O( m) .
+≥
+N `=0 N
+`
+0
+
+(26)
+
+Similar to part (a), the contribution of ` = s term will dominate and the remaining terms can be
+√
+absorbed to the O( m) term. In particular,
+
+
+Z 1
+ m
+√ 
+m r−s
+s
+r−s−1
+s3 (γr,s ) ≥ O ( ) (r − s)
+θ (1 − θ)
+dθ − O ( )r−s m .
+N
+N
+0
+Therefore,
+S3 (G) ≥
+
+k X
+r−2
+X
+
+|Cr,s (G)|
+
+ m r−s
+
+r=3 s=0
+
+N
+
+Z
+(r − s)
+
+1
+
+θs (1 − θ)r−s−1 dθ − O
+
+0
+
+k X
+r−2
+X
+r=3
+
+m
+1
+|Cr,s (G)|( )r−s m− 2
+N
+s=0
+
+!
+.
+
+Now, using Lemma 8(b), we have
+O
+
+k X
+r−2
+X
+r=3
+
+m
+1
+|Cr,s (G)|( )r−s m− 2
+N
+s=0
+
+!
+= O(n−1/2+(k+3)kα )
+
+which finishes the proof 
+
+6. Running Time of RandGraph and Proof of Theorem 2
+In this section we will prove that RandGraph can be implemented in a way that its expected
+running time would be of order n2 m operations. The idea is to define surrogate quantities for
+probabilities p(ij |Gt ) that are efficiently computable using sparse matrix multiplications (take order
+n2 operations per each step of the algorithm). The key point is that, by definition, p(ij |Gt ) is a
+weighted sum over simple cycles. It is known that one can count all cycles (not necessarily simple
+
+21
+
+cycles) of a graph via matrix multiplication of the its adjacency matrix. We will use this fact and
+prove that the contribution of non-simple cycles will be negligible.
+(c)
+
+During the execution of RandGraph, after adding t edges, let Mt and Mt
+matrices of the partially constructed graph Gt and its complement
+
+(c)
+Gt
+
+be the adjacency
+
+respectively. In addition,
+
+let Qt be the adjacency matrix of the graph obtained by all edges (ij) such that Gt ∪ (ij) ∈ Gn,t+1,k .
+We modify RandGraph so that it selects the (t + 1)th edge from all pairs (ij) with probability
+p0 (ij |Gt ) that is equal to (i, j) entry of the symmetric matrix P0Gt , defined by
+!r #
+" k−1
+X
+1
+m − t (c)
+0
+0
+.
+PGt ≡ [p (ij |Gt )] ≡ 0
+Qt  ed
+xp −
+Mt + n
+Mt
+Z (Gt )
+−
+t
+2
+r=2
+
+(27)
+
+Here Z 0 (Gt ) is a normalization constant. Symbols  and ed
+xp represent the coordinate-wise multiplication and exponentiation of square matrices. More precisely, for n × n matrices A, B, C the
+expression A = B  C means that for all i, j ∈ [n] we have aij = bij cij , and similarly A = ed
+xp(B)
+means for all i, j ∈ [n] we have aij = ebij . Let us call this modification RandGraph0 .
+The key result of this section is the following Lemma and is proved in Appendix A.
+Lemma 10. For any non-zero probability term p0 (ij |Gt ),
+p0 (ij |Gt ) ≥
+where Z(Gt ) =
+
+−Ek (Gt ,rs)
+rs∈Q(Gt ) e
+
+P
+
+
+
+−Ek (Gt ,ij)−O nk(k+3)α−2
+
+1
+e
+Z(Gt )
+
+
+,
+
+is the normalization term in definition of p(ij |Gt ) from §3.
+
+Using Lemmas 1 and 10 we can see that the output distribution of RandGraph0 still satisfies the
+0
+
+inequality PRG0 (G) ≥ e−c1 n
+
+−1/2+k(k+3)α
+
+kα
+
+PU (G) for all but O(e−n )|Gn,m,k | graphs G in Gn,m,k . More
+
+formally, a variant of Lemma 1 holds for PRG0 using Lemma 1 for PRG and Lemma 10. Next, we
+focus on the implementation of RandGraph0 .
+The fact that RandGraph0 has polynomial running time is clear since the matrix of the probabilities at any step, PGt , can be calculated using matrix multiplication. In fact a myopic calculation
+shows that PGt can be calculated with O(k n3 ) = O(n3 ) operations. This is because rth power of a
+matrix for any r takes O(rn3 ) operations to compute. So we obtain the simple bound of O(n3 m)
+for the running time. But we can improve this running time by at least a factor n with exploiting
+the structure of the matrices.
+Pk−1 r
+d
+Notice that the adjacency matrix Qt is equal to Jn − sign(
+r=0 Mt ) where Jn is the n by n
+d
+matrix of all ones and the sign(B)
+for any matrix B means the sign function is applied to each
+entry of B. This is correct since any bad pair (ij), that cannot be added to Gt , corresponds to a
+path in Gt of length r between i and j for 0 ≤ r ≤ k − 1. Such path forces the ij entry of the matrix
+Mrt to be positive.
+
+22
+
+Now we can store the matrices Mt , . . . , Mk−1
+at the end of each iteration and use them to
+t
+efficiently calculate Mt+1 , . . . , Mk−1
+t+1 . This is because the differences Mt+1 − Mt are sparse matrices
+and updating the matrix multiplications can be done with O(n2 ). More precisely, we can use
+r
+
+Mrt+1 = [Mt + (Mt+1 − Mt )] = Mrt + L ,
+where L is a linear sum of matrix products where each term contains at least one of (Mt+1 −
+Mt ), · · · , (Mt+1 − Mt )r−1 . Since Mt+1 − Mt has O(1) non-zero entries then the total operations
+h
+required for calculating L is of O(n2 ). A similar argument can be used for calculating Mt+1 +
+ir
+(c)
+(c)
+(c)
+m−t+1
+using sparsity of both Mt+1 − Mt and Mt+1 − Mt .
+M
+(n2 )−t+1 t+1
+Since Theorem 1 shows that RandGraph and hence RandGraph0 are successful with probability
+1 − n−1/2+k(k+3)α , the expected running-time of RandGraph0 for generating an element of Gn,m,k is
+also O(n2 m), for n large enough, which finishes proof of Theorem 2 
+
+7. Comparing RandGraph and Ck -free Process
+In this section, we perform a theoretical (§7.1) and an empirical comparison (§7.2) between our
+results for RandGraph and existing theory for Ck -free process. The motivation for this comparison
+is due to recent research by Pontiveros et al. (2013), Bohman and Keevash (2013). They show
+that certain graph parameters in the C3 -free process concentrate around their value in uniformly
+random C3 -free graphs. But these papers do not provide any formal statement on closeness of
+the two distributions. Our goal is to understand how close the output distribution of C3 -free and
+RandGraph are to the uniform distribution on Gn,m,k .
+7.1. Concentration Inequality for Graph Parameters
+Recall that Q(G) was defined to be the subset of edges in Kn that adding them to G does not
+create a cycle of length at most k. We enrich this notation by adding a subscript k, i.e. using
+Qk (G). Also let TF be the short notation for the triangle-free (C3 -free) process. We will show
+that Theorem 1 provides a sharper concentration than Theorem 2.1 of Pontiveros et al. (2013) for
+Q3 (G). Pontiveros et al. (2013) show that
+
+ 
+
+
+
+2
+3
+|
+Q
+(G)
+|
+3
+2m
+/n
+−1/4
+3
+ < 2e
+n
+(log n) = 1 .
+lim PTF 1 −
+n→∞
+EU |Q3 (G)| 
+
+(28)
+
+On the other hand, we note the following corollary of Theorem 1 for Qk (G) that is proved in
+Appendix A.
+Corollary 1. Let n, m, and k satisfy the conditions of Theorem 1. Then there exists a constant
+c3 such that
+
+ 
+
+
+|Qk (G)| 
+−1+(2k−1)(k+1)α
+
+PRG
+= 1 − O(n−1/2+k(k+3)α ) .
+1 − EU |Qk (G)|  < c3 n
+
+(29)
+
+23
+
+For small enough α, the bound (29) is clearly more general than (28) since it applies to k ≥ 3
+and the rate of convergence for the probability is provided. But, more importantly, the error term
+n−1+(2k−1)(k+1)α is much smaller than 2e2m
+
+2
+
+/n3
+
+n−1/4 (log n)3 ≈ n−1/4 when (2k − 1)(k + 1)α < 3/4.
+
+For example, when k = 3 and α < 0.025, the error term in (29) is O(n−1/2 ). We should note that the
+result of Pontiveros et al. (2013) is instead valid for a much larger range of graphs (up to m ≈ n1.5 )
+compared to our bound that is valid for m = O(n1+α ).
+Pontiveros et al. (2013) also prove similar asymptotic approximations as in (28) for several other
+graph parameters than |Q(G)|. We expect the same argument as above can be applied to obtain
+sharper concentrations for those parameters as well (when α is a small).
+It is worth noting that the above comparison is between the bounds proved for two different
+algorithms, Ck -free process and RandGraph. But an interesting comparison, that we leave for future
+research, could be done by applying the analysis of RandGraph from this paper to Ck -free process
+and obtaining a similar variant of (29) for the Ck -free process.
+7.2. Empirical Comparison
+In last section we showed that our bound on dT V (PRG , PU ) is sharper than existing theory on
+closeness of C3 -free process to PU . But we did not answer the question: Is dT V (PRG , PU ) is smaller
+than dT V (PTF , PU ). In order to shed light on this, below we perform an empirical comparison between
+RandGraph and triangle-free process.
+Given that at step t of either algorithm we know the value of p(π(t + 1)|Gπt ), we can use that to
+(empirically) compare the output distribution of each algorithm with uniform. In particular, for a
+successful run of RandGraph that outputs a graph G with ordering π of its edges we estimate its
+multiplicative bias by
+Qm−1
+m!
+p(π(t + 1)|Gπt )
+BiasπRG ≡ n  t=0 h
+ m 3 io−1 .
+N
+n
+exp − 3 N
+m
+
+(30)
+
+From Lemma 2, for α < min[1/(2k − 1), 1/(3k)] ≈ 0.11, the denominator in BiasπRG is close to PU (G)
+and the numerator is approximately equal to PRG (G) since there are m! orderings π for edges of G.
+Similarly, we can define BiasπTF by using the values p(π(t + 1)|Gπt ) from the triangle-free process.
+Therefore, BiasπRG and BiasπTF are approximations to PRG /PU and PTF /PU respectively. In other words,
+if the multiplicative bias of an algorithm is closer to 1 then its output distribution is also closer to
+uniform.
+Next, for n in {50, 100, 200, 400} and m = n1+α where α = 0.1, we execute RandGraph and trianglefree process 1, 000 times. First we note that no algorithm failed during the 1,000 repetitions. Figure
+1 shows the histograms of BiasπRG and BiasπTF for each n. The following observations can be made
+from the simulation:
+
+24
+
+Figure 1
+
+(a) n = 50
+
+(b) n = 100
+
+(a) n = 200
+
+(b) n = 400
+
+Histogram of multiplicative bias for 1,000 runs of RandGraph and triangle-free process (i.e., BiasπRG and
+BiasπTF ) for n ∈ {50, 100, 200, 400}. In all cases m = n1+α with α = 0.1.
+
+• Bias values for RandGraph are more concentrated around 1 than the ones by triangle-free
+
+process. This supports the fact that the distance between PRG and PU is less than the distance
+between PTF and PU .
+• The bias of RandGraph seems to converge to 1 as n grows which suggests that our results
+
+(possibly) hold for a larger range of α than what is required by Theorem 1, i.e., α ∈ (0, 0.11) versus
+α ∈ (0, 0.027).
+
+25
+
+8. Extension to Bipartite Graphs with Given Degrees
+The ideas described in §4 can be used to generate random bipartite graphs with given node degrees.
+Such graphs define the standard model for irregular LDPC codes. In this section we will show how
+to modify RandGraph for this application. The analysis of this extension is somewhat cumbersome
+and is beyond the scope of this paper but we expect it to be conceptually similar to the analysis of
+RandGraph. Since this is a short section, the notation introduced here is not presented in Table 1.
+Consider two ordered sequences of positive integers r̄ = (r1 , . . . , rn1 ) and c̄ = (c1 , . . . , cn2 ) for
+Pn1
+Pn2
+degrees of the vertices such that m = i=1
+ri = j=1
+cj . We would like to generate a random
+bipartite graph G(V1 , V2 ), V1 = [n1 ] and V2 = [n2 ], with girth greater than k and with degree
+sequence (r̄, c̄). We also assume that k is an even number. Denote the set of all such graphs by
+Gr̄,c̄,k . The algorithm is a natural generalization of RandGraph where the probabilities p(ij |Gt ) are
+adjusted properly.
+Algorithm 2 BipRandGraph.
+Input: Degree sequence (r̄, c̄) and k
+Output: An element of Gr̄,c̄,k or FAIL
+set G0 to be a graph over vertex sets V1 = [n1 ], V2 = [n2 ] and with no edges.
+let r̂ = (r̂1 , . . . , r̂n ) and ĉ = (ĉ1 , . . . , ĉm ) be ordered sets that are initialized by r̂ = r̄ and ĉ = c̄
+for each t in {0, . . . , m − 1} do
+if adding any edge to Gt creates a cycle of length at most k then
+stop and return FAIL
+else
+sample an edge (ij) from V1 × V2 with probability p00 (ij |Gt ), defined by Eq. (31)
+set Gt+1 = Gt ∪ (ij)
+set r̂i = r̂i − 1 and ĉj = ĉj − 1
+end if
+end for
+if the algorithm does not FAIL before t = m − 1 then
+return Gm
+end if
+
+Here each probability p00 (ij |Gt ) is an approximation to the probability that a uniformly random
+extension of graph Gt ∪ (ij) has girth larger than k (the intuitive reason for this is described in §4).
+The estimation procedure for p00 (ij |Gt ) is slightly more involved than the one used for p(ij |Gt ).
+It relies on considering a configuration model representation for the graphs with degree sequence
+(r̄, c̄), see (Bender and Canfield 1978, Bollobás 1980) for more details on configuration model. Then,
+building on the idea discussed in §4, we get the following Poisson-type approximation for p00 (ij |Gt ),
+00
+
+r̂i ĉj e−Ek (Gt ,ij)
+p (ij |Gt ) ≡
+,
+Z 00 (Gt )
+00
+
+(31)
+
+26
+
+where Z 00 (Gt ) is a normalization term, and r̂i ĉj , denote the remaining degrees of i and j. FurtherPk/2 P
+more, Ek00 (Gt , ij) ≡ r=1 γ∈C2r ptij (γ), where C2r is the set of all simple cycles of length 2r in the
+(ij)∈γ
+
+complete bipartite graph on vertices of V1 and V2 Also, ptij (γ) is approximately the probability that
+γ is in a random extension of Gt to a random bipartite graph with degree sequence (r̄, c̄). More
+precisely,
+ptij (γ)
+where
+
+=
+
+(m − t − 2r + |γ ∩ Gt |)!
+
+Q
+`∈γ∩V1
+
+t
+Rij
+(`, γ)
+
+Q
+`∈γ∩V2
+
+Cijt (`, γ)
+
+(m − t − 1)!
+
+,
+
+
+
+
+
+
+r̂
+(r̂
+−
+1)
+If
+deg
+γ
+∩
+G
+∪
+(ij)
+= 0,
+
+`
+`
+t
+`
+
+
+
+
+
+t
+Rij (`, γ) = r̂`
+If deg` γ ∩ Gt ∪ (ij) = 1 ,
+
+
+
+
+
+
+1
+If deg` γ ∩ Gt ∪ (ij) = 2 .
+
+Similarly,
+
+
+
+
+
+
+ĉ
+(ĉ
+−
+1)
+If
+deg
+γ
+∩
+G
+∪
+(ij)
+= 0,
+ ` `
+t
+`
+
+
+
+
+
+
+If deg` γ ∩ Gt ∪ (ij) = 1 ,
+Cijt (`, γ) = ĉ`
+
+
+
+
+
+
+1
+If deg` γ ∩ Gt ∪ (ij) = 2 .
+
+Here the notation degv (H) for a node v of graph G and subgraph H of G refers to the induced
+degree of v in H.
+Appendix A: Proofs of Auxiliary Lemmas
+Proof of Lemma 4
+
+It is easy to see that |Cr | = constant · nr . Now we try to find an upper bound
+
+for the number of paths of length r that intersect at least one edge of G. The number of paths
+
+γ that intersect a fixed edge (ij) in G is of order O(nr−2 ) since there are n−2
+ways to pick the
+r−2
+remaining r − 2 vertices of γ and this is the dominating term. And Therefore,
+!
+P
+r−2
+|Cr \Cr,0 (G)|
+(ij)∈G n
+=O
+|Cr |
+nr
+
+
+= O mn−2 = O nα−1 
+Proof of Lemma 5
+
+We note that for any 0 < p < 1, the random graph model G(n, p) is equivalent
+
+to the random graph model Gn,m conditioned on m(G) = m. Thus, for a random graph G we have
+
+
+
+
+Pn,p (Ak ) = Pn,p Ak ∩ {m(G) ≥ m} + Pn,p Ak ∩ {m(G) < m}
+
+
+N
+ 
+
+
+
+X
+≤
+Pn,p Ak m(G) = m Pn,p m(G) = ` + Pn,p m(G) < m
+`=m
+
+
+
+N
+ 
+X
+
+
+
+≤ Pn,p Ak m(G) = m
+Pn,p m(G) = ` + Pn,p m(G) < m
+`=m
+
+
+≤ Pn,m (Ak ) + Pn,p
+
+
+|m(G)| < m ,
+
+27
+
+where the second inequality uses monotonicity of property Ak . Similarly,
+
+
+Pn,p (Ak ) ≥ Pn,p Ak ∩ {m(G) ≤ m}
+m
+ 
+
+
+
+X
+=
+Pn,p Ak m(G) = ` Pn,p m(G) = `
+`=0
+m
+
+
+ 
+X
+Pn,q m(G) = ` ,
+≥ Pn,p Ak m(G) = m
+
+using monotonicity of Ak
+
+`=0
+
+
+
+= Pn,m (Ak )Pn,p m(G) ≤ m
+
+
+= Pn,m (Ak ) − Pn,p m(G) > m .
+Proof of Lemma 6
+
+First we state the following modified version of Hoeffding inequality, adapted
+
+from Corollary 3.2 in (Steger and Wormald 1999).
+Proposition 2 (Hoeffding inequality). Let X1 , . . . , Xn be independent variables with 0 ≤ Xi ≤
+Pn
+1 for all i ∈ [n], and let X = i=1 Xi . Then for δ ≤ 4/5,
+
+
+
+2
+P X − E(X) > δ E(X) ≤ e−δ E(X)/4 .
+We can now take N iid Bernoulli(p) random variables corresponding to the potential edges of G
+in Gn,p and use Proposition 2 to obtain, for any 0 < p < 1 and 0 < δ < 4/5,
+
+
+
+2
+Pn,p m(G) − N p > δN p ≤ e−δ N p/4 .
+Now we can see that by taking δ =
+
+m(1+β)/2
+,
+m−m(1+β)/2
+β
+
+when β ∈ (0, 1) and m is large enough, we have
+
+δ < 4/5, (1 + δ)N p1 = m, and δ 2 N p1 ≥ m /2 which give
+
+
+
+
+2
+β
+Pn,p1 m(G) > m ≤ Pn,p1 m(G) > (1 + δ)N p1 ≤ e−δ N p1 /4 ≤ e−m /8 .
+
+
+β
+m(1+β)/2
+For the second inequality, Pn,p2 m(G) < m ≤ e−m /8 , we take δ = m+m
+(1+β)/2 , which gives (1 −
+δ)N p2 = m and δ 2 N p2 ≥ mβ /2 and the result similarly follows 
+Proof of Lemma 7
+n(k+3)α
+
+First, we will find an upper bound for probability of the event ∆(G) >
+P2k−2
+and a separate bound for the event s=k+1 |Cs,s (G)| > n2kα . Then we combine them via
+
+union bound.
+For maximum degree, we use the following version of Chernoff inequality, Theorem A.1.18 in
+(Alon and Spencer 1992). For i.i.d. Bernoulli random variables X1 , . . . , XN with mean p
+!
+N
+X
+2
+P
+Xi > η + N p < e−2η .
+i=1
+
+Now combining this with a union bound, for graphs G in Gn,m,k we have for any p ∈ (0, 1)
+h
+i
+2
+Pn,p ∆(G) > (n − 1)p + η < ne−2η .
+
+28
+
+Note that the event {∆(G) > (n − 1) p + η } is a monotone property (see beginning of §5.2.1 for
+definition) but in the opposite direction as Ak that is adding edges to G maintains the property.
+1+β
+
+Therefore, similar to the proof of Lemma 2 we can take p2 =
+
+m+m 2
+N
+
+and obtain
+
+h
+i
+h
+i
+h
+i
+Pn,m ∆(G) > (n − 1)p2 + η < Pn,p2 ∆(G) > (n − 1)p2 + η + Pn,p2 m(G) < m
+2
+
+< ne−2η + e−
+Thus, for β = 1/2 and η = n
+
+(k+2)α
+2
+
+mβ
+8
+
+.
+
+, combining the above bounds with np2 = O(nα ) and mβ /8 >
+
+2n(k+2)α we have
+h
+i
+(k+1)α
+Pn,m ∆(G) > n(k+3)α < e−n
+.
+
+(32)
+
+P2k−2
+Next, we will find a similar bound for Pn,p [ s=k+1 |Cs,s (G)| > n2kα ]. For this, we use the following
+concentration inequality for |Cs,s (G)| in Gn,p that is adapted from Corollary 6.2 of Vu (2002),
+
+
+(k+1)α
+).
+Pn,p |Cs,s (G)| > En,p |Cs,s (G)| + ns(k+1)α = O(e−n
+
+(33)
+
+In fact, Corollary 6.2 of Vu (2002) provides a bound for more general subgraph counts (not necessarily cycle counts). But in Vu’s bound the tail is of order En,p |Cs,s (G)| = O(nsα ) and the probability
+is of order exp(−nα ). However, we require a smaller probability of order exp(−n(k+1)α ) and can
+afford to pick a larger tail. By choosing λ = 4anα(k+1) instead of λ = anα , and leaving everything
+else unchanged in Vu’s proof, all conditions satisfy and we obtain (33). Therefore,
+Pn,p
+
+h 2k−2
+X
+
+2k−2
+i
+h 2k−2
+X
+X
+i
+|Cs,s (G)| > n(2k−1)(k+1)α ≤ Pn,p
+|Cs,s (G)| >
+En,p |Cs,s (G)| + ns(k+1)α
+
+s=k+1
+
+s=k+1
+
+≤
+
+2k−2
+X
+
+s=k+1
+
+h
+
+Pn,p |Cs,s (G)| > En,p |Cs,s (G)| + ns(k+1)α
+
+i
+
+s=k+1
+(k+1)α
+
+= O(e−n
+
+).
+
+Now, defining p2 , m, and β the same as above and repeating the same argument for the monotone
+P2k−2
+property s=k+1 |Cs,s (G)| > n(2k−1)(k+1)α we have
+Pn,m
+
+h 2k−2
+X
+
+i
+h 2k−2
+i
+h
+i
+X
+|Cs,s (G)| > n(2k−1)(k+1)α < Pn,p2
+|Cs,s (G)| > n(2k−1)(k+1)α + Pn,p2 m(G) < m
+
+s=k+1
+
+s=k+1
+
+= O(e
+
+−n(k+1)α
+
+).
+
+Finally, note that in §5.2 we explicitly calculated Pn,m (Ak ) which shows that Pn,m (Ak )−1 is of
+order eO(n
+
+kα
+
+)
+
+. Hence,
+
+!
+h
+i h 2k−2
+i 
+X
+|Hn,m,k |
+= Pn,m ∆(G) ≤ n(k+3)α ∩
+|Cs,s (G)| ≤ n(2k−1)(k+1)α  G ∈ Gn,m,k
+|Gn,m,k |
+s=k+1
+
+29
+
+h
+=
+
+≥
+
+Pn,m
+
+i hP
+i
+
+2k−2
+(2k−1)(k+1)α
+∆(G) ≤ n(k+3)α ∩
+|C
+(G)
+|
+≤
+n
+∩
+A
+s,s
+k
+s=k+1
+Pn,m (Ak )
+
+h
+i
+hP
+i
+2k−2
+(2k−1)(k+1)α
+Pn,m (Ak ) − Pn,m ∆(G) > n(k+3)α − Pn,m
+|C
+(G)
+|
+>
+n
+s,s
+s=k+1
+Pn,m (Ak )
+
+= 1 − O(e−n
+
+(k+1)α
+
++O(nkα )
+
+kα
+
+) = 1 − O(e−n ) .
+
+This finishes proof of Lemma 7 
+Proof of Lemma 8
+
+Gt ,ij
+Clearly Nr,`
+is bounded from above by the number of paths (not neces-
+
+sarily simple paths) of length r − 1 from i to j that have at least ` edges of the Gt . Number of all
+such paths is equal to the number of sequences C = (i = i0 , i1 , . . . , ir−1 = j) with is ∈ [n] for all s,
+and at least ` of pairs (is is+1 ) in Gt . Since ` < r − 1 there is a pair (is is+1 ) that does not belong to
+Gt . We take s to be the smallest such number. So any path C breaks into C = C1 ∪ {(is is+1 )} ∪ C2
+where C1 is a path starting from i with length s and completely lies inside Gt . Number of such
+paths is at most ∆(G)s . Similarly C2 is a path with one endpoint equal to j and length r − 2 − s
+that contains exactly ` − s edges of Gt . Number of such paths is at most ∆(G)`−s nr−2−` . Therefore
+using G ∈ Hn,m,k ,
+Gt ,ij
+Nr,`
+≤
+
+`
+X
+
+∆(G)` nr−2−` = O(nr−2−`+(k+3)`α ) ,
+
+(34)
+
+s=0
+
+which finishes proof of part (a).
+Proof of part (b) is similar. If s = 0 then clearly the bound O(nr ) is valid since it is the order of
+all cycles of length r. Otherwise, each cycle in Cr,s contains an edge (ij) ∈ G. So the cycle contains
+a path of length r that contains (ij) and exactly s − 1 edges of G \ {(ij)}. Therefore, the number
+P
+G\{(ij)},(ij)
+of such cycles is at most O( (ij)∈G Nr,s−1
+). Note that each cycle is counted at most s times
+in the bound which is a constant and can be ignored. Using part (a), this number is of order
+O(m∆(G)s−1 nr−s−1 ) = O(∆(G)s−1 nr−s+α ) which finishes the proof (b).
+
+Proof of Lemma 9
+
+
+Note that Gπt is a random subgraph of G that has t edges. Therefore,
+
+
+m−a−b
+t−a
+
+m
+t
+a+b
+
+
+
+t,π
+Pπ At,π
+e1 ,...,ea ∩ Bea+1 ,...,ea+b =
+
+
+
+
+m
+(m − t) · · · (m − t − b + 1) t · · · (t − a + 1)
+fa,b (t)
+=
+m · · · (m − a − b + 1)
+(m − t)b
+ta
+
+30
+
+where fa,b (t) = ( mt )a ( m−t
+)b . This means,
+m
+
+Pπ
+
+At,π
+e1 ,...,ea
+
+∩ Bet,π
+a+1 ,...,ea+b
+
+
+
+
+a+b
+a+b
+t c
+fa,b+c (t)
+(1 − ) ≤ 1 +
+m
+m−a−b
+
+
+1
+≤ 1 + O( ) fa,b+c (t) .
+m
+
+(35)
+
+Now using the fact that the function θa (1 − θ)b has at most one maximum in the interval (0, 1)
+then
+
+Pm−1
+
+Z 1
+fa,b+c (t)
+1
+≤
+θa (1 − θ)b+c dθ + O( ) .
+m
+m
+θ=0
+Combining Eqs. (35) and (36) proves part (a) of Lemma 9.
+t=0
+
+(36)
+
+Part (b) is now easy to prove. In particular, given that
+
+m−a−b−1
+
+
+t c
+t
+t−a
+t,π
+t,π
+
+)c =
+) ,
+Pπ At,π
+e1 ,...,ea ∩ Bea+1 ,...,ea+b ∩ Cea+b+1 (1 −
+m (1 −
+m
+m
+(m − t) t
+using a similar bound as above, but with an extra m in the denominator, we have
+Pm−1
+m−1
+
+X 
+fa,b+c (t)
+1
+t c
+t,π
+t,π
+t,π
+,
+Pπ Ae1 ,...,ea ∩ Bea+1 ,...,ea+b ∩ Cea+b+1 (1 − ) ≤ O( ) + t=0
+m
+m
+m
+t=0
+which finishes proof of part (b) via Eq. (36).
+Now, we prove part (c). First we use Bernoulli’s inequality (1 − x)y ≥ 1 − yx for 0 ≤ x < 1, y ≥ 1
+√
+√
+to show that for m − m > t > m
+
+m−a−b
+
+
+t c
+t c t−a
+t,π
+t,π
+
+Pπ Ae1 ,...,ea ∩ Bea+1 ,...,ea+b (1 − ) = (1 − )
+m
+m
+m
+t
+a
+b b
+≥ (1 − )a (1 −
+) fa,b+c (t)
+t
+m
+−
+t
+
+
+1
+≥ 1 − O( √ ) fa,b+c (t) .
+(37)
+m
+Also, as before,
+
+Pm−1
+t=0
+
+fa,b+c (t)
+≥
+m
+
+Z
+
+1
+
+θa (1 − θ)b+c dθ − O(
+
+θ=0
+
+1
+).
+m
+
+(38)
+
+Hence,
+m−1
+X
+t=0
+
+
+
+t c
+t,π
+) ≥
+Pπ At,π
+∩
+B
+e1 ,...,ea
+ea+1 ,...,ea+b (1 −
+m
+≥
+
+≥
+≥
+
+=
+
+
+
+t c
+t,π
+)
+Pπ At,π
+∩
+B
+e1 ,...,ea
+ea+1 ,...,ea+b (1 −
+m
+√
+√
+m<t<m− m
+
+
+X
+1
+1 − O( √ )
+fa,b+c (t)
+m √
+√
+m<t<m− m
+
+ m−1
+X
+√
+1
+1 − O( √ )
+fa,b+c (t) − O( m)
+m
+t=0
+Z
+√  1 a
+√
+m − O( m)
+θ (1 − θ)b+c dθ − O( m)
+θ=0
+Z 1
+√
+m
+θa (1 − θ)b+c dθ − O( m) ,
+X
+
+θ=0
+
+31
+
+which finishes proof of Lemma 9 
+Proof of Lemma 10
+
+(c)
+
+m−t
+M corresponds
+(n2 )−t t
+that correspond to paths of length
+
+The main idea is that each entry of the matrix Mt +
+(c)
+
+m−t
+M
+(n2 )−t t
+r in Kn . Moreover the sum is dominated by those products that correspond to simple paths rather
+
+to sum of all products of entries of the matrix Mt +
+
+than self intersecting paths. Below, we will show this formally.
+By definition, for any non-zero (ij) entry of the matrix P0Gt we have:
+(P0Gt )ij = exp −
+
+k X
+r−2
+X
+
+Gt ,ij r−1−`
+qt
+−
+Nr,`
+
+G ,(ij)
+
+!
+G ,(ij) r−1−`
+qt
+
+Mr,`t
+
+r=3 `=0
+
+r=3 `=0
+
+where Mr,`t
+
+k X
+r−2
+X
+
+is the number of self intersecting cycles of length r in Kn that include (ij) and
+
+exactly ` edges of Gt . Similarly to the argument used in Lemma 8 to prove an upper bound for
+Gt ,ij
+Nr,`
+, we can show that
+Gt ,ij
+Mr,`
+= O(nr−3−`+(k+3)`α ) .
+
+(39)
+
+There is one factor n less in the right hand side of Eq. (39) compared to the bound we showed
+Gt ,ij
+in Lemma 8 for Nr,`
+and the reason is, due to self-intersection of the paths, there exist one less
+
+degree of freedom. Therefore,
+(P0Gt )ij = exp −
+
+k X
+r−2
+X
+
+G ,(ij) r−1−`
+qt
+
+Nr,`t
+
+−O n
+
+!
+
+k(k+3)α−2
+
+.
+
+r=3 `=0
+
+ P P
+
+k
+r−2
+G ,(ij)
+Gt
+For simplicity of the notation let Dij
+= exp − r=3 `=0 Nr,`t qtr−1−` . Hence,
+(P0Gt )ij
+Z 0 (Gt )
+(P0Gt )ij
+= P
+0
+rs∈Q(Gt ) (PGt )rs
+
+p0 (ij |Gt ) =
+
+(40)
+= P
+
+Gt
+Dij
+
+exp −O n
+
+Gt
+rs∈Q(Gt ) Drs
+
+k(k+3)α−2
+
+
+
+exp (−O (nk(k+3)α−2 ))
+(41)
+
+≥ P
+
+Gt
+Dij
+
+Gt
+rs∈Q(Gt ) Drs
+
+
+exp −O nk(k+3)α−2
+
+which finishes the proof 
+Proof of Corollary 1
+
+Recall from §5 that F (G) is the number of edges in Kn that when added
+
+to G a cycle of length at most k is created. Clearly, Q(G) = N − m − F (G). On the other hand, it
+Pk
+is clear that F (G) ≤ r=3 |Cr,r−1 |. Therefore, using Lemma 8(b), for all G in Hn,m,k
+F (G) = O(n(k−1)(k+3)α+1 ) .
+
+32
+
+Hence,
+1−
+
+N − m − O(n(k−1)(k+3)α+1 ) O(n(k−1)(k+3)α+1 )
+|Qk (G)|
+≤1−
+=
+= O(n(k−1)(k+3)α−1 ) .
+EU|Qk (G)|
+N −m
+N −m
+
+Similarly,
+1−
+
+N −m
+|Qk (G)|
+O(n(k−1)(k+3)α+1 )
+≥1−
+=
+−
+= −O(n(k−1)(k+3)α−1 ) .
+EU|Qk (G)|
+N − m − O(n(k−1)(k+3)α+1 )
+O(n2 )
+
+Therefore, combining the above two equations and using Lemma 7, there is a constant c3 such that
+
+
+
+
+kα
+|Qk (G)| 
+(k−1)(k+3)α−1
+
+P U 1 −
+< c3 n
+= 1 − O(e−n ) .
+(42)
+
+EU|Qk (G)|
+Now, define the event A by
+
+
+
+
+|Qk (G)| 
+(k−1)(k+3)α−1
+
+> c3 n
+.
+A = 1 −
+EU|Q (G)| 
+k
+
+From the definition of dT V and Theorem 1 we have
+|PRG (A) − PU (A)| ≤ dT V (PRG , PU ) = O(n−1/2+k(k+3)α ) .
+
+Therefore, combining this with Eq. (42),
+kα
+
+PRG (A) ≤ PU (A) + O(n−1/2+k(k+3)α ) = O(e−n ) + O(n−1/2+k(k+3)α ) = O(n−1/2+k(k+3)α )
+which finishes the proof 
+Appendix B: Mathematical Notations
+Notation
+
+Description
+
+[n]:
+Kn :
+O:
+o:
+(ij):
+n:
+m:
+N:
+m(G):
+Gn,m :
+Gn,p :
+Pn,m :
+Pn,p :
+Gn,m,k :
+Hn,m,k :
+Gn,m,k (τ ):
+PRG :
+PU :
+dT V (P, Q):
+Gt :
+
+When n is a positive integer it denotes the set {1, 2, . . . , n}.
+Complete graph with vertex set [n].
+For sequences {an }n≥1 , {bn }n≥1 big O notation an = O(bn ) means lim supn→∞ an /bn < ∞.
+For sequences {an }n≥1 , {bn }n≥1 little O notation an = o(bn ) means lim supn→∞ an /bn = 0.
+An edge that connects node i to node j (i, j ∈ [n]) (in a graph G with vertices [n]).
+Number of vertices of graphs considered in the paper.
+Number of edgesof most graphs in the paper.
+Defined to be n2 .
+Number edges of a graph G.
+Set of all simple graphs with m edges and vertices [n].
+Random graph model of simple graphs on [n] where each edge is present (independently) with probability p.
+Uniform probability distribution over Gn,m .
+Probability distribution obtained by random graph model Gn,p .
+The subset of graphs in Gn,m with girth greater than k.
+The set of graphs G in Gn,m,k with maximum degree of order O(n(k+3)α )
+Subset of graphs G in Gn,m,k where PRG (G) < (1 − τ )PU (G).
+Output distribution of RandGraph which is a distribution on Gn,m,k .
+Uniform distribution on Gn,m,k .
+Total variation distance between measures on X and is equal to sup {|P(A) − Q(A)| : A ⊂ X}.
+Partially constructed graph in RandGraph after t steps.
+
+33
+qt :
+θ:
+π:
+Gπt :
+Eπ :
+Pπ :
+γ:
+Q(Gt ):
+p(ij|Gt ):
+Ek (Gt , ij):
+T:
+πt :
+nk (Gt , πt ):
+G,ij
+Nr,`
+:
+Z(G):
+F (Gπt ):
+Z0 (G):
+S1 (G):
+S2 (G):
+S3 (G):
+Cr :
+Cr,` (G):
+γr,s :
+si (Cr,s ):
+Ak :
+degv (H):
+∆(G):
+At,π
+e1 ,...,es :
+Bet,π
+:
+1 ,...,es
+Cet,π :
+Mt :
+(c)
+Mt :
+Qt :
+A = B  C:
+A = ed
+xp(B):
+d
+A = sign(B):
+Jn :
+
+Equals to (m − t)/(N − t).
+Equals to t/m.
+A permutation of the edges of G where G ∈ Gn,m .
+The graph having [n] as vertex set and {π(1), . . . , π(t)} as edge set.
+Expectation with respect to a uniformly random permutation π.
+Probability with respect to a uniformly random permutation π.
+Notation used for cycles.
+The set of edges (ij) that do not belong to Gt and Gt ∪ (ij) ∈ Gn,t+1,k .
+For each (ij) ∈ Q(Gt ), it is the probability of selecting (ij) in step t of RandGraph.
+P
+P
+Gt ,ij r−1−`
+qt
+.
+Equals to kr=3 r−2
+`=0 Nr,`
+Execution tree of a sequential graph generation algorithm like RandGraph (see §4 for details).
+For a partially constructed graph Gt , it is an ordering (permutation) of its edges.
+Number of cycles of length at most k in a random extension of of a pair (Gt , πt ) in T.
+Number of simple cycles in Kn that have length r, include (ij), and include exactly ` edges of G.
+Normalization constant in definition of p(ij|Gt ) in Eq. (1).
+The set of edges (ij) where Gπt ∪ (ij) has a cycle of length at most k.
+Is equal to N − t − F (Gπt ).
+P
+E E (Gπ , π(t + 1)).
+Equals to − m−1
+Pt=0 π k πt
+1
+Equals to N m−1
+t=0 Eπ F (Gt ). π
+Pm−1
+Z(G )
+Equals to − t=0 Eπ log Z0 (Gtπ ) .
+t
+Set of all simple cycles of length r in Kn .
+Cycles in Cr that include exactly ` edges of G.
+An element of Cr,` (G).
+For each i = 1, 2, 3 denotes contribution of cycle Cr,s in Si (G).
+The event that a random graph has girth greater than k.
+Induced degree of a note v in a subgraph H of a larger graph containing v.
+Maximum degree of graph G.
+The event {∀i ∈ [s] : ei ∈ Gπt } when e1 , . . . , es are edges of G.
+The event {∀i ∈ [s] : ei ∈
+/ Gπt } when e1 , . . . , es are edges of G.
+The event {π(t + 1) = e} for edge e in G.
+Adjacency matrix of Gt .
+Adjacency matrix of complement of Gt .
+Adjacency matrix of all edges in Q(Gt ).
+For n × n matrices A, B, C it means that for all i, j ∈ [n]: aij = bij cij .
+For n × n matrices A, B it means that for all i, j ∈ [n]: aij = ebij .
+For n × n matrices A, B it means that for all i, j ∈ [n]: aij = sign(bij ).
+It is the n by n matrix of all ones.
+Table 1: Mathematical notations.
+
+Acknowledgments
+The authors gratefully acknowledge the National Science Foundation (awards CMMI: 1554140 and CCF:
+1216698) and Office of Naval Research (N00014-16-1-2893) for financial support.
+This paper has also benefitted from valuable feedback from Balaji Prabhakar, Joel Spencer, Daniel Spielman, Stefanos Zenios, and anonymous referees.
+
+References
+Alon, N., J. Spencer. 1992. The Probabilistic Method . Wiley, New York.
+Amraoui, A., A. Montanari, R. Urbanke. 2007. How to find good finite-length codes: From art towards
+science. Eur. Trans. Telecomm. 18 491–508.
+
+34
+Bayati, M., R. Keshavan, A. Montanari, S. Oh, A. Saberi. 2009a. Generating random tanner graphs with
+large girth. IEEE Information Theory Workshop. Taormina, Italy. Code available here: http://web.
+engr.illinois.edu/~swoh/software/girth/index.html.
+Bayati, Mohsen, Jeong Han Kim, Amin Saberi. 2010. A sequential algorithm for generating random graphs.
+Algorithmica 58(4) 860–910.
+Bayati, Mohsen, Andrea Montanari, Amin Saberi. 2009b. Generating random graphs with large girth.
+Proceedings of the Twentieth Annual ACM-SIAM Symposium on Discrete Algorithms. SODA ’09, 566–
+575. URL http://dl.acm.org/citation.cfm?id=1496770.1496833.
+Bender, Edward A., E. Rodney Canfield. 1978. The asymptotic number of labeled graphs with given degree
+sequences. J. Comb. Theory, Ser. A 24(3) 296–307.
+Blanchet, J. 2009. Efficient importance sampling for binary contingency tables. Ann. Appl. Probab. 19
+949–982.
+Blitzstein, J., P. Diaconis. 2010. A sequential importance sampling algorithm for generating random graphs
+with prescribed degrees. Internet Math. 6 489–522.
+Bohman, T., P. Keevash. 2010. The early evolution of the h-free process. Inventiones mathematicae 181(2)
+291–336.
+Bohman, T., P. Keevash. 2013. Dynamic concentration of the triangle-free process URL https://arxiv.
+org/abs/1302.5963.
+Bollobás, B., O. Riordan. 2000. Constrained graph processes. Electronic Journal of Combinatorics 7.
+Bollobás, Béla. 1980. A probabilistic proof of an asymptotic formula for the number of labelled regular
+graphs. European Journal of Combinatorics 1(4) 311–316.
+Bu, T., D. Towsley. 2002. On distinguishing between internet power law topology generators. INFOCOM .
+IEEE.
+Chandrasekhar, A. 2015. Econometrics of network formation. Oxford handbook on the economics of networks.
+(edited by yann bramoulle, andrea galeotti and brian rogers).
+Chen, Y., P. Diaconis, S. Holmes, J. S. Liu. 2005. Sequential monte carlo methods for statistical analysis of
+tables. Journal of the American Statistical Association 100 109–120.
+Chung, S. Y., G. D. Forney, T. J. Richardson, R. Urbanke. 2001. On the design of low-density parity-check
+codes within 0.0045 db of the shannon limit. IEEE Comm. Lett 5 58–60.
+Di, C., D. Proietti, I. E. Teletar, T. J. Richardson, R. Urbanke. 2002. Finite-length analysis of low-density
+parity-check codes on the binary erasure channel. IEEE Trans. Inform. Theory 46.
+Efron, B. 1979. Bootstrap methods: another look at the jackknife. Ann. Statistics 7 1–26.
+Erdős, P., S. Suen, P. Winkler. 1995. On the size of a random maximal graph. Random Structure and
+Algorithms 6 309–318.
+
+35
+Faloutsos, M., P. Faloutsos, Ch. Faloutsos. 1999. On power-law relationships of the internet topology. ACM,
+New York, NY, USA, 251–262.
+Ioannides, Y. 2006. Random graphs and social networks: An economics perspective. Preprint.
+Jackson, M., D. Watts. 2002. The evolution of social and economic networks. Journal of Economic Theory
+106 265–295.
+Janson, Luczak, Rucinski. 2000. Random Graphs. Wiley-Interscience.
+Janson, S. 1990. Poisson approximation for large deviations. Random Structures and Algorithms 1 221229.
+Kim, J. H., V. H. Vu. 2007. Generating random regular graphs. Combinatorica 26 683–708.
+Kleinberg, J. 2000. Navigation in a small world. Nature 406 845.
+Koetter, R., P. Vontobel. 2003. Graph covers and iterative decoding of finite-lenght codes. Proc. Int. Conf.
+on Turbo codes and Rel. Topics. Brest, France.
+Luby, M., M. Mitzenmacher, A. Shokrollahi, D. A. Spielman, V. Stemann. 1997. Practical loss-resilient
+codes. ACM Symposium on Theory of Computing (STOC).
+Medina, A., I. Matta, J. Byers. 2000. On the origin of power laws in internet topologies. ACM Computer
+Communication Review 30 18–28.
+Milo, R., S. ShenOrr, S. Itzkovitz, N. Kashtan, D. Chklovskii, U. Alon. 2002. Network motifs: Simple building
+blocks of complex networks. Science 298 824–827.
+Newman, M. 2003. The structure and function of complex networks. SIAM Review 45 167–256.
+Osthus, D., A. Taraz. 2001. Random maximal h-free graphs. Random Struct. Algorithms 18(1) 61–82.
+Papadimitriou, C. 2001. Algorithms, games, and the internet 749–753.
+Pontiveros, G. F., S. Griffiths, R. Morris. 2013. The triangle-free process and r(3, k). URL http://arxiv.
+org/abs/1302.6279. Eprint.
+Richardson, T. 2003. Error-floors of ldpc codes. Proceedings of the 41st Annual Conference on Communication, Control and Computing. 1426–1435.
+Richardson, T., R. Urbanke. 2008. Modern Coding Theory. Cambridge University Press, Cambridge.
+Rucinski, A., N. Wormald. 1992. Random graph processes with degree restrictions. Combinatorics Prob.
+Comput. 1.
+Sinclair, A. 1993. Algorithms for random generation and counting: a Markov chain approach. Birkhauser.
+Spencer, J. 1995. Maximal triangle-free graphs and ramsey r(3, t). Manuscript.
+Steger, A., N. C. Wormald. 1999. Generating random regular graphs quickly. Combinatorics Prob. and
+Comput 8 377–396.
+
+36
+Tangmunarunkit, H., R. Govindan, S. Jamin, S. Shenker, W. Willinger. 2002. Network topology generators:
+Degree-based vs. structural. Proceedings of the 2002 Conference on Applications, Technologies, Architectures, and Protocols for Computer Communications. SIGCOMM ’02, ACM, New York, NY, USA,
+147–159.
+Valente, T., K. Fujimoto, C. Chou, D. Spruijt-Metz. 2009. Adolescent affiliations and adiposity: A social
+network analysis of friendships and obesity. J Adolesc Health 45 202204. doi:10.1016/j.jadohealth.
+2009.01.007.
+Vu, Van H. 2002. Concentration of non-lipschitz functions and applications. Random Struct. Algorithms
+20(3) 262–316.
+Warnke, L. 2014. The c` -free process. Random Struct. Algorithms 44(4) 490–526.
+Wolfovitz, G. 2011. Triangle-free subgraphs in the triangle-free process. Random Struct. Algorithms 39(4)
+539–543.
+Wormald, N. C. 1999. Models of random regular graphs. London Mathematical Society Lecture Note Series
+239–298.
+
+

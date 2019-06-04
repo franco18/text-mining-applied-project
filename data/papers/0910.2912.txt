@@ -1,0 +1,2019 @@
+arXiv:0910.2912v1 [quant-ph] 15 Oct 2009
+
+Universally Composable
+Quantum Multi-Party Computation∗
+Dominique Unruh
+Saarland University
+
+Abstract
+The Universal Composability model (UC) by Canetti (FOCS 2001) allows for secure composition
+of arbitrary protocols. We present a quantum version of the UC model which enjoys the same
+compositionality guarantees. We prove that in this model statistically secure oblivious transfer
+protocols can be constructed from commitments. Furthermore, we show that every statistically
+classically UC secure protocol is also statistically quantum UC secure. Such implications are not
+known for other quantum security definitions. As a corollary, we get that quantum UC secure
+protocols for general multi-party computation can be constructed from commitments.
+
+Contents
+1 Introduction
+1.1 Quantum Universal Composability (quantum-UC) . . . . .
+1.2 UC-secure quantum oblivious
+transfer . . . . . . . . . . . . .
+1.3 Quantum lifting and multiparty computation . . . . . . .
+1.4 How to interpret our result . .
+1.5 Compositionality restrictions in
+prior work . . . . . . . . . . . .
+1.6 Related work . . . . . . . . . .
+1.7 Preliminaries . . . . . . . . . .
+
+2
+
+2.3
+
+15
+
+3 Relating classical and quantumUC
+17
+3.1 The computational case . . . . 19
+
+3
+4
+
+4 Relation to the stand-alone model 20
+
+5
+6
+7
+8
+9
+
+2 Quantum Universal Composability
+11
+2.1 Ideal functionalities . . . . . . . 12
+2.2 Elementary properties of UCsecurity . . . . . . . . . . . . . 14
+
+∗
+
+Universal composition . . . . .
+
+5 Oblivious transfer
+5.1 Corrupted Alice . . . . . . . . .
+5.2 Corrupted Bob . . . . . . . . .
+
+23
+23
+25
+
+6 Multi-party computation
+
+27
+
+7 Conclusions
+
+28
+
+References
+
+29
+
+Index
+
+31
+
+Funded by the Cluster of Excellence “Multimodal Computing and Interaction”.
+
+1
+
+1
+
+Introduction
+
+Since the inception of quantum key distribution by Bennett and Brassard [BB84], it has been known
+that quantum communication permits to achieve protocol tasks that are impossible given only a
+classical channel. For example, a quantum key distribution scheme [BB84] permits to agree on
+a secret key that is statistically secret, using only an authenticated but not secret channel. (By
+statistical security we mean security against computationally unbounded adversaries, also known as
+information-theoretical security.) In contrast, when using only classical communication, it is easy
+to see that such a secret key can always be extracted by a computationally sufficiently powerful
+adversary. Similarly, based on an idea by Wiesner [Wie83], Bennett, Brassard, Crépeau, and
+Skubiszewska [BBCS91] presented a protocol that was supposed to construct an statistically secure
+oblivious transfer1 protocol from a commitment, another feat that is easily seen to be impossible
+classically.2 Oblivious transfer, on the other hand, has been recognized by Kilian [Kil88] to securely
+evaluate arbitrary functions. Unfortunately, the protocol of Bennett et al. could, at the time, not
+be proven secure, and the first complete proof of (a variant of) that protocol was given almost two
+decades later by Damgård, Fehr, Lunemann, Salvail, and Schaffner [DFL+ 09a].
+Yet, although the oblivious transfer protocol satisfies the intuitive secrecy requirements of oblivious transfer, in certain cases the protocol might lose its security when used in a larger context. In
+other words, there are limitations on how the protocol can be composed. For example, no security
+guarantee is given when several instances of the protocol are executed concurrently (see Section 1.5
+for a more detailed explanations of the various restrictions).
+The problem of composability has been intensively studied by the classical cryptography community (here and in the following, we use the word classical as opposed to quantum). To deal with
+this problem in a general way, Canetti [Can01] introduced the notion of Universal Composability, short UC (Pfitzmann and Waidner [PW01] independently introduced the equivalent Reactive
+Simulatability framework). The UC framework allows to express the security of a multitude of
+protocol tasks in a unified way, and any UC-secure protocol automatically enjoys strong composability guarantees (so-called universal composability). In particular, such a protocol can be run
+concurrently with others, and it can be used as a subprotocol of other protocols in a general way.
+Ben-Or and Mayers [BOM04] and Unruh [Unr04] have shown that the idea of UC-security can be
+easily adapted to the quantum setting and have independently presented quantum variants of the
+UC notion. These notions enjoy the same strong compositionality guarantees. Shortly afterwards,
+Ben-Or, Horodecki, Leung, Mayers, and Oppenheim [BOHL+ 05] showed that many quantum key
+distribution protocols are quantum-UC-secure.
+Our contribution. In this work, we use the UC framework to show the existence of a statistically
+secure and universally composable oblivious transfer protocol that uses only a commitment scheme.
+Towards this goal, we first present a new definition of quantum-UC-security. In our opinion, our
+notion is technically simpler than the notions of Ben-Or and Mayers [BOM04] and Unruh [Unr04].
+1
+In an oblivious transfer protocol, Alice holds two bitstrings m0 , m1 , and Bob a bit c. Bob is supposed to get mc
+but not m1−c , and Alice should not learn c.
+2
+We remark that, on the other hand, Mayers [May97] shows that also in the quantum case, constructing an statistically secure commitment scheme without any additional assumption is impossible. However, under additional
+assumptions like in the quantum bounded storage model by Damgård, Fehr, Salvail, and Schaffner [DFSS05], statistically secure bit commitment is possible. See Section 1.4 for a discussion of the implications of Mayers’ impossibility
+result for our result.
+
+2
+
+We believe that this may also help to increase the popularity of this notion in the quantum cryptography community and to show the potential for using UC-security in the design of quantum
+protocols. Second, we show that a variant of the protocol by Bennett et at. [BBCS91] is indeed
+a UC-secure oblivious transfer protocol. By composing this protocol with a UC-secure protocol
+for general multi-party computations by Ishai, Prabhakaran, and Sahai [IPS08], we get UC-secure
+protocols for general multi-party computations using only commitments and a quantum channel –
+this is easily seen to be impossible in a purely classical setting.
+
+1.1
+
+Quantum Universal Composability (quantum-UC)
+
+We begin by giving an overview over the UC framework. The basic idea behind the UC framework
+is to define security by comparison. Given a certain protocol task, say to implement a secure
+message transfer, we first specify a machine, called the ideal functionality F that, by definition,
+fulfills this protocol task securely. E.g., In the case of a secure message transfer, this functionality
+would take a value x from Alice and give this value to Bob. All communication between parties and
+the functionality is done over secure channels. Obviously, this functionality F does exactly what
+we expect from a secure message transfer. Then, we define what it means for a protocol π to be a
+secure implementation of F. Intuitively, we require that π is no less secure than F. In other words,
+anything the adversary can do in an execution of π, the adversary could also do in an execution
+using F. (And in particular, since F is secure by definition, the adversary then cannot perform
+any successful attacks on π either.) This requirement is formally captured by requiring that for
+any adversary Adv, there is another adversary Sim, the simulator, such that an execution of π with
+Adv (called the real model) is indistinguishable from an execution of F with Sim (called the ideal
+model). And indistinguishability in turn is modeled by requiring that no machine Z, called the
+environment, can guess whether it is interacting with the real model or with the ideal model. More
+precisely:
+Definition 1 ((Classical) Universal Composability – informal) We say π classical-UCemulates F if for any adversary Adv there is a simulator Sim such that for all environments
+Z we have that the difference between the following probabilities is negligible: The probability that
+Z outputs 1 in an execution of Z, Adv, and π, and the probability that Z outputs 1 in an execution
+of Z, Sim, and F. (We assume that Z can freely communicate with the adversary/simulator.)
+In the example of a secure message transfer functionality F, the functionality would require its
+inputs x from Z and then send x back to Z. In a secure message transfer protocol π, that is, in a
+protocol π classical-UC-emulating F, Alice would than have to take the input x from Z, and Bob
+would have to output x to Z (otherwise Z could trivially distinguish the real and the ideal model).
+All communication send between Alice and Bob over insecure channels, however, would be under
+the control of the adversary. Thus everything the adversary learns from that communication, the
+simulator would have to be able to produce on its own; in particular, the adversary cannot derive
+x from that communication since the simulator could not simulate that knowledge (in the ideal
+model, the simulator cannot get x). This captures the intuitive requirement that a secure message
+transfer protocol should not reveal the message to the adversary. In a similar way, other properties
+like the authenticity of the message can be derived from the UC definition.
+The UC definition comes in many flavors. For example, in computational classical UC-security
+we restrict the adversary, simulator, and environment to polynomial-time machines. This variant
+3
+
+is used if we want to show security based on computational assumptions. In statistical classical
+UC, on the other hand, we quantify over all (possibly unbounded) adversaries, simulators, and
+environments. This variant is used to model statistical security.
+Besides providing a unified way to model the security of various protocol tasks by specifying
+the ideal functionality, the UC framework allows for very general composition of protocols. Assume
+a protocol σ F that uses a functionality F as a building block. That is, in the real model, σ F has
+access to a functionality F that performs a certain task in a fully trusted way. (We say, σ F runs in
+the F-hybrid model.) Assume that σ F classical-UC-emulates some other functionality G and that
+we are given a protocol π that classical-UC-emulates F. Then the so-called universal composition
+theorem states that σ π , the protocol resulting from using the subprotocol π instead of F, also
+classical-UC-emulates G. This even holds if σ F invokes many instances of F concurrently. Such a
+composition theorem is very useful for proving the security of larger protocols in a modular way:
+One first abstracts away a subprotocol (here π) by replacing it by some functionality (here F),
+leading to a simpler protocol σ F in the F-hybrid model that is more amenable to analysis. Then
+the protocol π is analyzed separately. It should be noted that it was shown by Lindell [Lin03] that
+no security notion weaker than (a particular variant of) classical UC can have such a composition
+theorem.
+To get a variant of the UC notion suitable for modeling quantum cryptography, we only need
+to slightly modify the definition: Instead of quantifying over classical adversaries, simulators, and
+environment, we quantify over quantum adversaries, simulators, and environment. That is, the
+protocol parties, the adversary, the simulator, and the environment are allowed to store, send, and
+compute with quantum states. (And in the computational variant of quantum-UC-security, we
+additionally restrict adversaries, simulators, and environment to be restricted to polynomial-time
+quantum computations.) Since, in a sense, we only change the machine model, most structural
+theorems about UC-security, in particular the universal composition theorem, still hold for quantumUC-security; their proofs are almost identical in the classical and in the quantum setting. We present
+our model of quantum-UC in Section 2 and give a universal composition theorem for that model.
+
+1.2
+
+UC-secure quantum oblivious transfer
+
+The oblivious transfer (OT) protocol used in this paper is essentially the same a the protocol proposed by Damgård et al. [DFL+ 09a] which in turn is based on a protocol by Bennett et al. [BBCS91].
+The basic idea of the protocol is that Alice encodes a random sequence x̃ of bits as a quantum state,
+each bit randomly either in the computational basis or in the diagonal basis.3 Then Bob is supposed
+to measure all bits, this time in random bases of his choosing. Then Alice sends the bases she used
+to Bob. Let I= denote the indices of the bits x̃i where Alice and Bob chose the same basis, and I6=
+the indices of the bits where Alice and Bob chose different bases. Assume that Bob wants to receive
+the message mc out of Alice’s messages m0 , m1 . Then Bob sets Ic := I= and I1−c := I6= and sends
+(I0 , I1 ) to Alice. Alice will not know which of these two sets is which and hence does not learn c.
+Bob will know the bits x̃i at indices i ∈ Ic . But even a dishonest Bob, assuming that he measured
+the whole quantum state, will not know the bits at indices I1−c since he used the wrong bases for
+these bits. Thus Alice uses the bits at I0 to mask her message m0 , and the bits at I1 to mask
+3
+
+If we were to use photons for transmission, in the computational basis we might encode the bit 0 as a vertically
+polarized photon and the bits 1 as a horizontally polarized photon. In the diagonal basis we might encode the bit 0
+as a 45◦ -polarized photon, and the bit 1 as a 135◦ -polarized photon.
+
+4
+
+her message m1 . Then Bob can recover mc but not m1−c . (To deal with the fact that a malicious
+Bob might have partial knowledge about the bits at I1−c , we use so-called privacy amplification to
+extract a near uniformly mask from these bits.)
+The problem with this analysis is that we have assumed that a malicious Bob measures the
+whole quantum state upon reception. But instead, Bob could store the quantum state until he
+learns the bases that Alice used, and then use these bases to measure all bits x̃i accurately. Hence,
+we need to force a dishonest Bob to measure all bits before Alice sends the bases. The idea of
+Bennett et al. [BBCS91] is to introduce the following test: Bob has to commit to the bases he
+used and to his measurement outcomes. Then Alice picks a random subset of the bits, and Bob
+opens the commitments on his bases and outcomes corresponding to this subset of bits. Alice then
+checks whether Bob’s measurement outcomes are consistent with what Alice sent. If Bob does not
+measure enough bits, then he will commit to the wrong values in many of the commitments, and
+there will be a high probability that Alice detects this.
+It was a long-standing open problem what kind of a commitment needs to be used in order for
+this protocol to be secure. Damgård et al. [DFL+ 09a] give criteria for the commitment scheme under
+which the OT protocol can be proven to have so-called stand-alone security; stand-alone security,
+however, does not give as powerful compositionality guarantees as UC-security (cf. Section 1.5
+below). In order to achieve UC-security, we assume that the commitment is given as an ideal
+functionality. Then we have to show UC-security in the case of a corrupted Alice, and UC-security
+in the case of a corrupted Bob. The case of a corrupted Alice is simple, as one can easily see that
+no information flows from Bob to Alice (the commitment functionality does, by definition, not leak
+any information about the committed values). The case of a corrupted Bob is more complex and
+requires a careful analysis about the amount of information that Bob can retrieve about Alice’s
+bits. Such an analysis has already been performed by Damgård et al. [DFL+ 09a] in their setting.
+Fortunately, we do not need to repeat the analysis. We show that that under certain special
+conditions, stand-alone security already implies UC-security. Since in the case of a corrupted Bob,
+these conditions are fulfilled, we get the security in the case of a corrupted Bob as a corollary from
+the work by Damgård et al. [DFL+ 09a].
+In Section 5, we show that the OT protocol by Damgård et al. [DFL+ 09a], when using an ideal
+functionality for the commitment, is statistically quantum-UC-secure. Furthermore, the universal
+composition theorem guarantees that we can replace the commitment functionality by any quantumUC-secure commitment protocol.
+
+1.3
+
+Quantum lifting and multi-party computation
+
+We are now equipped with a statistically quantum-UC-secure OT protocol πQOT in the commitmenthybrid model. As noted first by Kilian [Kil88], OT can be used for securely evaluating arbitrary
+functions, short, OT is complete for multi-party computation. Furthermore, Ishai, Prabhakaran,
+and Sahai [IPS08] showed that for any functionality G (even interactive functionalities that proceed
+in several rounds), there is a classical protocol ρFOT in the OT-hybrid model that statistically
+classical-UC-emulates G. Thus, to get a protocol for G in the commitment-hybrid model, we simply
+replace all invocations to FOT by invocations of the subprotocol πQOT , resulting in a protocol
+ρπQOT . We then expect that the security of ρπQOT follows directly using the universal composition
+theorem (in its quantum variant). There is, however, one difficulty: To show that ρπQOT statistically
+quantum-UC-emulates G, the universal composition theorem requires that the following premises
+
+5
+
+are fulfilled: πQOT statistically quantum-UC-emulates FOT , and ρFOT statistically quantum-UCemulates G. But from the result of Ishai et al. [IPS08] we only have that ρFOT statistically classicalUC-emulates G. Hence, we first have to show that the same result also holds with respect to
+quantum-UC-security. Fortunately, we do not have to revisit the proof of Ishai et al., because we
+show the following general fact:
+Theorem 2 (Quantum lifting theorem – informal) If the protocols π and ρ are classical protocols, and π statistically classical-UC-emulates ρ, then and π statistically quantum-UC-emulates ρ.
+Combining this theorem with the universal composition theorem, we immediately get that ρπQOT
+statistically quantum-UC-emulates G. In other words, any multi-party computation can be performed securely using only a commitment and a quantum-channel. In contrast, we show that in
+the classical setting a commitment is not even sufficient to compute the AND-function.
+We stress that a property like the quantum lifting theorem should not be taken for granted.
+For example, for the so-called stand-alone model as considered by Fehr and Schaffner [FS09], no
+corresponding property is known. A special case of security in the stand-alone model is the zeroknowledge property: The question whether protocols that are statistical zero-knowledge with respect to classical adversaries are also zero-knowledge with respect to quantum adversaries has been
+answered positively by Watrous [Wat06] for particular protocols, but is still open in the general
+case.
+
+1.4
+
+How to interpret our result
+
+We show that we can perform arbitrary statistically UC-secure multi-party computations, given
+a quantum channel and a commitment. However, Mayers [May97] has shown that, even in the
+quantum setting, statistically secure commitment schemes do not exist, not even with respect to
+security notions much weaker than quantum-UC-security. In the light of this result, the reader may
+wonder whether our result is not vacuous. To illustrate why our result is useful even in the light of
+Mayers’ impossibility result, we present four possible application scenarios.
+Weaker computational assumptions. The first application of our result would be to combine
+our protocols with a commitment scheme that is only computationally quantum-UC-secure. Of
+course, the resulting multi-party computation protocol would then not be statistically secure any
+more. However, since commitment intuitively seems to be a simpler task than oblivious transfer,
+constructing a computationally quantum-UC-secure commitment scheme might be possible using
+simpler computational assumptions, and our result then implies that the same computational assumptions can be used for general multi-party computation.
+Physical setup. One might seek a direct physical implementation of a commitment, such as
+a locked strongbox (or an equivalent but technologically more advanced construct). With our
+result, such a physical implementation would be sufficient for general multi-party computation.
+In contrast, in a classical setting one would be forced to try to find physical implementations of
+OT. It seems that a commitment might be a simpler physical assumption than OT (or at least an
+incomparable one). So our result reduces the necessary assumptions when implementing general
+multi-party computation protocols based on physical assumptions. Also, Kent [Ken99] proposes to
+build commitments based on the fact that the speed of light is bounded. Although it is not clear
+whether his schemes are UC-secure (and in particular, how to model his physical assumptions in
+6
+
+the UC framework), his ideas might lead to a UC-secure commitment scheme that then, using our
+result, gives general UC-secure multi-party computation based on the limitation of the speed of
+light.
+Theoretical separation. Our result can also be seen from the purely theoretical point of view. It
+gives a separation between the quantum and the classical setting by showing that in the quantum
+setting, commitment is complete for general statistically secure multi-party computation, while
+in the classical world it is not. Such separations – even without practical applications – may
+increase our understanding of the relationship between the classical and the quantum setting and
+are therefore arguably interesting in their own right.
+Long-term security. Müller-Quade and Unruh [MQU07b] introduce the concept of long-term UCsecurity. In a nutshell, long-term UC-security is a strengthening of computational UC-security that
+guarantees that a protocol stays secure even if the adversary gets unlimited computational power
+after the protocol execution. This captures the fact that, while we might confidently judge today’s
+technology, we cannot easily make predictions about which computational problems will be hard
+in the future. Müller-Quade and Unruh show that (classically) long-term UC-secure commitment
+protocols exist given certain practical infrastructure assumptions, so-called signature cards. It is,
+however, likely that their results cannot be extended to achieve general multi-party computation.
+Our result, on the other hand, might allow to overcome this limitation: Assume that we show that
+the commitment protocol of Müller-Quade and Unruh is also secure in a quantum variant of longterm UC-security. Then we could compose that commitment protocol with the protocols presented
+here, leading to long-term UC-secure general multi-party protocols from signature cards.
+
+1.5
+
+Compositionality restrictions in prior work
+
+Above, we claimed that the results of prior work on commitment schemes in the quantum setting
+have limitations concerning their composability guarantees. We will now briefly explain in which
+cases composition is possible in prior models, and what the restrictions are. All prior results giving
+some kind of composability guarantee work in the some variant of the so-called stand-alone model.
+The basic idea of the stand-alone model is similar to that of the UC model: We specify a protocol
+π and an ideal functionality F, and we say that π implements F in the stand-alone model if for
+every adversary Adv attacking π (real model), there is a simulator Sim attacking F (ideal model),
+so that the real and the ideal model are indistinguishable. But in contrast to the UC model,
+indistinguishability of the real and the ideal model is not defined with respect to an environment
+that tries to guess which model it is interacting with. Instead, given fixed inputs for all honest
+parties, we require that the output of the honest parties and of the adversary (considered as a
+joint quantum state) is indistinguishable from the output of the functionality and of the simulator
+(considered as a joint quantum state). The notion of indistinguishability of quantum states is then
+defined depending of the flavor of the stand-alone model. Security in the stand-alone model is
+strictly weaker than security in the UC model: the UC environment may introduce additional
+dependencies between the messages send in the protocol and the protocol inputs/outputs. For
+example, the environment could give a message that has been sent over an insecure channel by
+Bob as initial protocol input to Alice. Such dependencies are explicitly excluded in the stand-alone
+model.
+In the classical case, it has been shown by Canetti [Can00] that the stand-alone model allows for
+sequential composition. Sequential composition means that we are allowed to run several protocols
+7
+
+or several instances of one protocol one after the other without loosing security, but we are not
+allowed to run them concurrently or interleave the protocol steps (as can easily happen if the
+protocol parties are not careful about their synchronization). Similar results have been obtained
+in the quantum case by Wehner and Wullschleger [WW08] and by Fehr and Schaffner [FS09] for
+different variants of the quantum stand-alone model.
+There are two main flavors of the quantum stand-alone model: Statistical and computational
+security. In the first case, adversary and simulator are allowed to be unlimited, and in the second
+case, adversary and simulator are computationally bounded. Note that when defined like this, statistical stand-alone security does not imply computational stand-alone security because statistical
+stand-alone security does not guarantee that the simulator corresponding to a computationally
+bounded adversary is also computationally bounded. The effect of this is slightly paradoxical: one
+can compose statistically secure protocols with each other, and one can compose computationally
+secure protocols with each other, but no guarantees are given if one composes a computationally
+secure protocol with a statistically secure protocol.
+We note that the problems arising from an unlimited simulator can be avoided by simply
+strengthening the statistical stand-alone model and requiring that the simulator is computationally
+bounded if the adversary is. This is the approach we also take in our modeling of statistical
+quantum-UC-security.
+The protocols analyzed by Wehner and Wullschleger [WW08] and Fehr and Schaffner [FS09]
+are proven secure in (different variants of) the statistical stand-alone model. Furthermore, the
+simulator they construct does not run in polynomial time, therefore their results do not imply
+computational stand-alone security and the difficulties outlined above apply.
+The situation concerning the OT protocol analyzed by Damgård, Fehr, Lunemann, Salvail, and
+Schaffner [DFL+ 09a] is even more subtle. They prove that in the case of a corrupted recipient Bob,
+their protocol is secure in the computational stand-alone model. Furthermore, for a corrupted sender
+Alice, the protocol is secure in the statistical stand-alone model with non-polynomial-time simulator.
+Thus, the protocol can be composed sequentially with other protocols that are computationally
+secure for corrupted Bob and statistically secure for corrupted Alice; yet it cannot be composed with
+protocols which are statistically secure for corrupted Bob and computationally secure for corrupted
+Alice. In particular, the OT protocol cannot be composed with another instance of itself where Bob
+is the sender. The full version [DFL+ 09b, Section 5] of their paper describes an extension of the
+underlying commitment scheme which enables the construction of an efficient simulator. With such
+an extension, sequential composition of their OT protocol with computationally secure protocols is
+possible.
+In all three papers, when composing classical and quantum protocols, it is necessary that even
+the classical protocols are proven secure with respect to a definition involving quantum adversaries.
+A result like our quantum lifting theorem (Theorem 2) is an open problem in the stand-alone
+model.
+
+1.6
+
+Related work
+
+Security models. General quantum security models based on the stand-alone model have first
+been proposed by van de Graaf [vdG98]. His model comes without a composition theorem. The
+notion has been refined by Wehner and Wullschleger [WW08] and by Fehr and Schaffner [FS09]
+who also prove sequential composition theorems. Quantum security models in the style of the UC
+8
+
+model have been proposed by Ben-Or and Mayers [BOHL+ 05] and by Unruh [Unr04]. The original
+idea behind the UC framework in the classical setting was independently discovered by Canetti
+[Can01] and by Pfitzmann and Waidner [PW01] (the notion is called Reactive Simulatability in the
+latter paper).
+Quantum protocols. The idea of using quantum communication for cryptographic purposes
+seems to originate from Wiesner [Wie83]. The idea gained widespread recognition with the BB84
+quantum key-exchange protocol by Bennett and Brassard [BB84]. A statistically hiding and binding
+commitment scheme was proposed by Brassard, Crépeau, Jozsa, and Langlois [BCJL93]. Unfortunately, the scheme was later found to be insecure; in fact, Mayers [May97] showed that statistically
+hiding and binding quantum commitments are impossible without using additional assumptions.
+Kent [Ken99] circumvents this impossibility result by proposing a statistically hiding and binding
+commitment scheme that is based on the limitation of the speed of light. Bennett, Brassard, Crépeau, and Skubiszewska [BBCS91] present a protocol for statistically secure oblivious transfer in
+the quantum setting. They prove their protocol secure under the assumption that the adversary
+cannot store qubits and measures each qubit individually. They also sketch an extension that uses
+a commitment scheme to make their OT protocol secure against adversaries that can store and
+compute on quantum states. The protocol analyzed in the present paper is, in its basic idea, that
+extension. Yao [Yao95] gave a partial proof of the extended OT protocol. His proof, however,
+is incomplete and refers to a future complete paper which, to the best of our knowledge, never
+appeared. As far as we know, the first complete proof of a variant of that OT protocol has been
+given by Damgård, Fehr, Lunemann, Salvail, and Schaffner [DFL+ 09a]; their protocol is secure in
+the stand-alone model. Hofheinz and Müller-Quade [HMQ03] conjectured that the extended OT
+protocol by Bennett et al. [BBCS91] is indeed UC-secure; in the present paper we prove this claim.
+Damgård, Fehr, Salvail, and Schaffner [DFSS05] have presented OT and commitment protocols
+which are statistically secure under the assumption that the adversary has a bounded quantum
+storage capacity.
+Classical vs. quantum security. To the best of our knowledge, van de Graaf [vdG98] was the first
+to notice that even statistically secure classical protocols are not necessarily secure in a quantum
+setting. The reason is that the powerful technique of rewinding the adversary is not available in the
+quantum setting. Watrous [Wat06] showed that in particular cases, a technique similar to classical
+rewinding can be used. He uses this technique to construct quantum zero-knowledge proofs. No
+general technique relating classical and quantum security is known; to the best of our knowledge,
+our quantum lifting theorem is the first such result (although restricted to the statistical UC model).
+Miscellaneous. Kilian [Kil88] first noted that OT is complete for general multi-party computation.
+Ishai, Prabhakaran, and Sahai [IPS08] prove that this also holds in the UC setting. Computationally
+secure UC commitment schemes have been presented by Canetti and Fischlin [CF01].
+
+1.7
+
+Preliminaries
+
+General. A nonnegative function µ is called negligible if for all c > 0 and all sufficiently large k,
+µ(k) < k−c . A nonnegative function f is called overwhelming if f ≥ 1 − µ for some negligible µ.
+Keywords in typewriter font (e.g., environment) are assumed to be fixed but arbitrary, distinct
+non-empty words in {0, 1}∗ . ε ∈ {0, 1}∗ denotes the empty word. Given a sequence x = x1 , . . . , xn ,
+and a set I ⊆ {1, . . . , n}, x|I denote the sequence x restricted to the indices i ∈ T .
+9
+
+Quantum systems. We can only give a few terse overview over the formalism used in quantum
+computing. For a thorough introduction, we recommend the textbook by Nielsen and Chuang
+[NC00, Chap. 1–2]. A (pure) state in a quantum system is described by a vector |ψi in some
+Hilbert space H. In this work, we only use Hilbert spaces of the form H = N for some countable
+set N , usually N = {0, 1} for qubits or N = {0, 1}∗ for bitstrings. We always assume a designated
+orthonormal basis {|xi : x ∈ N } for each Hilbert space, called the computational basis. The
+basis states |xi represent classical states (i.e., states without superposition). Given several separate
+subsystems H1 = N1 , . . . , Hn = Nn , we describe the joint system by the tensor product H1 ⊗
+· · · ⊗ Hn = N1 ×···×Nn . We write hΨ| for the linear transformation mapping |Φi to the scalar
+product hΨ|Φi. Consequently, |ΨihΨ| denotes the orthogonal projector on |Ψi. We set |0i+ := |0i,
+|1i+ := |1i, |0i× := √12 (|0i + |1i), and |1i× := √12 (|0i − |1i). For x ∈ {0, 1}n and θ ∈ {+, ×}n , we
+define |xiθ := |x1 iθ1 ⊗ · · · ⊗ |xn iθn .
+
+C
+
+C
+
+C
+
+C
+
+Mixed states. If a system is not in a single pure state, but instead is in the pure state |Ψi i ∈ H
+withP
+probability pi (i.e., it is in a mixed state), we describe the system by a density operator
+ρ = i pi |Ψi ihΨi | over H. This representation contains all physically observable information about
+the distribution of states, but some distributions are not distinguishable by any measurement and
+are represented by the same mixed state. The set of all density operators is the set of all positive4
+operators H with trace 1, and is denoted P(H). Composed systems are descibed by operators
+in P(H1 ⊗ · · · ⊗ Hn ). In the following, when speaking about (quantum) states, we always mean
+mixed states in the density operator representation. A mapping E : P(H1 ) → P(H2 ) represents a
+physically possible operation (realizable by a sequence of unitary transformations, measurements,
+and initializations and removals of qubits) iff it is a completely positive trace preserving map.5
+{0,1}∗ and
+m on P(H) with H :=
+We call such mappings superoperators. The superoperator Einit
+m (ρ) := |mihm| for all ρ.
+m ∈ {0, 1}∗ is defined by Einit
+
+C
+
+Composed systems. Given a superoperator E on P(H1 ), the superoperator E ⊗ id operates
+on P(H1 ⊗ H2 ). Instead of saying “we apply E ⊗ id ”, we say “we apply E to H1 ”. If we say
+m to H”. Given a state ρ ∈ P(H ⊗ H ), let
+“we initialize H with m”, we mean “we apply Einit
+1
+2
+ρx := (|xihx| ⊗ id)ρ(|xihx| ⊗ id). Then the outcome of measuring H1 in the computational basis
+is x with probability tr ρx , and after measuring x, the quantum state is trρρxx . Since we will only
+performs measurements in the computational basis in this work, we will omit the qualification “in
+the computational basis”. The terminology in this paragraph generalizes to systems composed of
+more than two subsystems.
+Classical states. Classical probability distributions P : N
+P → [0, 1] over a countable set N
+are represented by density operators ρ ∈ P( N ) with ρ = x∈N P (x)|xihx| where {|xi} is the
+computational basis. We call a state classical if it is of this form. We thus have a canonical
+isomorphism between the classical states over N and the probability distributions over N . We call
+a superoperator E :P
+P( N1 ) → P( N2 ) classical iff if there is a randomized function F : N1 → N2
+such that E(ρ) =
+x∈N1 Pr[F (x) = y] · hx|ρ|xi · |yihy|. Classical superoperators describe what
+
+C
+
+C
+
+C
+
+C
+
+y∈N2
+
+C
+
+N ) is
+can be realized
+P with classical computations. An example of a classical superoperator on P(
+Eclass : ρ 7→ x hx|ρ|xi · |xihx|. Intuitively, Eclass measures ρ in the computational basis and then
+4
+
+We call an operator positive if it is Hermitean and has only nonnegative Eigenvalues.
+A map E is completely positive iff for all Hilbert spaces H′ , and all positive operators ρ over H1 ⊗ H′ , (E ⊗ id )(ρ)
+is positive.
+5
+
+10
+
+discards the outcome, thus removing all superpositions from ρ.
+
+2
+
+Quantum Universal Composability
+
+We now present our quantum-UC-framework. For a motivation of the model, we refer to Section 1.1.
+Machine model. A machine M is described by an identity id M in {0, 1}∗ and a sequence of
+∗
+(k)
+superoperators EM (k ∈ ) on Hstate ⊗ Hclass ⊗ Hquant with Hstate , Hclass , Hquant := {0,1} (the
+(k)
+state transition operators). The index k in EM denotes the security parameter. The Hilbert space
+Hstate represents the state kept by the machine between invocations, and Hclass and Hquant are
+used both for incoming and outgoing messages. Any message consists of a classical part stored in
+Hclass and a quantum part stored in Hquant . If a machine id sender wishes to send a message with
+classical part m and quantum part |Ψi to a machine id rcpt , the machine id sender initializes Hclass
+with (id sender , id rcpt , m) and Hquant with |Ψi. (See the definition of the network execution below
+for details.) The separation of messages into a classical and a quantum part is for clarity only, all
+information could also be encoded directly in a single register. If a machine does not wish to send
+a message, it initializes Hclass and Hquant with ε.
+A network N is a set of machines with pairwise distinct identities containing a machine Z with
+id Z = environment. We write ids N for the set of the identities of the machines in N.
+We call a machine M quantum-polynomial-time if there is a uniform6 sequence of quantum
+(k)
+circuits Ck such that for all k, the circuit Ck implements the superoperator EM .
+
+N
+
+C
+
+Network execution. The state space HN for a network N is defined as HN := Hclass ⊗ Hquant ⊗
+N
+{0,1}∗ . Here Hstate represents the local state of the
+state with Hstate , Hclass , Hquant :=
+id
+id
+id∈ids N Hid
+machine with identity id and Hclass and Hquant represent the state spaces used for communication.
+(Hclass and Hquant are shared between all machines. Since only one machine is active at a time, no
+conflicts occur.)
+(k)
+A step in the execution of N is defined by a superoperator E := EN operating on HN . This
+superoperator performs the following steps: First, E measures Hclass in the computational basis,
+and parses the outcome as (id sender , id rcpt , m). Let M be the machine in N with identity id rcpt .
+(k)
+state ⊗ Hclass ⊗ Hquant . Then E measures Hclass and parses the outcome
+Then E applies EM to Hid
+′
+′
+′
+as (id sender , id rcpt , m ). If the outcome could not be parsed, or if id ′sender 6= id rcpt , initialize Hclass
+with (ε, environment, ε) and Hquant with ε. (This ensures that the environment is activated if a
+machine sends no or an ill-formed message.)
+The output of the network N on input z and security parameter k is described by the following
+algorithm: Let ρ ∈ P(HN ) be the state that is initialized to (ε, environment, z) in Hclass , and
+(k)
+to the empty word ε in all other registers. Then repeat the following indefinitely: Apply EN to
+ρ. Measure Hclass . If the outcome is of the form (environment, ε, out ), return out and terminate.
+Otherwise, continue the loop. The probability distribution of the return value out is denoted by
+ExecN (k, z).
+
+C
+
+6
+A sequence of circuits Ck is uniform if a deterministic Turing machine can output the description of Ck in time
+polynomial in k.
+
+11
+
+Corruptions. To model corruptions, we introduce corruption parties, special machines that follow
+the instructions given by the adversary. When invoked, the corruption party PidC with identity id
+measures Hclass and parses the outcome as (id sender , id rcpt , m). If id sender = adversary, Hclass
+is initialized with m. (In this case, m specifies both the message and the sender/recipient. Thus
+the adversary can instruct a corruption party to send to arbitrary recipients.) Otherwise, Hclass is
+initialized with (id , adversary, (id sender , id rcpt , m)). (The message is forwarded to the adversary.)
+Note that, since PidC does not touch the Hquant , the quantum part of the message is forwarded.
+Given a network N, and a set of identities C, we write NC for the set resulting from replacing
+each machine M ∈ N with identity id ∈ C by PidC .
+Security model. A protocol π is a set of machines with environment, adversary ∈
+/ ids(π). We
+assume a set of identities parties π ⊆ ids(π) to be associated with π. parties π denotes which of the
+machines in the protocol are actually protocol parties (as opposed to incorruptible entities such as
+ideal functionalities).
+An environment is a machine with identity environment, an adversary or a simulator is a
+machine with identity adversary (there is no formal distinction between adversaries and simulators,
+the two terms refer to different intended roles of a machine).
+In the following we call two networks indistinguishable if there is a negligible function µ such
+that for all z ∈ {0, 1}∗ and k ∈ , |Pr[ExecN (k, z) = 1] − Pr[ExecM (k, z) = 1]| ≤ µ(k). We speak
+of perfect indistinguishability if µ = 0.
+
+N
+
+Definition 3 (Statistical quantum-UC-security) Let protocols π and ρ be given. We say π
+statistically quantum-UC-emulates ρ iff for every set C ⊆ parties π and for every adversary Adv
+there is a simulator Sim such that for every environment Z, the networks π C ∪ {Adv, Z} (called
+the real model) and ρC ∪ {Sim, Z} (called the ideal model) are indistinguishable. We furthermore
+require that if Adv is quantum-polynomial-time, so is Sim.
+Definition 4 (Computational quantum-UC-security) Let protocols π and ρ be given. We say
+π computationally quantum-UC-emulates ρ iff for every set C ⊆ parties π and for every quantumpolynomial-time adversary Adv there is a quantum-polynomial-time simulator Sim such that for
+every quantum-polynomial-time environment Z, the networks π C ∪ {Adv, Z} and ρC ∪ {Sim, Z} are
+indistinguishable.
+Note that although ExecπC ∪{Adv,Z} (k, z) may return arbitrary bitstrings, we only compare whether
+the return value of Z is 1 or not. This effectively restricts Z to returning a single bit. This can be
+done without loss of generality (see [Can01] for a discussion this issue; their arguments also apply
+to the quantum case) and simplifies the definition.
+In our framework, any communication between two parties is perfectly secure since the network
+model guarantees that they are delivered to the right party and not leaked to the adversary. To
+model a protocol with insecure channels instead, one would explicitly instruct the protocol parties
+to send all messages through the adversary. Authenticated channels can be realized by introducing
+an ideal functionality (see the next section) that realizes an authenticated channel. For simplicity,
+we only consider protocols with secure channels in this work.
+
+2.1
+
+Ideal functionalities
+
+In most cases, the behavior of the ideal model is described by a single machine F, the so-called ideal
+functionality. We can think of this functionality as a trusted third party that perfectly implements
+12
+
+the desired protocol behavior. For example, the functionality FOT for oblivious transfer would take
+as input from Alice two bitstrings m0 , m1 , and from Bob a bit c, and send to Bob the bitstring
+mc . Obviously, such a functionality constitutes a secure oblivious transfer. We can thus define
+a protocol π to be a secure OT protocol if π quantum-UC-emulates FOT where FOT denotes
+the protocol consisting only of one machine, the functionality FOT itself. There is, however, one
+technical difficulty here. In the real protocol π, the bitstring mc is sent to the environment Z by
+Bob, while in a the ideal model, mc is sent by the functionality. Since every message is tagged
+with the sender of that message, Z can distinguish between the real and the ideal model merely
+by looking at the sender of mc . To solve this issue, we need to ensure that F sends the message
+mc in the name of Bob (and for analogous reasons, that F receives messages sent by Z to Alice
+or Bob). To achieve this, we use so-called dummy-parties [Can01] in the ideal model. These are
+parties with the identities of Alice and Bob that just forward messages between the functionality
+and the environment.
+Definition 5 (Dummy-party) Let a machine P and a functionality F be given. The dummyparty P̃ for P and F is a machine that has the same identity as P and has the following state
+transition operator: Let id F be the identity of F. When activated, measure Hclass . If the outcome
+of the measurement is of the form (environment, id P , m), initialize Hclass with (id P , id F , m). If
+the outcome is of the form (id F , id P , m), initialize Hclass with (id P , environment, m). In all cases,
+the quantum communication register is not modified (i.e., the message in that register is forwarded).
+Note the strong analogy to the corruption parties (page 12).
+Thus, if we write π quantum-UC-emulates F, we mean that π quantum-UC-emulates ρF where
+ρF consists of the functionality F and the dummy-parties corresponding to the parties in π. More
+precisely:
+Definition 6 Let π be a protocol and F be a functionality.
+We say that π statistically/computationally quantum-UC-emulates F if π statistically/computationally quantum-UCemulates ρF where ρF := {P̃ : P ∈ parties π } ∪ {F}.
+For more discussion of dummy-parties and functionalities, see [Can01].
+Using the concept of an ideal functionality, we can specify a range of protocol tasks by simply
+defining the corresponding functionality. Below, we give the definitions of various functionalities.
+All these functionalities are classical, we therefore do not explicitly describe when the registers
+Hclass and Hquant are measured/initialized but instead describe the functionality in terms of the
+messages sent and received.
+B→A,ℓ
+Definition 7 (Commitment) Let A and B be two parties. The functionality FCOM
+behaves as
+ℓ(k)
+follows: Upon (the first) input (commit, x) with x ∈ {0, 1}
+from B, send committed to A. Upon
+input open from B send (open, x) to A. All communication/input/output is classical.
+We call B the sender and A the recipient.
+A→B,ℓ
+Definition 8 (Oblivious transfer (OT)) Let A and B be two parties. The functionality FOT
+behaves as follows: When receiving input (s0 , s1 ) from A with s0 , s1 ∈ {0, 1}ℓ(k) and c ∈ {0, 1} from
+B, send s := sc to B. All communication/input/output is classical.
+We call A the sender and B the recipient.7
+7
+
+We used A as the sender in the description of the OT functionality, and as the recipient in the description of
+the commitment functionality. We do so to simplify notation later; our protocol for OT from A to B will use a
+commitment from B to A.
+
+13
+
+Definition 9 (Randomized oblivious transfer (ROT)) Let A and B be two parties. The
+A→B,ℓ
+functionality FROT
+behaves as follows: If A is uncorrupted, when receiving input c ∈ {0, 1} from
+B, choose s0 , s1 ∈ {0, 1}ℓ(k) uniformly and send (s0 , s1 ) to A and s := sc to B. If A is corrupted,
+when receiving input (s0 , s1 ) from A with s0 , s1 ∈ {0, 1}ℓ(k) and c ∈ {0, 1} from B, send s := sc to
+B. All communication/input/output is classical.
+
+2.2
+
+Elementary properties of UC-security
+
+Lemma 10 (Reflexivity, transitivity) Let π, ρ, and σ be protocols. Then π quantum-UCemulates π. If π quantum-UC-emulates ρ and ρ quantum-UC-emulates σ, then π quantum-UCemulates σ.
+This holds both for statistical and computational quantum-UC-security.
+Proof. We first consider the case of statistical quantum-UC-security.
+For any adversary Adv and any set C, with Sim := Adv, we have that π C ∪ {Adv, Z} and π C ∪
+{Sim, Z} are equal and hence perfectly indistinguishable for all Z. If Adv is quantum-polynomialtime, so is Sim = Adv. Thus π quantum-UC-emulates ρ.
+Assume that π quantum-UC-emulates ρ and ρ quantum-UC-emulates σ. Fix an adversary Adv
+and a set C. Then there is a simulator Sim such that for all Z, π C ∪ {Adv, Z} and ρC ∪ {Sim, Z}
+are indistinguishable. Furthermore, for the adversary Adv′ := Sim, there is a simulator Sim′ such
+that ρC ∪ {Sim, Z} = ρC ∪ {Adv′ , Z} and σ C ∪ {Sim′ , Z} are indistinguishable for all Z. Since
+indistinguishability is transitive, π C ∪ {Adv, Z} and σ C ∪ {Sim′ , Z} are indistinguishable for all
+Z. Finally, if Adv is quantum-polynomial-time, so is Adv′ = Sim, and thus also Sim′ . Thus π
+quantum-UC-emulates σ.
+In the case of computational quantum-UC-security, the proof is identical, except that we quantify over quantum-polynomial-time Adv and Z.
+
+Dummy-adversary. In the definition of UC-security, we have three entities interacting with
+the protocol: the adversary, the simulator, and the environment. Both the adversary and the
+environment are all-quantified, hence we would expect that they do, in some sense, work together.
+This intuition is backed by the following fact which was first noted by Canetti [Can01]: Without
+loss of generality, we can assume an adversary that is completely controlled by the environment.
+This so-called dummy-adversary only forwards messages between the environment and the protocol.
+The actual attack is then executed by the environment.
+Definition 11 (Dummy-adversary Advdummy ) When
+activated,
+the
+dummy-adversary
+class
+Advdummy measures H
+; call the outcome m. If m is of the form (environment, adversary,
+m′ ), initialize Hclass with m′ . Otherwise initialize Hclass with (adversary, environment, m). In
+all cases, the quantum communication register is not modified (i.e., the message in that register is
+forwarded).
+Note the strong analogy to the dummy-parties (Definition 5) and the corruption parties (page 12).
+Lemma 12 (Completeness of the dummy-adversary) Assume
+that
+π
+quantum-UCemulates ρ with respect to the dummy-adversary (i.e., instead of quantifying over all adversaries
+Adv, we fix Adv := Advdummy ). Then π quantum-UC-emulates ρ.
+This holds both for statistical and computational quantum-UC-security.
+14
+
+Z
+
+Adv
+
+ZAdv
+Z Adv
+
+π
+
+π
+(I)
+
+ZAdv
+Z Adv
+
+Advdummy
+(II)
+
+ρ
+
+Sim′
+(III)
+
+Sim
+Z Adv
+ρ
+
+Sim′
+(IV)
+
+Figure 1: Completeness of the dummy-adversary: proof steps
+Proof. We first consider the case of statistical quantum-UC-security.
+Assume that π statistically quantum-UC-emulates ρ with respect to the dummy-adversary. Fix
+an adversary Adv. We have to show that there exists a simulator Sim such that for all environments
+Z we have that π ∪ {Adv, Z} and ρ ∪ {Sim, Z} are indistinguishable. Furthermore, if Adv is
+quantum-polynomial-time, Sim has to be quantum-polynomial-time, too.
+For a given environment Z, we construct an environment ZAdv that is supposed to interact with
+Advdummy and internally simulates Z and Adv, and that routes all messages sent by the simulated
+Adv to π through Advdummy and vice versa. Then π ∪ {Adv, Z} and π ∪ {Advdummy , ZAdv } are
+perfectly indistinguishable. (Cf. networks (I) and (II) in Figure 1.) Since π statistically quantumUC-emulates ρ with respect to the dummy-adversary, we have that π ∪ {Advdummy , ZAdv } and
+ρ ∪ {Sim′ , ZAdv } are indistinguishable for some Sim′ and all Z. (Cf. networks (II) and (III).) Since
+Advdummy is quantum-polynomial-time, so is Sim′ . We construct a machine Sim that internally
+simulates Sim′ and Adv (network (IV)). Then ρ ∪ {Sim′ , ZAdv } and ρ ∪ {Sim, Z} are perfectly indistinguishable. Summarizing, π∪{Adv, Z} and ρ∪{Sim, Z} are indistinguishable for all environments
+Z. Furthermore, since Sim′ is quantum-polynomial-time, we have that Sim is quantum-polynomialtime if Adv is. This concludes the proof in the case of statistical quantum-UC-security.
+The proof in the case of computational quantum-UC-security is identical, except that we consider only quantum-polynomial-time Adv and Z, and thus have that ZAdv , Sim′ , and Sim are
+quantum-polynomial-time.
+
+
+2.3
+
+Universal composition
+
+For some protocol σ, and some protocol π, by σ π we denote the protocol where σ invokes (up to
+polynomially many) instances of π. That is, in σ π the machines from σ and from π run together
+in one network, and the machines from σ access the inputs and outputs of π. (That is, σ plays
+the role of the environment from the point of view of π. In particular, Z then talks only to σ
+and not to the subprotocol π directly.) A typical situation would be that σ F is some protocol that
+makes use of some ideal functionality F, say a commitment functionality, and then σ π would be the
+protocol resulting from implementing that functionality with some protocol π, say a commitment
+protocol. (We say that σ F is a protocol in the F-hybrid model.) One would hope that such an
+implementation results in a secure protocol σ π . That is, we hope that if π quantum-UC-emulates F
+and σ F quantum-UC-emulates G, then σ π quantum-UC-emulates G. Fortunately, this is the case:
+Theorem 13 (Universal Composition Theorem) Let π, ρ, and σ be quantum-polynomialtime protocols. Assume that π quantum-UC-emulates ρ. Then σ π quantum-UC-emulates σ ρ .
+This holds both for statistical and computational quantum-UC-security.
+
+15
+
+Z
+(I)
+
+σ
+
+Adv
+Z
+σ
+
+(II)
+Adv
+
+π1
+..
+.
+πn
+Sim′1
+..
+.
+Sim′n
+
+Zσ,i
+Z
+(III)
+
+ρ1
+..
+.
+ρn
+
+Sim
+
+Adv
+
+π1
+..
+.
+πi−1
+
+σ
+
+Advdummy
+Sim′i+1
+..
+.
+Sim′n
+
+πi
+
+ρi+1
+..
+.
+ρn
+
+Figure 2: Networks occurring in the proof sketch of Theorem 13. Network (I) represents the real
+model, (II) the ideal model, and (III) the hybrid case. To avoid cluttering, in (III), the connections
+to πi−1 , Sim′i+1 , and ρi+1 have been omitted.
+If we additionally have that σ quantum-UC-emulates G, from the transitivity of quantum-UCemulation (Lemma 10), it immediately follows that σ π quantum-UC-emulates G.
+The compositionality guarantee given by Theorem 13 is often called universal composability.
+One should not confuse universal composability with UC-security. Although UC security implies
+universal composability, it has been shown by Hofheinz and Unruh [HU05, HU06, Unr06] that – in
+the classical setting at least – universal composability is a strictly weaker notion than UC security.
+Proof of Theorem 13.
+We first show Theorem 13 for the case of computational quantum-UCsecurity. Thus, our goal is to prove that under the assumptions of Theorem 13, σ π computationally
+quantum-UC-emulates σ ρ . Since σ is quantum-polynomial-time, σ invokes at most a polynomial
+number n of instances of its subprotocol π or ρ. Since π quantum-UC-emulates ρ, there is a quantumpolynomial-time simulator Sim′ such that for all environments Z we have that π ∪ {Advdummy , Z}
+and ρ ∪ {Sim′ , Z} are indistinguishable. In the following, we call Sim′ the dummy-simulator.
+Let a quantum-polynomial-time adversary Adv be given (that is supposed to attack σ π ). We construct a simulator Sim that internally simulates the adversary Adv and n instances Sim′1 , . . . , Sim′n
+of the dummy-simulator Sim′ . The simulated adversary Adv is connected to the environment and
+to the protocol σ, but all messages between Adv and the i-th instance πi of π are routed through
+the dummy-simulator-instance Sim′i (which is then supposed to transform these messages into a
+form suitable for instances of ρ). The simulator Sim is depicted by the dashed box in network (II)
+in Figure 2.
+We have to show that for any environment Z we have that σ π ∪ {Adv, Z} and σ ρ ∪ {Sim, Z} are
+indistinguishable, i.e., that the output of Z in the networks (I) and (II) in Figure 2 is statistically
+indistinguishable.
+For this, we construct a hybrid environment Zσ,i . (It is depicted as the dashed box in network
+(III) in Figure 2.) This environment simulates the machines Z, Adv, the protocol σ, instances
+π1 , . . . , πi−1 of the real protocol π, and instances Sim′i+1 , . . . , Sim′n and ρi+1 , . . . , ρn of the dummysimulator Sim′ and the ideal protocol ρ, respectively. The communication between Z, Adv, and σ is
+directly forwarded by Zσ,i . Communication between Adv and the j-th protocol instance is forwarded
+as follows: If j < i, the communication is simply forwarded to πj . If j > i, the communication
+is routed through the corresponding dummy-simulator Sim′j (which is then supposed to transform
+these messages into a form suitable for ρi ). And finally, if j = i, the communication is passed to
+16
+
+the adversary/simulator outside of Zσ,i . Communication between σ and the instances of π or ρ is
+directly forwarded.
+We will now show that there is a negligible function µ such that |Pr[Execπ∪{Advdummy ,Zσ,i } (k, z) =
+1] − Pr[Execρ∪{Sim′ ,Zσ,i } (k, z) = 1]| ≤ µ(k) for any security parameter k and any i = 1, . . . , n.
+For this, construct an environment Zσ which expects as its initial input a pair (i, z), and then
+runs Zσ,i with input z. Since π ∪ {Advdummy , Z} and ρ ∪ {Sim′ , Z} are indistinguishable for
+all quantum-polynomial-time environments Z, there exists a negligible function µ such that the
+difference of Pr[Execπ∪{Advdummy ,Zσ,i } (k, z) = 1] = Pr[Execπ∪{Advdummy ,Zσ } (k, (i, z)) = 1] and
+Pr[Execρ∪{Sim′ ,Zσ,i } (k, z) = 1] = Pr[Execρ∪{Sim′ ,Zσ } (k, (i, z)) = 1] is bounded by µ(k) for all i, k, z.
+The game Execπ∪{Advdummy ,Zσ,i } (k, z) is depicted as network (III) in Figure 2 (except that we
+denoted the external copy of π with πi ). Observe that Execρ∪{Sim′ ,Zσ,i+1} (k, z) (note the changed
+index i+1) contains the same machines as Execπ∪{Advdummy ,Zσ,i } (k, z) (when unfolding the simulation
+performed by Zσ,i into individual machines) up to the fact that the communication with the i-th
+instance of π is routed through the dummy-adversary Advdummy . However, the latter just forwards
+messages, so π ∪ {Advdummy , Zσ,i } and ρ ∪ {Sim′ , Zσ,i+1 } are perfectly indistinguishable.
+Using the triangle inequality, it follows that |Pr[Execπ∪{Advdummy ,Zσ,n} (k, z) = 1] −
+Pr[Execρ∪{Sim′ ,Zσ,1} (k, z) = 1]| is bounded by n · µ(k) which is negligible.
+Moreover,
+Execπ∪{Advdummy ,Zσ,n} (k, z) and Execσπ ∪{Adv,Z} (k, z) describe the same game (up to unfolding of simulated submachines and up to one instance of the dummy-adversary). Similarly,
+Execρ∪{Sim′ ,Zσ,1} (k, z) and Execσρ ∪{Sim,Z} (k, z) describe the same game (up to unfolding of simu
+
+lated submachines). Thus Pr[Execσπ ∪{Adv,Z} (k, z) = 1]−Pr[Execσρ ∪{Sim,Z} (k, z) = 1] is negligible
+and thus σ π ∪ {Adv, Z} and σ ρ ∪ {Sim, Z} are indistinguishable. Furthermore, since Adv and Sim′
+are quantum-polynomial-time, so is Sim.
+Since this holds for all Z, and the construction of Sim does not depend on Z, we have that σ π
+computationally quantum-UC-emulates σ ρ .
+The case of statistical quantum-UC-security is shown analogously, except that Adv and Z may
+be unbounded, and Sim is only quantum-polynomial-time if Adv is.
+
+
+3
+
+Relating classical and quantum-UC
+
+We call a machine classical if its state transition operator is classical. A protocol is classical if all
+its machines are classical.
+Using this definition we can reformulate the definition of statistical classical UC in our framework.
+Definition 14 (Statistical classical-UC-security) Let protocols π and ρ be given. We say π
+statistically classical-UC-emulates ρ iff for every set C ⊆ parties π and for every classical adversary
+Adv there is a classical simulator Sim such that for every classical environment Z, π C ∪ {Adv, Z}
+and ρC ∪ {Sim, Z} are indistinguishable. We furthermore require that if Adv is probabilisticpolynomial-time, so is Sim.
+Note that classical statistical UC is essentially the same as the notion of statistical UC-security
+defined by Canetti [Can01].8 Thus, known results for statistical UC-security carry over to the
+setting of Definition 14.
+8
+
+Details such as the machine model and message scheduling are defined differently, of course. But since these
+
+17
+
+The next theorem guarantees that if a classical protocol is statistically classical UC-secure, then
+it is also statistically quantum-UC-secure. This allows, e.g., to first prove the security of a protocol
+in the (usually much simpler) classical setting, and then to compose it with quantum protocols
+using the universal composition theorem (Theorem 13).
+Theorem 15 (Quantum lifting theorem) Let π and ρ be classical protocols. Assume that π
+statistically classical-UC-emulates ρ. Then π statistically quantum-UC-emulates ρ.
+Proof. Given a machine M , let C(M ) denote the machine which behaves like M , but measures
+incoming messages in the computational basis before processing them, and measures outgoing
+(k)
+messages in the computational basis. More precisely, the superoperator EC(M ) first invokes Eclass
+(k)
+
+on Hclass ⊗ Hquant , then invokes EM on Hstate ⊗ Hclass ⊗ Hquant , and then again invokes Eclass
+on Hclass ⊗ Hquant . Since it is possible to simulate quantum Turing machines on classical Turing
+machines (with an exponential overhead), for every machine M , there exists a classical machine M ′
+such that C(M ) and M ′ are perfectly indistinguishable.9
+We define the classical dummy-adversary Advclass
+dummy to be the classical machine that is defined
+like Advdummy (Definition 11), except that in each invocation, it first measures Hclass , Hquant , and
+Hstate in the computational basis (i.e., it applies Eclass to Hstate ⊗Hclass ⊗Hquant ) and then proceeds
+as does Advdummy . Note that Advclass
+dummy is probabilistic-polynomial-time.
+By Lemma 12, we only need to show that for any set C of corrupted parties, there exists
+a quantum-polynomial-time machine Sim such that for every machine Z the real model π C ∪
+{Z, Advdummy } and the ideal model ρC ∪ {Z, Sim} are indistinguishable.
+The protocol π is classical, thus π C is classical, too, and thus all messages forwarded by
+Advdummy from π C to Z have been measured in the computational basis by π C , and all messages forwarded by Advdummy from Z to π C will be measured by π C before being used. Thus, if Adv would
+additionally measure all messages it forwards in the computational basis, the view of Z would not be
+modified. More formally, π C ∪ {Z, Advdummy } and π C ∪ {Z, Advclass
+dummy } are perfectly indistinguishclass
+C
+able. Furthermore, since both π and Advdummy measure all messages upon sending and receiving,
+class
+C
+π C ∪{Z, Advclass
+dummy } and π ∪{C(Z), Adv dummy } are perfectly indistinguishable. Since it is possible
+to simulate quantum machines on classical machines (with an exponential overhead), there exists a
+classical machine Z ′ that is perfectly indistinguishable from C(Z ′ ). Then π C ∪ {C(Z), Adv class
+dummy }
+class
+′ are classical and
+and π C ∪ {Z ′ , Advclass
+}
+are
+perfectly
+indistinguishable.
+Since
+Adv
+and
+Z
+dummy
+dummy
+Advclass
+is
+polynomial-time,
+there
+exists
+a
+classical
+probabilistic-polynomial-time
+simulator Sim
+dummy
+class
+′
+C
+′
+C
+(whose construction is independent of Z ) such that π ∪ {Z , Advdummy } and ρ ∪ {Z ′ , Sim} are
+indistinguishable.
+Then ρC ∪ {Z ′ , Sim} and ρC ∪ {C(Z), Sim} are perfectly indistinguishable by construction of
+′
+Z . And since both ρC and Sim measure all messages they send and receive, ρC ∪ {C(Z), Sim} and
+ρC ∪ {Z, Sim} are perfectly indistinguishable.
+Summarizing, we have that π C ∪ {Z, Advdummy } and ρC ∪ {Z, Sim} are indistinguishable for all
+quantum-polynomial-time environments Z. Furthermore, Sim is classical probabilistic-polynomialdetails also considerably change between different versions of the full version [Can05], we feel justified in saying that
+the notion of statistical classical UC is essentially the same as that formulated by Canetti.
+9
+More precisely, for any set of machines N , the networks N ∪ {M } and N ∪ {C(M )} are perfectly indistinguishable.
+
+18
+
+time and hence quantum-polynomial-time and its construction does not depend on the choice of Z.
+Thus π statistically quantum-UC-emulates ρ.
+
+
+3.1
+
+The computational case
+
+We now formulate a computational analogue to the quantum lifting theorem (Theorem 15) from the
+previous section. We cannot, however, expect a theorem of the following form: If π computationally
+classical-UC-emulates ρ, then π computationally quantum-UC-emulates ρ. For example, if the
+security of π is based on the hardness of the discrete logarithm, then π may computationally classicalUC-emulate ρ, but certainly π does not computationally quantum-UC-emulate ρ – a quantumpolynomial-time adversary can easily compute discrete logarithms using Shor’s algorithm [Sho94].
+Thus, in order to get a computational quantum lifting theorem, we need to give the adversary in
+the classical setting the same computational power as in the quantum setting. Classical machines
+that are as powerful as quantum-polynomial-time machines, we call QPPT machines.
+Definition 16 (Quantum-strong PPT) A classical machine M is said to be QPPT (quantumstrong probabilistic polynomial-time) if there is a quantum-polynomial-time machine M̃ such that
+for any network N , N ∪ {M } and N ∪ {M̃ } are perfectly indistinguishable (short: M and M̃ are
+perfectly indistinguishable).
+Definition 17 (QPPT classical UC security) Let protocols π and ρ be given. We say π QPPT
+classical-UC-emulates ρ iff for every set C ⊆ parties π and for every QPPT adversary Adv there
+is a QPPT simulator Sim such that for every QPPT environment Z, the networks π C ∪ {Adv, Z}
+and ρC ∪ {Sim, Z} are indistinguishable.
+Theorem 18 (Quantum lifting theorem – computational) Let π and ρ be classical protocols.
+Assume that π QPPT classical-UC-emulates ρ. Then π computationally quantum-UC-emulates ρ.
+Proof. We define C(M ) and Advclass
+dummy as in the proof of Theorem 15.
+By Lemma 12, we only need to show that for any set C of corrupted parties, there exists a
+quantum polynomial-time machine Sim such that for every quantum-polynomial-time machine Z
+the real model π C ∪ {Z, Advdummy } and the ideal model ρC ∪ {Z, Sim} are indistinguishable.
+The protocol π is classical, so is π C is classical, and thus all messages forwarded by Advdummy
+from π C to Z have been measured in the computational basis by π C , and all messages forwarded
+by Advdummy from Z to π C will be measured by π C before being used. Thus, if Adv would additionally measure all messages it forwards in the computational basis, the view of Z would not be
+modified. More formally, π C ∪ {Z, Advdummy } and π C ∪ {Z, Advclass
+dummy } are perfectly indistinguishclass
+C
+able. Furthermore, since both π and Advdummy measure all messages upon sending and receiving,
+class
+C
+π C ∪ {Z, Advclass
+dummy } and π ∪ {C(Z), Adv dummy } are indistinguishable. By definition of QPPT machines, and since C(Z) is quantum-polynomial-time, there is a QPPT machine Z ′ that is perfectly
+class
+C
+′
+indistinguishable from C(Z). Then π C ∪ {C(Z), Adv class
+dummy } and π ∪ {Z , Advdummy } are perfectly
+class
+indistinguishable. Since Advdummy and Z ′ are QPPT machines, there exists a QPPT simulator
+′
+C
+′
+Sim′ (whose construction is independent of Z ′ ) such that π C ∪ {Z ′ , Advclass
+dummy } and ρ ∪ {Z , Sim }
+are indistinguishable.
+Then ρC ∪{Z ′ , Sim′ } and ρC ∪{C(Z), Sim′ } are perfectly indistinguishable by construction of Z ′ .
+And since both ρC and Sim′ measure all message they send and receive, ρC ∪ {C(Z), Sim′ } and ρC ∪
+19
+
+{Z, Sim′ } are perfectly indistinguishable. Since Sim′ is a QPPT machine, by definition there exists
+a quantum-polynomial-time machine Sim such that Sim and Sim′ are perfectly indistinguishable.
+Then ρC ∪ {Z, Sim′ } and ρC ∪ {Z, Sim} are perfectly indistinguishable.
+Summarizing, we have that π C ∪ {Z, Advdummy } and ρC ∪ {Z, Sim} are perfectly indistinguishable for all quantum-polynomial-time environments Z. Furthermore, Sim is quantum-polynomialtime and its construction does not depend on the choice of Z. Thus π computationally quantumUC-emulates ρ.
+
+A word of caution: While the statistical quantum lifting theorem (Theorem 15) can be directly
+applied to existing statistically UC-secure protocols, the computational variant of this theorem
+cannot be directly applied to existing proofs. Although proving that a classical protocol is QPPT
+classical UC-secure is probably simpler than directly performing the proof in the quantum setting,
+at various places in a proof of QPPT classical UC-security one has to prove that the machines one
+constructed from the adversary/environment are QPPT. (This needs to be done whenever a proof
+step is done by reduction, and when showing that the final simulator is QPPT). As long as the
+constructed machines simulate the original adversary as a black-box without rewinding, this will
+be straightforward. However, when the constructed machine internally rewinds a QPPT machine,
+showing that the constructed machine is also QPPT will be non-trivial. Thus, to apply Theorem 18
+to an existing protocol, we need to carefully revisit the original proof, and we need to be aware of
+the fact that the closure properties of the class of QPPT machines are not the same as those of the
+class of PPT machines.
+In this context, we formulate the following open problem: Can we formulate the class of all
+QPPT machines as the class of all probabilistic-polynomial-time machines relative to a suitable
+oracle? More precisely, is the following conjecture true?
+Conjecture 19 There exists an oracle O (e.g., the decision oracle of a BQP-complete problem)
+such that a classical machine M is QPPT if and only if there exists an oracle machine M̂ O which
+runs in probabilistic-polynomial-time and which is perfectly indistinguishable from M .
+A positive answer to this question would allow rewinding of QPPT machines (since an oracle
+machine M̂ O can be rewound). However, the impact of such a positive answer would not be limited
+to our setting; we expect that it would also allow a simple analysis of classical protocols in the
+quantum stand-alone model, and of classical zero-knowledge proofs in the quantum setting.
+
+4
+
+Relation to the stand-alone model
+
+In this section, we show that security in the quantum stand-alone model does, in some cases, already
+imply quantum-UC-security. We will need this result as a tool for reusing parts of the proof given
+by Damgård et al. [DFL+ 09a] for their OT protocol. We first review the necessary parts of the
+stand-alone model as defined by Fehr and Schaffner [FS09]. For details, see their paper.
+The basic idea behind the stand-alone model is similar to that of the UC model. We are given
+a protocol π and a functionality F, and we call the protocol π secure if any attack on π can be
+simulated in an ideal model where the simulator only has access to the functionality F.10 We
+will only need the special case of a two-party protocol in which Alice does not take any input. In
+10
+
+In the stand-alone model, one usually call this functionality a function because it is required to be non-interactive,
+first taking inputs from all parties, and then sending the computed outputs to all parties.
+
+20
+
+′
+ZAdv
+
+Z
+Z′
+
+D
+
+Z′
+
+Adv
+
+A
+
+Adv
+
+(Real )
+
+Z′
+Adv
+
+A
+
+(Real ′ )
+
+A
+
+(Real ′′ )
+
+′
+ZAdv
+
+Z
+Z′
+
+D
+
+Z′
+
+Sim
+
+F
+
+Adv
+Sim
+
+(Ideal )
+
+Z′
+Sim∗
+
+F
+
+Adv
+
+Sim∗
+
+F
+
+Sim′
+
+(Ideal ′ )
+
+(Ideal ′′ )
+
+Figure 3: Networks occurring in the proof of Theorem 20. Dashed boxes represent machines that
+internally simulate other machines. Arrows between machines represent communication, and arrows
+leaving the network represent the overall output of the network (indistinguishability is defined in
+terms of that output). Dummy-parties and corruption parties are omitted for simplicity.
+this case, we say that the protocol π implements F in the statistical quantum stand-alone model
+for corrupted Bob if the following holds: For any adversary Adv, there is a simulator Sim such
+that such that for any quantum state ρadv , the trace distance between the states ρreal and ρideal
+is negligible. Here, the state ρreal is defined to be the joint state consisting of the output of Alice
+and of the adversary after a protocol execution in which the adversary gets ρadv as his initial input.
+The state ρideal is defined to be the joint state consisting of the output of Alice and of the simulator
+after an execution in which the simulator first gets ρadv as his initial input, then may give arbitrary
+inputs to F in the name of Bob, then gets the outputs for Bob from F, and then produces his
+output.
+Theorem 20 Fix a protocol π with parties Alice and Bob (not using any ideal functionality). Assume that in this protocol Alice takes no input, and that Alice does not accept messages after sending
+her output.
+Assume that the protocol π implements a two-party functionality F in the statistical quantum
+stand-alone model for corrupted Bob.
+Assume that the corresponding simulator is quantum-polynomial-time, that the simulator internally simulates the adversary as a black-box (and in particular, the description of the simulator
+does not otherwise depend on the adversary), that the simulator does not rewind the adversary, and
+that the simulator outputs the state output by the internally simulated adversary.
+Then π statistically quantum-UC-emulates F in the case of corrupted Bob.
+Proof. Fix an environment Z. By Lemma 12, we have to construct a simulator Sim such that the
+probability that Z outputs 1 in the real and ideal model is negligibly close. (This simulator needs
+21
+
+to be independent of the choice of Z.) Here, the real model Real consists of the environment Z,
+the dummy-adversary Adv := Advdummy , the honest party A (Alice), and the corruption party B C .
+The ideal model Ideal consists of the environment Z, the simulator Sim, the functionality F, the
+dummy-party Ã, and the corruption party B C .
+Alice does not accept any messages after sending her output, so we can assume without loss of
+generality that Z does not send any messages to Alice after receiving her output. Since Adv is the
+dummy-adversary, we can assume that Z also does not send any messages to Adv after receiving
+Alice’s output (since these messages would be routed through Adv through B C and then to Alice
+and ignored). Thus, we can assume without loss of generality that after receiving Alice’s output,
+Z does not send any messages, but performs a measurement D on its state and Alice’s output with
+some outcome d ∈ {0, 1}. Then Z terminates with output d. Thus we can represent Z as consisting
+internally of two machines Z ′ and D. The machine D gets the outputs of Z ′ and Alice and outputs
+d. This situation is depicted in Figure 3, network Real .
+We then define a network Real ′ which contains Z ′ instead of Z. See Figure 3. Let ρ(Real ′ )
+denote the joint output of Z ′ and Alice. Note that this output is not a single bit (as in Definition 3)
+but a quantum state. Note that when applying the measurement D to ρ(Real ′ ), the distribution of
+the measurement outcome is the distribution of the output of Z ′ in Real .
+We then define a network Real ′′ which results from Real ′ by replacing Z ′ and Adv by a single
+machine ZAdv which internally simulates Z ′ and Adv. See Figure 3. Then ρ(Real ′ ) = ρ(Real ′′ ).
+′
+Now, since π implements F in the statistical quantum stand-alone model, and since ZAdv
+is a
+valid adversary in the quantum stand-alone model (it only interacts with the honest parties, but
+does not provide inputs or get the outputs), we have that there is a simulator Sim′ such that the
+trace distance between ρ(Real ′′ ) and ρ(Ideal ′′ ) is negligible. Here Ideal ′′ is the network consisting
+of Sim′ and F.
+′
+as a black box and outputs what
+By assumption, the simulator Sim′ internally simulates ZAdv
+′
+′
+the simulated ZAdv outputs. Hence we can represent Sim as internally consisting of some two
+′
+′
+. The construction
+, and some machine Sim∗ that interacts with ZAdv
+machines: the adversary ZAdv
+∗
+∗
+′
+of Sim does not depend on ZAdv , and Sim is quantum-polynomial-time since Sim′ is quantum′
+′
+polynomial-time by assumption. The output of Sim′ is that of ZAdv
+. Note further that ZAdv
+by
+′
+construction also consists of two internally simulated machines Z and Adv and outputs what Z ′
+outputs. So the output of Sim′ is that of the internal Z ′ . See Figure 3, network Ideal ′′ .
+The simulator Sim′ internally simulates Z ′ , Adv, and Sim∗ . We define Ideal ′ by replacing Sim′
+in Ideal ′′ by Z ′ and Sim, where Sim is defined to internally simulate Adv and Sim∗ . See Figure 3.
+Then ρ(Ideal ′′ ) = ρ(Ideal ′ ).
+Thus the trace distance between ρ(Real ′ ) and ρ(Ideal ′ ) is negligible. Furthermore, when applying the measurement D to ρ(Real ′ ), the distribution of the measurement outcome is the distribution
+of the output of Z in Real . Similarly, when applying the measurement D to ρ(Ideal ′ ) is the distribution of the output of Z in Ideal . Thus the statistical distance between the output of Z ′ in Real
+and in Ideal is negligible. Thus Real and Ideal are indistinguishable.
+Furthermore, since Sim consists of Adv and Sim∗ , it is independent of Z. And since Sim∗
+is quantum-polynomial-time, Sim is quantum-polynomial-time if Adv is. Thus π statistically
+quantum-UC-emulates F in the case of corrupted Bob.
+
+
+22
+
+Parameters: Integers n, m > n, ℓ, a family F of universal hash functions.
+Parties: The sender Alice and the recipient Bob.
+Inputs: Alice gets no input, Bob gets a bit c.
+1. Alice chooses x̃A ∈ {0, 1}m and θ̃ A ∈ {+, ×}m and sends |x̃A iθ̃A to Bob.
+2. Bob receives the state |Ψi sent by the sender. Then Bob chooses θ̃ B ∈ {+, ×}m and measures
+the qubits of |Ψi in the bases θ̃ B . Call the result x̃B .
+B→A,1
+3. For each i, Bob commits to θ̃iB and x̃B
+each.
+i using one instance of FCOM
+4. Alice chooses a set T ⊆ {1, . . . , m} of size m − n and sends T to Bob.
+5. Bob opens the commitments of θ̃iB and x̃B
+i for all i ∈ T .
+B for all i with i ∈ T and θ̃ A = θ̃ B . If this test fails, Alice aborts.
+=
+x̃
+6. Alice checks x̃A
+i
+i
+i
+i
+7. Let xA be the n-bit string resulting from removing the bits at positions i ∈ T from x̃A . Define
+θ A , xB , and θ B analogously.
+8. Alice sends θ A to Bob.
+9. Bob sets Ic := {i : θiA = θiB } and I1−c := {i : θiA 6= θiB }. Then Bob sends (I0 , I1 ) to Alice.
+10. Alice chooses s0 , s1 ∈ {0, 1}ℓ(k) and f0 , f1 ∈ F, output (s0 , s1 ), and computes mi := si ⊕
+fi (xA |Ii ) for i = 1, 2. Then Alice sends f0 , f1 , m0 , m1 to Bob.
+11. Bob outputs s := mc ⊕ fc (xB |Ic ).
+Figure 4: Protocol πQROT for randomized oblivious transfer.
+
+5
+
+Oblivious transfer
+
+Definition 21 (OT protocols) The protocol πQROT is defined in Figure 4. Fix a commitment
+com
+scheme com. The protocol πQROT
+is defined like πQROT , but instead of using the functionality FCOM ,
+the commitment scheme com is used. The protocol πQOT is defined like πQROT , with the following
+modifications: Alice takes as input two ℓ(k)-bit strings v0 , v1 . In Step 10, Alice additionally sends
+t0 , t1 with ti := si ⊕ vi . Bob outputs s ⊕ tc instead of s in Step 11.
+We first analyze πQROT and will then deduce the security of πQOT from that of πQROT .
+We first state the trivial cases (note for the uncorrupted case that we assume secure channels):
+A→B,ℓ
+Lemma 22 The protocol πQROT statistically quantum-UC-emulates FROT
+in the case of no corrupted parties and in the case of both Alice and Bob being corrupted.
+
+5.1
+
+Corrupted Alice
+
+A→B,ℓ
+in the case of corLemma 23 The protocol πQROT statistically quantum-UC-emulates FROT
+rupted Alice.
+
+Proof. First, we describe the structure of the real and ideal model in the case that the party A
+(Alice) is corrupted:
+In the real model, we have the environment Z, the adversary Adv, the corruption party AC , the
+honest party B (Bob), and the 2m instances of the commitment functionality FCOM . The adversary
+controls the corruption party AC , so effectively he controls the communication with Bob and the
+inputs of FCOM . Bob’s input (a choice bit c) is chosen by the environment, and the environment
+also gets Bob’s output (a bitstring s ∈ {0, 1}ℓ ). See Figure 5(a).
+23
+
+(a)
+Adv
+
+AC
+
+Sim
+
+AC
+
+(b)
+
+(c)
+
+Adv
+
+AC
+
+B
+
+FCOM
+
+s0 ,s1
+
+FROT
+
+FFakeCOM
+
+c
+
+B̃
+
+sc
+
+B
+
+s0 ,s1
+
+c
+s
+
+c
+sc
+
+AC
+
+Z
+
+Z
+
+s0 ,s1
+
+FROT
+
+c
+sc
+
+B̃
+
+c
+sc
+
+Z
+
+Sim
+Figure 5: Networks occurring in the proof of Lemma 23. The dashed box represents the machine
+Sim that internally simulates Adv, AC , FFakeCOM and B.
+In the ideal model, we have the environment Z, the simulator Sim (to be defined below), the
+corruption party AC , the dummy-party B̃, and the randomized OT functionality FROT . The
+simulator Sim controls the corruption party AC and hence effectively chooses the inputs s0 , s1
+of FROT .11 The input c of FROT is chosen by the dummy-party B̃ and thus effectively by the
+environment Z. The output s := sc of FROT is given to the dummy-party B̃ and thus effectively
+to the environment Z. See Figure 5(b).
+To show Lemma 23, we need to find a simulator Sim such that, for any environment Z, the
+real model and the ideal model are indistinguishable. To do so, we start with the real model, and
+change the machines in the real model step-by-step until we end up with the ideal model containing
+a suitable simulator Sim (which we define below in the description of Game 6). In each step, we
+show that network before and after the step are perfectly indistinguishable.
+Game 1. We replace FCOM by a commitment functionality FFakeCOM in which Bob (the sender)
+can cheat. That is, in the commit phase, FFakeCOM expects a message commit from B (instead
+of (commit, x)), and in the open phase, FFakeCOM expects a message (open, x) (instead of open)
+and then sends (open, x) to Alice. We also change Bob’s implementation accordingly, i.e., when
+Bob should commit to a bit b, he stores that bit b and gives it to FFakeCOM when opening the
+commitment. Obviously, this change leads to a perfectly indistinguishable network (since Bob still
+opens the commitment in the same way).
+Game 2. Since Bob uses FFakeCOM instead of FCOM , he does not use the outcomes x̃B
+i of his
+measurements before Step 5 (for i ∈ T ) or Step 11 (for i ∈
+/ T ) of the protocol. Thus, we modify
+Bob so that he performs the measurements with outcomes x̃B
+i (i ∈ T ) in Step 5 (in particular, after
+B
+learning T ), and the measurements with outcomes xi in Step 11. Delaying the measurements leads
+to a perfectly indistinguishable network.
+Game 3. The bits xB
+i with i ∈ I1−c are never used by Bob. Thus we can modify Bob to use
+11
+
+Remember that, if Alice is corrupted, FROT behaves like FOT and takes inputs s0 , s1 from Alice.
+
+24
+
+the bases θiA instead of θiB for these bits without changing the output of Z. Furthermore, since
+θiA = θiB for i ∈ Ic , we can modify Bob to also use the bases θiA instead of θiB when measuring
+A
+B
+xB
+i with i ∈ Ic . Summarizing, we modify Bob to use θ instead of θ , and we get a perfectly
+indistinguishable network.
+Game 4. The bases θ B are chosen randomly by Bob, and they are only used to compute the sets
+I0 and I1 . We change Bob to instead pick (I0 , I1 ) as a random partition of {1, . . . , n}. Since this
+leads to the same distribution of (I0 , I1 ) and since θ B is not used elsewhere, this leads to a perfectly
+indistinguishable network.
+Game 5. In Step 11, we change Bob to compute si := mi ⊕ fi (xB |Ii ) for i = 0, 1 and to output
+s := sc . This leads to the same value of s as the original computation s := mc ⊕ fc (xB |Ic ), hence
+the resulting network is perfectly indistinguishable from the previous one. Note that now, Bob only
+uses the choice bit c to pick which of the two values s0 , s1 to output.
+Game 6. We now construct a machine Sim that internally simulates the machines Adv, AC ,
+FFakeCOM , and Bob. We let Sim run with an (external) corruption party AC , and when (the
+simulated) Bob computes s0 , s1 in Step 11, Sim instructs the (external) corruption party AC to
+input s0 , s1 into FROT (instead of letting Bob output s = sc ). Then FROT will, given input c from
+the dummy-party B̃, output sc to the dummy-party B̃. The dummy-party B̃ then forwards sc to
+the environment Z. See Figure 5(c). The only difference with respect to the previous network
+(besides a regrouping of machines) is that now sc is computed by FROT from s0 , s1 . However, FROT
+computes sc in the same way as Bob would have done. Thus, the resulting network is perfectly
+indistinguishable from the previous one.
+Since the network from Game 6 (Figure 5(c)) is identical to the ideal model (Figure 5(b)), and
+since the real model is perfectly indistinguishable from the network from Game 6, we have that the
+real and the ideal network are perfectly indistinguishable.
+Furthermore, Sim is quantum-polynomial-time if Adv is, and the construction of Sim does not
+depend on the choice of the environment Z. Thus the protocol πQROT statistically quantum-UCA→B,ℓ
+emulates FROT
+in the case of corrupted Alice.
+
+
+5.2
+
+Corrupted Bob
+
+We call a commitment scheme trivially extractable if, given the messages exchanged during the
+commit phase, it is efficiently possible to determine the value to which the commitment will be
+opened. Obviously, this directly contradicts the hiding property of the commitment, so trivially
+extractable commitments are not overly useful. However, we need such commitments as an intermediate construction in the following proofs. An example of a trivially extractable commitment is
+one which sends the committed message in clear during the commit phase.
+Corollary 24 (Stand-alone quantum OT [DFL+ 09a]) Let 0 < α < 1 and 0 < λ < 14 be
+constants. Assume m = ⌈n/(1 − α)⌉ and ℓ = ⌊λn⌋ and that n grows at least linearly in the security
+parameter k.
+Assume that com is a statistically binding, trivially extractable commitment scheme.
+A→B,ℓ
+com
+Then πQROT
+implements FROT
+in the statistical quantum stand-alone model.
+The corresponding simulator is quantum-polynomial-time, internally simulates the adversary as
+a black-box, does not rewind the adversary, and outputs the state output by the internally simulated
+adversary.
+25
+
+Note that Damgård et al. [DFL+ 09a] prove a slightly different result. First, it only assumes that
+the commitment scheme com is extractable in the so-called common reference string (CRS) model.
+That is, a globally known and trusted string, the CRS, is available to all parties, and it is possible to
+extract the committed value when one is allowed to choose the CRS oneself. A trivially extractable
+commitment can be seen as a special case with a zero-length CRS. Second, it only assumes that the
+scheme is computationally binding, and thus only proves security in the computational quantum
+stand-alone model. If we assume that the commitment is statistically binding instead, the same
+proof shows security in the statistical quantum stand-alone model. Third, they analyze the protocol
+com , but the proof trivially adapts to π com .
+πQOT
+QROT
+Lemma 25 Under the same assumptions on n, m, ℓ as in Corollary 24, the protocol πQROT statisA→B,ℓ
+tically quantum-UC-emulates FROT
+in the case of corrupted Bob.
+Proof. Let com be the following encryption scheme: To commit to a message m, the sender sends
+(commit, m), and the recipient always accepts the commitment. To open the commitment, the
+sender sends open, and the recipients accepts and output m. Obviously, this commitment is not
+hiding. However, it is easily seen to be statistically binding and trivially extractable.
+Consider the protocol πQROT . Here Bob sends the messages (commit, m) and open to the
+com , Bob sends these messages directly to
+commitment functionality, while in the protocol πQROT
+com
+Alice. In other words, the machine Alice in πQROT can be represented as a machine that internally
+simulates the machine Alice from πQROT and the ideal functionality FCOM . Thus, as long as Alice
+com
+is honest, πQROT
+statistically quantum-UC-emulates FROT in the case of corrupted Bob if and only
+if πQROT statistically quantum-UC-emulates FROT in the case of corrupted Bob.
+com
+By Corollary 24, πQROT
+implements FCOM in the statistical quantum stand-alone model in the
+case of corrupted Bob with a simulator having the special properties listed in Corollary 24. Thus, by
+com
+Theorem 20, πQROT
+statistically quantum-UC-emulates FROT in the case of corrupted Bob. Thus
+πQROT statistically quantum-UC-emulates FROT in the case of corrupted Bob.
+
+Theorem 26 Let 0 < α < 1 and 0 < λ < 14 be constants. Assume m = ⌈n/(1 − α)⌉ and ℓ = ⌊λn⌋
+and that n grows at least linearly in the security parameter.
+A→B,ℓ
+Then the protocol πQROT statistically quantum-UC-emulates FROT
+.
+Proof. Immediate from Lemmas 22, 23, and 25.
+Theorem 27 Let 0 < α < 1 and 0 < λ < 14 be constants. Assume m = ⌈n/(1 − α)⌉ and ℓ = ⌊λn⌋
+and that n grows at least linearly in the security parameter.
+A→B,ℓ
+.
+Then the protocol πQOT (Definition 21) statistically quantum-UC-emulates FOT
+′
+Proof. Consider the following protocol πQOT
+in the FROT -hybrid model. Given inputs v0 , v1 ∈
+ℓ(k)
+{0, 1}
+for Alice and a bit c for Bob, Bob invokes FROT with input c. Then Alice gets random
+s0 , s1 ∈ {0, 1}ℓ(k) , and Bob gets s = sc . Then Alice sends t0 , t1 with ti := vi ⊕ si to Bob. And Bob
+′
+outputs s ⊕ tc . It is easy to see that πQOT
+statistically classical-UC-emulates FOT . Hence, by the
+′
+quantum lifting theorem (Theorem 15), πQOT
+statistically quantum-UC-emulates FOT . Note that
+′
+the protocol πQOT is the protocol resulting from replacing, in πQOT
+, calls to FROT by calls to the
+subprotocol πQROT . Furthermore, πQROT statistically quantum-UC-emulates FROT by Theorem 26.
+Hence, by the composition theorem (Theorem 13), πQOT statistically quantum-UC-emulates FOT .
+
+
+26
+
+6
+
+Multi-party computation
+
+Theorem 28 Let F be a classical probabilistic-polynomial-time functionality.12 Then there exists
+a protocol π in the FCOM -hybrid model that statistically quantum-UC-emulates F. (Assuming the
+number of protocol parties does not depend on the security parameter.)
+Proof. Ishai, Prabhakaran, and Sahai [IPS08] prove the existence of a protocol ρFOT in the FOT hybrid model that statistically classical-UC-emulates F (assuming a constant number of parties).
+By the quantum lifting theorem (Theorem 15), ρFOT statistically quantum-UC-emulates F. By
+Theorem 27, πQOT statistically quantum-UC-emulates FOT . Let π := ρπQOT be the result of
+replacing invocations to FOT in ρFOT by invocations of the subprotocol πQOT (as described in
+Section 2.3). Then by the universal composition theorem (Theorem 13), π statistically quantumUC-emulates ρFOT . Using the fact that quantum-UC-emulation is transitive (Lemma 10), it follows
+that π statistically quantum-UC-emulates F.
+
+We proceed to show that the result from Theorem 28 is possible only in the quantum setting.
+That is, we show that there is a natural functionality that cannot be statistically classical-UCemulated in the commitment-hybrid model. To show this impossibility result, we first need the
+following lemma.
+Lemma 29 There is no classical two-party protocol (that runs in a polynomial number of rounds)
+in the commitment-hybrid model that has the following properties:
+• Let a ∈ {0, 1} denote Alice’s input, and b ∈ {0, 1} Bob’s input. Then Alice’s and Bob’s output
+is a · b with overwhelming probability.
+• The view of Alice in the case (a, b) = (0, 0) is statistically indistinguishable from the view of
+Alice in the case (a, b) = (0, 1).
+• The view of Bob in the case (a, b) = (0, 0) is statistically indistinguishable from the view of
+Bob in the case (a, b) = (1, 0).
+In all three cases we assume that Alice and Bob honestly follow the protocol (i.e., Alice and Bob are
+honest-but-curious). The view of a party consists of all messages sent and received by that party
+together with its input and random choices.
+Proof. Assume a protocol π satisfying the properties from Lemma 29. We assume without loss
+of generality that the last message sent in an execution of π contains the output of Alice. We
+transform π into a protocol π ′ that does not use commitments. Namely, when Alice would commit
+to a value m, she instead sends committed to Bob, and when she would open that commitment,
+she sends m to Bob. Analogously, we remove Bob’s commitments. The resulting protocol π ′ still
+satisfies the properties from Lemma 29 since we only consider honest-but-curious parties.
+We use Lemma 33 from [MQU07a]: Let U , Ũ , L, L̃ be interactive machines that send only a
+polynomially-bounded number of messages. Let hU, Li denote the transcript of the communication
+12
+
+Subject to certain technical restrictions stemming from the proof by Ishai et al. [IPS08]: Whenever the functionality gets an input, the adversary is informed about the length of that input. Whenever the functionality makes an
+output, the adversary is informed about the length of that output and may decide when this output is to be scheduled.
+
+27
+
+in an interaction of U and L. Assume that hU, Li ≈ hŨ , Li ≈ hU, L̃i where ≈ denotes statistical
+indistinguishability. Then hU, Li ≈ hŨ , L̃i.
+Let U be a machine executing Alice’s program in π ′ on input 0, and let Ũ execute Alice’s
+program on input 1. Let L and L̃ execute Bob’s program on inputs 0 and 1, respectively. Then
+the properties in Lemma 29 guarantee that hU, Li ≈ hŨ , Li ≈ hU, L̃i. Hence hU, Li ≈ hŨ , L̃i.
+This implies that the communication between Alice and Bob in π ′ is indistinguishable in the cases
+a = b = 0 and a = b = 1. This is a contradiction to the fact that in the first case, the last message
+contains the output ab = 0, and in the second case, the last message contains the output ab = 1.
+
+Definition 30 (AND) The functionality FAND expects an input a ∈ {0, 1} from Alice and b ∈
+{0, 1} from Bob. Then it sends a · b to Alice and Bob.
+Theorem 31 (Impossibility of classical multi-party computation) There is no classical
+probabilistic-polynomial-time protocol π in the FCOM -hybrid model such that π statistically classicalUC-emulates FAND .
+Proof. The statistical UC-security of π would imply the properties listed in Lemma 29. Hence by
+Lemma 29 such a protocol π does not exist.
+
+
+7
+
+Conclusions
+
+We have given a definition of quantum-UC-security that provides strong composability guarantees
+for quantum protocols. We have shown that in this model, it is possible to construct statistically
+secure oblivious transfer protocols given only commitments. Furthermore, we showed that a protocol which is secure in the statistical classical UC model is also secure in the statistical quantum
+UC model. This simplifies the modular design of quantum protocols and allows us to construct
+UC-secure general multi-party computation protocols given only commitments.
+Directions for future work include:
+• Combine the UC framework and the bounded quantum storage model. In this model,
+Damgård, Fehr, Salvail, and Schaffner [DFSS05] have constructed statistically hiding and
+binding commitment schemes and statistically secure OT protocols. If variants of these protocols can be shown secure in the UC framework, this would allow to construct general UCsecure multi-party computation protocols, only assuming that the adversary has a certain
+upper bound on his quantum storage.
+• Combine our result with the protocols for long-term classical UC-secure commitments by
+Müller-Quade and Unruh [MQU07b] (see Section 1.4). If their protocols can be shown to
+be secure in the quantum setting, this would enable general long-term secure multi-party
+computation based on practical setup-assumptions (the availability of signature cards).
+• Find efficient constructions. Our protocol invokes a commitment for each qubit sent by Alice.
+In some settings, a commitment can be quite expensive. For example, commitment protocols
+in the bounded quantum storage model have a large quantum communication complexity. In
+this setting, the efficiency of our protocol could be improved considerably if we were able to
+use few string commitments instead of committing to each bit individually.
+28
+
+• Find analogues to the quantum lifting theorem in other security models. In the stand-alone
+model, it is an open question whether classically secure protocols are secure in the quantum
+setting, too. Similarly, we do not know whether classically secure zero-knowledge proofs are
+in general secure against quantum adversaries.
+Acknowledgements. I thank Jörn Müller-Quade for the original inspiration for this work and
+Christian Schaffner for valuable discussions.
+
+References
+[BB84]
+
+Charles H. Bennett and Gilles Brassard. Quantum cryptography: Public-key distribution and coin tossing. In IEEE International Conference on Computers, Systems and
+Signal Processing 1984, pages 175–179. IEEE Computer Society, 1984.
+
+[BBCS91]
+
+Charles H. Bennett, Gilles Brassard, Claude Crépeau, and Marie-Hélène Skubiszewska.
+Practical quantum oblivious transfer. In Crypto ’91, volume 576 of LNCS, pages 351–
+366. Springer, 1991.
+
+[BCJL93]
+
+G. Brassard, C. Crépeau, R. Jozsa, and D. Langlois. A quantum bit commitment
+scheme provably unbreakable by both parties. In FOCS ’93, pages 362–371, Los Alamitos, CA, USA, 1993. IEEE Computer Society.
+
+[BOHL+ 05] Michael Ben-Or, Michal Horodecki, Debbie W. Leung, Dominic Mayers, and Jonathan
+Oppenheim. The universal composable security of quantum key distribution. In TCC
+2005, volume 3378 of LNCS, pages 386–406. Springer, 2005. Online available at http:
+//xxx.lanl.gov/abs/quant-ph/0409078.
+[BOM04]
+
+M. Ben-Or and D. Mayers. General security definition and composability for quantum
+& classical protocols, September 2004. Online available at http://xxx.lanl.gov/
+abs/quant-ph/0409062.
+
+[Can00]
+
+Ran Canetti. Security and composition of multi-party cryptographic protocols. Journal
+of Cryptology, 3(1):143–202, 2000.
+
+[Can01]
+
+Ran Canetti. Universally composable security: A new paradigm for cryptographic
+protocols. In FOCS 2001, pages 136–145. IEEE Computer Society, 2001. Full and
+revised version is [Can05].
+
+[Can05]
+
+Ran Canetti. Universally composable security: A new paradigm for cryptographic
+protocols. IACR ePrint Archive, January 2005. Full and revised version of [Can01],
+online available at http://eprint.iacr.org/2000/067.ps.
+
+[CF01]
+
+Ran Canetti and Marc Fischlin. Universally composable commitments. In CRYPTO
+2001, volume 2139 of LNCS, pages 19–40. Springer, 2001. Full version online available
+at http://eprint.iacr.org/2001/055.ps.
+
+[DFL+ 09a] Ivan Damgård, Serge Fehr, Carolin Lunemann, Louis Salvail, and Christian Schaffner.
+Improving the security of quantum protocols. In Crypto 2009, volume 5677 of LNCS,
+pages 408–427. Springer, 2009.
+29
+
+[DFL+ 09b] Ivan Damgård, Serge Fehr, Carolin Lunemann, Louis Salvail, and Christian Schaffner.
+Improving the security of quantum protocols, 2009. Full version of [DFL+ 09a], version
+3, online available at http://arxiv.org/abs/0902.3918v3.
+[DFSS05]
+
+Ivan Damgård, Serge Fehr, Louis Salvail, and Christian Schaffner. Cryptography in
+the bounded quantum-storage model. In FOCS 2005, pages 449–458, 2005. A full
+version is available at http://arxiv.org/abs/quant-ph/0508222.
+
+[FS09]
+
+Serge Fehr and Christian Schaffner. Composing quantum protocols in a classical environment. In TCC 2009, volume 5444 of LNCS, pages 350–367. Springer, 2009.
+
+[HMQ03]
+
+Dennis Hofheinz and Jörn Müller-Quade. A paradox of quantum universal composability. Poster at the 4th European QIPC Workshop, 2003. Abstract online available
+at http://www.quiprocone.org/Hot%20Topics%20posters/muellerquade_poster.
+pdf.
+
+[HU05]
+
+Dennis Hofheinz and Dominique Unruh. Comparing two notions of simulatability. In
+TCC 2005, number 3378 in LNCS, pages 86–103. Springer-Verlag, 2005.
+
+[HU06]
+
+Dennis Hofheinz and Dominique Unruh. Simulatable security and polynomially
+bounded concurrent composition. In IEEE Symposium on Security and Privacy
+2006, pages 169–182. IEEE Computer Society, 2006. Full version online available
+at http://eprint.iacr.org/2006/130.ps.
+
+[IPS08]
+
+Yuval Ishai, Manoj Prabhakaran, and Amit Sahai. Founding cryptography on oblivious
+transfer – efficiently. In CRYPTO 2008, volume 5157 of LNCS, pages 572–591. Springer,
+2008.
+
+[Ken99]
+
+Adrian Kent. Unconditionally secure bit commitment. Phys. Rev. Lett., 83(7):1447–
+1450, Aug 1999.
+
+[Kil88]
+
+Joe Kilian. Founding cryptography on oblivious transfer. In STOC 1988, pages 20–31.
+ACM, 1988.
+
+[Lin03]
+
+Yehuda Lindell. General composition and universal composability in secure multiparty computation. In FOCS 2003, pages 394–403. IEEE Computer Society, 2003.
+Full version online available at http://eprint.iacr.org/2003/141.ps.
+
+[May97]
+
+D. Mayers. Unconditionally Secure Quantum Bit Commitment is Impossible. Physical
+Review Letters, 78(17):3414–3417, 1997. Online available at http://arxiv.org/abs/
+quant-ph/9605044.
+
+[MQU07a]
+
+Jörn Müller-Quade and Dominique Unruh. http://eprint.iacr.org/2006/422, January 2007. Long version of [MQU07b].
+
+[MQU07b]
+
+Jörn Müller-Quade and Dominique Unruh. Long-term security and universal composability. In TCC 2007, volume 4392 of LNCS, pages 41–60. Springer, March 2007.
+
+[NC00]
+
+Michael A. Nielsen and Isaac L. Chuang. Quantum Computation and Quantum Information. Cambridge University Press, 2000.
+30
+
+[PW01]
+
+Birgit Pfitzmann and Michael Waidner. A model for asynchronous reactive systems
+and its application to secure message transmission. In 22nd IEEE Symposium on
+Security & Privacy, pages 184–200, 2001.
+
+[Sho94]
+
+Peter W. Shor. Algorithms for quantum computation: Discrete logarithms and factoring. In FOCS 1994, pages 124–134. IEEE Computer Society, 1994.
+
+[Unr04]
+
+Dominique Unruh. Simulatable security for quantum protocols, September 2004. Online available at http://arxiv.org/ps/quant-ph/0409125.
+
+[Unr06]
+
+Dominique Unruh. Protokollkomposition und Komplexität. PhD thesis, Universität
+Karlsruhe (TH), Berlin, 2006. In German, online available at http://crypto.m2ci.
+org/unruh/publications/unruh07protokollkomposition.html.
+
+[vdG98]
+
+Jeroen van de Graaf. Towards a formal definition of security for quantum protocols.
+PhD thesis, Départment d’informatique et de r.o., Université de Montréal, 1998. Online
+available at http://www.cs.mcgill.ca/~crepeau/PS/these-jeroen.ps.
+
+[Wat06]
+
+John Watrous. Zero-knowledge against quantum attacks. In STOC ’06, pages 296–305,
+New York, NY, USA, 2006. ACM.
+
+[Wie83]
+
+Stephen Wiesner. Conjugate coding. SIGACT News, 15(1):78–88, 1983. Manuscript
+written ca. 1970.
+
+[WW08]
+
+Stephanie Wehner and Jörg Wullschleger. Composable security in the boundedquantum-storage model. In ICALP 2008, track C, LNCS, pages 604–615. Springer,
+2008. Full version available at http://arxiv.org/abs/0709.0492v1.
+
+[Yao95]
+
+Andrew Chi-Chih Yao. Security of quantum protocols against coherent measurements.
+In STOC 1995, pages 67–75. ACM, 1995.
+
+Index
+adversary
+classical dummy, 18
+dummy, 14
+AND
+functionality, 28
+authenticated channel, 12
+channel
+authenticated, 12
+insecure, 12
+secure, 12
+classical
+machine, 17
+protocol, 17
+UC, 17
+
+classical dummy adversary, 18
+classical state, 10
+classical superoperator, 10
+classical UC
+QPPT, 19
+commitment
+functionality, 13
+composed systems, 10
+composition
+sequential, 7
+composition theorem, 15
+computational basis, 10
+computational quantum UC, 12
+computationally quantum-UC-emulate, 12
+31
+
+corruption, 12
+corruption party, 12
+density operator, 10
+dummy-adversary, 14
+classical, 18
+completeness of, 14
+dummy-party, 13
+empty word, 9
+emulate
+computationally quantum-UC-, 12
+statistically quantum-UC-, 12
+functionality, 12
+AND, 28
+commitment, 13
+OT, 13
+randomized OT, 14
+hybrid model, 15
+ideal model, 12
+ideal functionality, see functionality
+identity
+of a machine, 11
+indistinguishability
+of networks, 12
+perfect, 12
+information-theoretical, see statistical
+insecure channel, 12
+key distribution
+quantum, 2
+lifting
+quantum, 18
+light
+speed of, 6
+long-term security, 7
+machine, 11
+classical, 17
+message transfer
+secure, 3
+mixed state, 10
+model
+
+hybrid, 15
+ideal, 12
+real, 12
+stand-alone, 20
+multi-party computation
+classical impossibility, 28
+multi-party computation, 27
+negligible, 9
+network, 11
+oblivious transfer, see OT
+operator
+density, 10
+super-, 10
+OT, 4
+functionality, 13
+protocol, 23
+overwhelming, 9
+party, 12
+corruption, 12
+dummy-, 13
+perfect indistinguishability, 12
+physical setup, 6
+polynomial-time
+quantum-, 11
+PPT
+quantum-strong, see QPPT
+protocol, 12
+classical, 17
+pure state, 10
+QKD, see quantum key distribution
+QPPT, 19
+QPPT classical UC, 19
+quantum key distribution, 2
+quantum lifting, 18
+computational, 19
+quantum-polynomial-time, 11
+quantum-strong PPT, see QPPT
+quantum-UC
+computational, 12
+statistical, 12
+quantum-UC-emulate
+computationally, 12
+32
+
+statistically, 12
+randomized OT
+functionality, 14
+real model, 12
+reflexivity, 14
+secure channel, 12
+secure message transfer, 3
+security
+long-term, 7
+stand-alone, see stand-alone model
+sequential composition, 7
+setup
+physical, 6
+signature card, 7
+speed of light, 6
+stand-alone model, 20
+state
+classical, 10
+mixed, 10
+
+pure, 10
+state transition operator, 11
+statistical quantum UC, 12
+statistically quantum-UC-emulate, 12
+superoperator, 10
+classical, 10
+transitivity, 14
+UC
+classical, 17
+computational quantum, 12
+QPPT classical, 19
+statistical quantum, 12
+UC-emulate
+computationally quantum-, 12
+statistically quantum-, 12
+Universal Composability, see UC
+word
+empty, 9
+
+33
+
+

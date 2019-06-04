@@ -1,0 +1,10 @@
+../data/papers_own_impl/1505.02348.txt
+../data/papers_own_impl/1506.00366.txt
+../data/papers_own_impl/1503.07759.txt
+../data/papers_own_impl/1412.0291.txt
+../data/papers_own_impl/1510.06482.txt
+../data/papers_own_impl/1505.05193.txt
+../data/papers_own_impl/1504.06320.txt
+../data/papers_own_impl/1210.2246.txt
+../data/papers_own_impl/1501.04836.txt
+../data/papers_own_impl/1105.1302.txt
