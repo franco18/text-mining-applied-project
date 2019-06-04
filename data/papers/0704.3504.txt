@@ -1,0 +1,667 @@
+Smooth Rényi Entropy of Ergodic Quantum
+Information Sources
+Berry Schoenmakers
+
+Jilles Tjoelker
+
+arXiv:0704.3504v1 [quant-ph] 26 Apr 2007
+
+Dept. of Mathematics and Computer Science
+Technical University Eindhoven
+The Netherlands
+berry@win.tue.nl
+
+j.tjoelker@student.tue.nl
+
+Pim Tuyls
+
+Evgeny Verbitskiy
+
+Information Security Systems
+Philips Research Eindhoven
+The Netherlands
+
+Digital Signal Processing
+Philips Research Eindhoven
+The Netherlands
+
+pim.tuyls@philips.com
+
+evgeny.verbitskiy@philips.com
+
+Abstract— We investigate the recently introduced notion of
+smooth Rényi entropy for the case of ergodic information sources,
+thereby generalizing previous work which concentrated mainly
+on i.i.d. information sources. We will actually consider ergodic
+quantum information sources, of which ergodic classical information sources are a special case. We prove that the average
+smooth Rényi entropy rate will approach the entropy rate of a
+stationary, ergodic source, which is equal to the Shannon entropy
+rate for a classical source and the von Neumann entropy rate
+for a quantum source.
+
+I. I NTRODUCTION
+The elegant notion of smooth Rényi entropy was introduced
+recently by Renner and Wolf in [6] for classical information
+sources, and the natural extension to quantum information
+sources was defined by Renner and König in [5]. In these two
+papers and further work by Renner and Wolf [7], [4], many
+properties of smooth Rényi entropy—and smooth min-entropy
+and smooth max-entropy in particular—have been studied in
+detail.
+A central property of smooth Rényi entropy proved in these
+works is that for memoryless (i.i.d.) information sources, the
+average smooth Rényi entropy rate will approach the entropy
+rate of the source, which is equal to the Shannon entropy for a
+classical source and the von Neumann entropy for a quantum
+source. Whereas, in general, the average (conventional) Rényi
+entropy rate of a memoryless source does not converge to the
+source’s entropy rate.
+In this paper we extend the study of smooth Rényi entropy
+to the more general class of stationary, ergodic sources rather
+than memoryless sources. We will prove that for both the
+classical and the quantum case that the average smooth Rényi
+entropy rate will approach the Shannon and the von Neumann
+entropy rate, respectively. We will do so by first treating the
+classical case and then reducing the quantum case to the
+classical one without losing generality.
+In general, smooth Rényi entropy of order α > 1, and α =
+∞ (min-entropy) in particular, is of cryptographic relevance
+(e.g., for randomness-extraction), and smooth Rényi entropy
+of order α < 1, and α = 0 (max-entropy) in particular, are
+relevant to data compression (minimum encoding length). In
+these contexts, the importance of smooth Rényi entropy is that
+its rate is basically equal to the Shannon/von Neumann entropy
+
+rate for an i.i.d. source (and for ergodic sources as well, as we
+show in this paper). This is not the case for conventional Rényi
+entropy. More generally, as shown in the papers by Renner et
+al. mentioned above, smooth Rényi entropy behaves much as
+Shannon/von Neumann entropy does.
+In this paper we focus on the unconditional case, whereas
+much of the abovementioned work by Renner et al. treats the
+more general conditional case. We leave the extension to the
+conditional case for future work. However, we do consider
+two notions of ǫ-closeness, one based on trace distance (also
+known as variational or statistical distance) and one based on
+non-normalized density matrices (or probability distributions),
+where the latter is more suitable to handle the conditional
+case.1 Thus, we believe that our results can be extended to the
+conditional case as well.
+We also note that Renner [4] presents a different kind of
+generalization of i.i.d. quantum sources, namely by analyzing
+the smooth min-entropy of symmetric (permutation-invariant)
+quantum states. Or, more precisely, states in a symmetric
+subspace of H⊗n are considered, for n ∈ N. See [4, Chapter 4]
+for details, which also covers the conditional case.
+II. P RELIMINARIES
+Throughout this paper we use P and Q to denote probability
+distributions with over the same finite or countably infinite
+range Z. Similarly, we use ρ and σ to denote density matrices
+on the same Hilbert space of a finite or countably infinite dimension. These probability distributions
+Pand density matrices
+are not necessarily normalized (e.g.,
+z P(z) < 1 if P is
+non-normalized and tr(ρ) < 1 if ρ is non-normalized).
+For ease of comparison we state all the preliminaries
+explicitly for the classical case as well as for the quantum
+case.
+Definition 1 (Classical Rényi entropy): The Rényi entropy
+of order α ∈ [0, ∞] of probability distribution P is
+X
+1
+log
+P(z)α ,
+Hα (P) =
+1−α
+z∈Z
+
+1 The trace distance was originally used in [6], [5]. The use of nonnormalized probability distributions was also shown in the full version of
+[6] and used in [7]. In this paper, we extend this to the use of non-normalized
+density matrices in the quantum case.
+
+for 0 < α < ∞, α 6= 1, and Hα (P) = limβ→α Hβ (P)
+otherwise.
+Hence, H0 (P) = log |{z ∈ Z : P(z) > 0}|, H1 (P) = H (P)
+(Shannon entropy) and H∞ (P) = − log maxz∈Z P(z).
+For a random variable Z we use Hα (Z) as a shorthand for
+Hα (PZ ), where PZ is the probability distribution of Z.
+Smooth Rényi entropy was introduced in [6] for the classical
+case. For ǫ ≥ 0, let B ǫ(P) denote either the set of probability
+distributions which are ǫ-close to P, B ǫ(P) = {Q : δ(P, Q) ≤
+ǫ}, or the set of non-normalized P
+probability distributions which
+are ǫ-close to P, B ǫ(P) = {Q : z∈Z Q(z) ≥ 1 − ǫ, ∀z∈Z 0 ≤
+Q(z) ≤ P(z)}. The first notionPof ǫ-closeness, based on the
+statistical distance δ(P, Q) = 12 z∈Z |P(z)−Q(z)|, was used
+in [6]. The second notion was mentioned in the full version
+of [6], and used in [7].
+Definition 2 (Classical smooth Rényi entropy, [6]): The ǫsmooth Rényi entropy of order α ∈ [0, 1) ∪ (1, ∞] of a
+probability distribution P is
+
+inf Q∈Bǫ (P) Hα (Q), 0 ≤ α < 1,
+ǫ
+Hα (P) =
+supQ∈Bǫ (P) Hα (Q), 1 < α ≤ ∞.
+At the end of this paper, we point out that Hαǫ (P) will
+actually vary, depending on which notion of ǫ-closeness is
+α
+log(1 − ǫ).
+used, leading to a maximum difference of α−1
+For a probability distribution P on, e.g., Z = {0, 1}N, we
+define Pn as the probability distribution corresponding to the
+restriction of the “infinite volume” distribution P to the finite
+volume {0, . . . , n − 1}.
+Definition 3 (Entropy rate of a classical source): For
+a
+stationary source given by its probability measure P, we
+define
+1
+h(P) = lim H (Pn ),
+n→∞ n
+1
+hǫα (P) = lim Hαǫ (Pn ).
+n→∞ n
+We will actually prove that hǫα (P) = h(P) as ǫ → 0.
+We use the standard notion of typical sequences and typical sets, which are defined for any information source (not
+necessarily i.i.d.). See, for instance, [2] or [3].
+Definition 4 (Typical sequences, typical set): A sequence
+z n ∈ {0, 1}n, n ∈ N, is called ǫ-typical if
+e−n(h(P)+ǫ) ≤ P(z n ) ≤ e−n(h(P)−ǫ) .
+(n)
+
+The typical set Tǫ is the set of all ǫ-typical sequences from
+{0, 1}n.
+In this paper we need the following consequence of the AEP,
+where we refer to [2, Section 16.8] for the AEP for ergodic
+sources (known as the Shannon-McMillan-Breiman theorem).
+
+Definition 5 (Quantum Rényi entropy): The Rényi entropy
+of order α ∈ [0, ∞] of a density matrix ρ is
+Sα (ρ) =
+
+1
+log tr(ρα )
+1−α
+
+for 0 < α < ∞, α 6= 1, and Sα (ρ) = limβ→α Sβ (ρ)
+otherwise.
+Hence, S0 (ρ) = log rank(ρ), S1 (ρ) = S (ρ) = − tr(ρ log ρ)
+(von Neumann entropy) and S∞ (ρ) = − log λmax (ρ).
+Analogous to the classical case, smooth Rényi entropy is
+defined in the quantum case (see [5]). We use either the set
+of density matrices which are ǫ-close to ρ, B ǫ (ρ) = {σ :
+δ(ρ, σ) ≤ ǫ} or the set of non-normalized density matrices
+which are ǫ-close to ρ, B ǫ (ρ) = {σ : tr(σ) ≥ 1 − ǫ, 0 ≤ σ ≤
+ρ}. The first notion of ǫ-closeness, based on the trace distance
+δ(ρ, σ) = 12 tr(|ρ − σ|), was used in [5]. The second notion is
+introduced here, and will actually be used in the next section.
+Definition 6 (Quantum smooth Rényi entropy, [5]): The ǫsmooth Rényi entropy of order α ∈ [0, 1)∪(1, ∞] of a density
+matrix ρ is
+
+inf σ∈Bǫ (ρ) Sα (σ), 0 ≤ α < 1,
+ǫ
+Sα (ρ) =
+supσ∈Bǫ (ρ) Sα (σ), 1 < α ≤ ∞.
+Definition 7 (Entropy rates of a quantum source): For a
+stationary quantum source ρ, given by its local densities
+ρ(n) = ρ0,...,n−1 , for n ∈ N, we define:
+1
+S (ρ(n) ),
+n
+1
+sǫα (ρ) = lim Sαǫ (ρ(n) ).
+n→∞ n
+We use the following notion of typical states and typical
+subspaces, as can be found in [1] (also see [3]).
+Definition 8 (Typical state, typical subspace): A pure state
+(n)
+(n)
+|ei i, where ei is an eigenvector of ρ(n) is called ǫ-typical
+(n)
+if the corresponding eigenvalue λi satisfies
+s(ρ)
+
+=
+
+lim
+
+n→∞
+
+(n)
+
+e−n(s(ρ)+ǫ) ≤ λi
+
+≤ e−n(s(ρ)−ǫ) .
+
+(n)
+
+The typical subspace Tǫ is the subspace spanned by all ǫtypical states.
+We will need the following consequences of the quantum
+AEP for ergodic sources, which has been studied in [1] (see
+[3] for the quantum AEP for i.i.d. sources).
+Theorem 2 (Quantum AEP bounds): Let ρ be a stationary,
+ergodic quantum source with local densities ρ(n) . Let ǫ > 0.
+Then, for sufficiently large n,
+tr(ρ(n) PT (n) ) ≥ 1 − ǫ,
+ǫ
+
+(n)
+
+Theorem 1 (Classical AEP bounds): Let P be a stationary,
+ergodic probability distribution on Z = {0, 1}N. Let ǫ > 0.
+Then, for sufficiently large n,
+P(Tǫ(n) ) ≥ 1 − ǫ,
+and
+|Tǫ(n) | ≤ en(h(P)+ǫ) .
+
+where PT (n) is the projector onto the subspace Tǫ . Furtherǫ
+more,
+tr(PT (n) ) ≤ en(s(ρ)+ǫ) .
+ǫ
+Clearly, the quantum AEP for ergodic sources implies the
+classical AEP for ergodic sources.
+The following theorem by Renner and Wolf states that
+smooth Rényi entropy approaches Shannon entropy in the case
+of a classical i.i.d. source.
+
+Theorem 3 ([7, Lemma I.2]): Let Z n denote an n-tuple of
+i.i.d. random variables with probability distribution PZ . Then,
+lim lim
+
+ǫ→0 n→∞
+
+1 ǫ n
+H (Z ) = H (Z),
+n α
+
+(n)
+
+z n ∈Tǫ
+
+for any α ∈ [0, ∞].
+The analogous theorem by Renner and König for a quantum
+i.i.d. source is as follows.
+Theorem 4 ([5, Lemma 3]): Let ρ be a density matrix.
+Then,
+1
+lim lim Sαǫ (ρ⊗n ) = S (ρ),
+ǫ→0 n→∞ n
+for any α ∈ [0, ∞].
+III. M AIN R ESULT
+We extend the results by Renner and Wolf (Theorem 3
+above) and by Renner and König (Theorem 4 above) to the
+case of ergodic sources. Throughout this section, we use
+the notion of ǫ-closeness based on non-normalized probability
+distributions and density matrices, so B ǫ (P) = {Q :
+P
+ǫ
+z∈Z Q(z) ≥ 1 − ǫ, ∀z∈Z 0 ≤ Q(z) ≤ P(z)} and B (ρ) =
+{σ : tr(σ) ≥ 1 − ǫ, 0 ≤ σ ≤ ρ}, respectively. In the next
+section, we will argue that the results are independent on which
+notion of ǫ-closeness is used.
+A. Classical Case
+We start with our main result for the classical case. The
+known result for an i.i.d. source is by Renner and Wolf,
+Theorem 3 above. We will extend this to a stationary, ergodic
+source in Theorem 5 below.
+Lemma 1: Let P be a stationary, ergodic information source
+given by its probability measure and let 0 < ǫ < 1/2. Then
+we have,
+h(P) − ǫ ≤ hǫ∞ (P) ≤ h(P) + 2ǫ.
+Proof: Let 0 < ǫ < 1/2. To prove the lower bound, we
+ǫ
+(Pn ) ≥ n(h(P) − ǫ).
+show that, for sufficiently large n, H∞
+Define non-normalized probability distribution Q for all z n ∈
+{0, 1}n by
+(
+(n)
+P(z n ), if z n ∈ Tǫ
+(1)
+Q(z n ) =
+(n)
+0,
+if z n ∈
+/ Tǫ .
+(n)
+
+Clearly, 0 ≤ Q(z n ) ≤ P(z n ) and, by the AEP, Q(Tǫ ) =
+(n)
+P(Tǫ ) ≥ 1 − ǫ for sufficiently large n. So, Q ∈
+(n)
+B ǫ (Pn ). Furthermore, for z n ∈ Tǫ , we have that
+− log P(z n ) ≥ n(h(P) − ǫ), and hence that for any z n that
+− log Q(z n ) ≥ n(h(P) − ǫ). This implies that H∞ (Q) =
+− log maxzn Q(z n ) ≥ n(h(P) − ǫ) and the lower bound
+follows.
+Next, to prove the upper bound, we show that, for sufficiently large n, one has that for all Q ∈ B ǫ (Pn ),
+H∞ (Q) = − log max
+Q(z n ) ≤ n(h(P) + 2ǫ).
+n
+z
+
+This follows from maxzn ∈T (n) Q(z n ) ≥ e−n(h(P)+2ǫ) , which
+ǫ
+P
+(n)
+in turn follows from zn ∈T (n) Q(z n ) ≥ |Tǫ |e−n(h(P)+2ǫ).
+ǫ
+
+(n)
+
+From the AEP we get |Tǫ | ≤ en(h(P)+ǫ) , hence it suffices
+to prove that, for sufficiently large n,
+X
+Q(z n ) ≥ e−nǫ .
+(2)
+Q(z n ) ≥ 1 − ǫ, for Q ∈ B ǫ (Pn ), and also
+n
+≤ ǫ (because Q(z n ) ≤ P(z n ) and
+(n) Q(z )
+z n ∈T
+/
+
+As
+P
+
+P
+
+zn
+ǫ
+
+(n)
+
+P (Tǫ
+that
+
+) ≥ 1 − ǫ from the AEP), we only need to observe
+1 − 2ǫ > e−nǫ
+
+holds for sufficiently large n, using that ǫ < 1/2.
+We now state an analogous lemma for the max-entropy.
+Lemma 2: Let P be a stationary, ergodic information source
+given by its probability measure and let 0 < ǫ < 1/2. Then
+we have,
+h(P) − 2ǫ ≤ hǫ0 (P) ≤ h(P) + ǫ.
+Proof: Let 0 < ǫ < 1/2. To prove the upper bound, we
+show that, for sufficiently large n, H0ǫ (Pn ) ≤ n(h(P)+ ǫ). We
+do so by showing that H0 (Q) = log |{z n : Q(z n ) > 0}| ≤
+n(h(P)+ ǫ) for the non-normalized probability distribution Q,
+defined by (1) in the proof of Lemma 1. As
+|{z n : Q(z n ) > 0}| = |{z n ∈ Tǫ(n) : Q(z n ) > 0}| ≤ |Tǫ(n) |,
+the result follows directly from the AEP.
+Next, to prove the lower bound, we show that, for sufficiently large n, one has that for all Q ∈ B ǫ (Pn ),
+H0 (Q) = log |{z n : Q(z n ) > 0}| ≥ n(h(P) − 2ǫ).
+(n)
+
+This is implied by |{z n ∈ Tǫ : Q(z n ) > 0}| ≥ en(h(P)−2ǫ),
+which is in turn implied by
+X
+Q(z n ) ≥
+max
+Q(z n )en(h(P)−2ǫ) .
+(n)
+
+z n ∈Tǫ
+
+(n)
+
+z n ∈Tǫ
+
+,Q(z n )>0
+
+Using inequality (2) from the proof of Lemma 1, it suffices
+to show that
+Q(z n ) ≤ e−nǫ e−n(h(P)−2ǫ) = e−n(h(P)−ǫ).
+
+max
+
+(n)
+
+z n ∈Tǫ
+
+,Q(z n )>0
+
+This is a direct consequence of the definition of ǫ-typical
+sequences, as Q(z n ) ≤ P(z n ) for Q ∈ B ǫ (Pn ), using that
+(n)
+Q(z n ) > 0 holds for at least one z n ∈ Tǫ
+on account of
+inequality (2).
+Theorem 5: For α ∈ [0, ∞], the ǫ-smooth entropy of a
+stationary, ergodic information source P given by its probability measure on Z = {0, 1}N is close to the mean Shannon
+entropy:
+lim hǫα (P) = h(P).
+ǫ→0
+Proof: For α < 1, the monotonicity of smooth Rényi
+entropy (see, e.g., [7, Lemma 1]) yields Hαǫ (Pn ) ≤ H0ǫ (Pn ),
+and hence hǫα (P) ≤ h(P) + ǫ by Lemma 2.
+To get a lower bound for hǫα (P), we note that
+Hαǫ (Pn ) ≥ H02ǫ (Pn ) −
+
+log(1/ǫ)
+,
+1−α
+
+using [7, Lemma 2]. So, hǫα (P) ≥ h2ǫ
+0 (P) as the constant term
+on the right-hand side vanishes for n → ∞. Using Lemma 2,
+we thus get hǫα (P) ≥ h(P) − 4ǫ.
+This proves that limǫ→0 hǫα (P) = h(P). The proof for α > 1
+is completely symmetrical, hence omitted.
+Note that the term 2ǫ in the upper and lower bounds of
+Lemmas 1 and 2, respectively, can be improved to (1 + δ)ǫ
+for any constant δ > 0. Similarly, the term 4ǫ in the proof of
+Theorem 5 for the lower bound for hǫα can be improved to
+(1 + δ)ǫ for any constant δ > 0.
+B. Quantum Case
+Although it is possible to prove the quantum case directly,
+along the same lines as in the classical case, we treat the
+quantum case indirectly, by reducing it to the classical case.
+This leads to a more compact proof. To this end, we will
+first prove Lemma 3 below, which captures the correspondence between B ǫ (ρ(n) ) and B ǫ(λ(n) ). We only consider the
+case of ǫ-closeness for non-normalized density matrices and
+probability distributions (but the lemma also holds for the case
+of ǫ-closeness based on trace distance).
+To prove our lemma, we need Weyl’s monotonicity principle
+which we recall first.
+Theorem 6 (Weyl monotonicity): If A, B are m by m Hermitian matrices and B is positive, then λi (A) ≤ λi (A + B)
+for all i = 1, . . . , m, where λi (M ) is the i-th eigenvalue of
+M (ordered from largest to smallest).
+Lemma 3: Let ρ be a density matrix with eigenvalues λ1 ≥
+λ2 ≥ . . . ≥ λm .
+1) For any density matrix σ with eigenvalues µ1 ≥ µ2 ≥
+. . . ≥ µm ,
+σ ∈ B ǫ (ρ) ⇒ µ ∈ B ǫ (λ).
+2) Given real numbers µ1 , . . . , µm such that µ ∈ B ǫ(λ),
+there exists a matrix σ with eigenvalues µ1 , . . . , µm such
+that σ ∈ B ǫ (ρ).
+Proof: We prove the result for
+X
+µi ≥ 1 − ǫ, ∀i 0 ≤ µi ≤ λi },
+B ǫ (λ) = {µ :
+i
+
+B ǫ (ρ) =
+
+{σ : tr(σ) ≥ 1 − ǫ, 0 ≤ σ ≤ ρ}.
+
+For the first part, let σ be a (possibly non-normalized) density
+matrix with eigenvalues µ1 ≥ µ2 ≥ . . . ≥ µm and suppose
+σ ∈ B ǫ (ρ). Since σ is positive we have µi ≥ 0 for all i.
+And since σ ≤ ρ, we have that ρ − σ is positive as well,
+so λi ≥ µi for all i (using Weyl’s monotonicity principle,
+Theorem
+6 above). Finally, note that tr(σ) ≥ 1−ǫ is equivalent
+P
+to i µi ≥ 1 − ǫ, so we conclude that µ ∈ B ǫ (λ).
+For the second part, let µ ∈ B ǫ (λ) be given. We write the
+Hermitian matrix ρ in diagonal form,
+X
+λi |vi ihvi |.
+ρ=
+i
+
+for eigenvectors vi (i = 1, . . . , m), and we show that the
+Hermitian matrix σ, defined by
+X
+µi |vi ihvi |,
+σ=
+i
+
+is in B ǫ (ρ).
+Since µ ∈ B ǫ (λ), we have that 0 ≤ µi ≤ λi , and because ρ
+and σ commute (eigenvalues
+of ρ − σ are λi − µi ), we have
+P
+0 ≤ σ ≤ ρ. Clearly, i µi ≥ 1 − ǫ so tr(σ) ≥ 1 − ǫ as well,
+and therefore σ ∈ B ǫ (ρ).
+We now proceed to prove the main result for the quantum
+case.
+Theorem 7: For α ∈ [0, ∞], the ǫ-smooth entropy of
+a stationary, ergodic quantum source ρ given by its local
+densities ρ(n) , for n ∈ N, is close to the mean von Neumann
+entropy:
+lim sǫα (ρ) = s(ρ).
+ǫ→0
+Proof: We will apply Theorem 5 as follows.
+First note that for the local densities ρ(n) for a quantum
+information source ρ, we have that S (ρ(n) ) = H (λ(n) ), where
+λ(n) denotes the probability distribution corresponding to the
+eigenvalues of ρ(n) . Consequently, s(ρ) = h(λ) as well, where
+λ denotes the probability distribution corresponding to the
+eigenvalues of ρ.
+Next, we recall the definitions of smooth Rényi entropy in
+the classical and quantum case, resp.:
+
+inf Q∈Bǫ (P) Hα (Q), 0 ≤ α < 1,
+ǫ
+Hα (P) =
+supQ∈Bǫ (P) Hα (Q), 1 < α ≤ ∞.
+
+inf σ∈Bǫ (ρ) Sα (σ), 0 ≤ α < 1,
+Sαǫ (ρ) =
+supσ∈Bǫ (ρ) Sα (σ), 1 < α ≤ ∞.
+We only consider the case α < 1, as the other case follows
+by symmetry. We have that
+Sαǫ (ρ(n) ) =
+=
+=
+
+inf
+
+Sα (σ)
+
+inf
+
+Hα (µ)
+
+σ∈Bǫ (ρ(n) )
+µ∈Bǫ (λ(n) )
+
+Hαǫ (λ(n) ),
+
+using that Lemma 3 implies that the infimum over B ǫ (ρ(n) )
+is equal to the infimum over B ǫ (λ(n) ).
+As a consequence, we have that sǫα (ρ) = hǫα (λ) and the
+result follows from Theorem 5. Here, we use the fact that
+quantum AEP implies classical AEP.
+We note that the actual convergence rate (as a function
+of ǫ) is the same as in the classical case, which follows by
+considering the analogons of Lemmas 1 and 2.
+IV. N OTIONS
+
+OF
+
+ǫ-C LOSENESS
+
+As mentioned in the introduction, two notions of ǫ-closeness
+were originally introduced by Renner and Wolf [6], [7], which
+can both be used in the definition of classical smooth Rényi
+entropy. For the quantum case, the paper by Renner and König
+[5] only considers the notion of ǫ-closeness based on the trace
+distance. As the natural quantum analogon of the notion of
+ǫ-closeness based on non-normalized probability distributions,
+we have used the set of non-normalized density matrices which
+are ǫ-close to a given density matrix ρ:
+B ǫ (ρ) = {σ : tr(σ) ≥ 1 − ǫ, 0 ≤ σ ≤ ρ}.
+
+The entropy rates (Definitions 3 and 7), and consequently
+the results for these entropy rates (Theorems 3, 4, 5, and 7) do
+not depend on which of these notions of ǫ-closeness is used.
+Furthermore, if the corresponding notions of ǫ-closeness are
+used, the quantum case and the classical case are in general
+connected as follows:
+Sαǫ (ρ) =
+
+inf
+
+σ∈Bǫ (ρ)
+
+Sα (σ) =
+
+inf
+
+µ∈Bǫ (λ)
+
+Hα (µ) = Hαǫ (λ),
+
+where λ denotes the probability distribution corresponding to
+the eigenvalues of ρ.
+We note, however, that the smooth Rényi entropy Hαǫ may
+depend on which notion of ǫ-closeness is used, contrary to
+what was stated before (see, e.g., Section 3.3 of the full version
+of [6]). In general, one can show that
+α
+Hα (Q) ≤
+0 ≤ inf Hα (Q)− P inf
+log(1−ǫ),
+α−1
+δ(P,Q)≤ǫ
+z Q(z)≥1−ǫ
+∀z 0≤Q(z)≤P(z)
+
+for 0 ≤ α < 1, and that
+α
+log(1−ǫ) ≤ sup Hα (Q)−
+α−1
+δ(P,Q)≤ǫ
+
+sup
+
+Hα (Q) ≤ 0,
+
+P
+z Q(z)≥1−ǫ
+∀z 0≤Q(z)≤P(z)
+
+for 1 < α ≤ ∞. So, only for α = 0 either notion of ǫcloseness yields the same value for the smooth Rényi entropy
+Hαǫ . But for all other values of α, the difference may be as
+α
+log(1 − ǫ). The maximum difference is attained
+large as α−1
+for the uniform distribution P(z) = 1/m on a finite range Z
+of size m, assuming that ǫ is sufficiently small (i.e., ǫ < 1/m).
+ACKNOWLEDGMENT
+Boris Škorić is gratefully acknowledged for discussions in
+the early stage of this work.
+R EFERENCES
+[1] I. Bjelakovic and A. Szkola, ”The Data Compression Theorem
+for Ergodic Quantum Information Sources”, 2003. Available as
+quant-ph/0301043.
+[2] T. M. Cover and J.A. Thomas, ”Elements of Information Theory”, 2nd
+edition, Wiley-Interscience, 2006.
+[3] M. A. Nielsen and I. L. Chuang, ”Quantum Computation and Quantum
+Information”, Cambridge University Press, 2000.
+[4] R. Renner, ”Security of Quantum Key Distribution”, Diss. ETH
+No. 16242, PhD Thesis, ETH Zürich, September 2005. Also available
+as quant-ph/0512258.
+[5] R. Renner and R. König, LNCS 3378, TCC 2005, pp. 407-425.
+[6] R. Renner and S. Wolf, ”Smooth Rényi Entropy and
+Applications, ISIT 2004, p. 233. Full version available as
+http://qi.ethz.ch/pub/publications/smooth.ps.
+[7] R. Renner and S. Wolf, ”Simple and Tight Bounds for Information
+Reconciliation and Privacy Amplification”, LNCS 3788, Asiacrypt 2005,
+pp. 199–216.
+
+

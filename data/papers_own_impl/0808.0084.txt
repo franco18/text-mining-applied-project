@@ -1,0 +1,1667 @@
+On the hitting times of quantum versus random walks ∗
+
+arXiv:0808.0084v1 [quant-ph] 1 Aug 2008
+
+Frédéric Magniez†
+
+Ashwin Nayak‡
+
+Peter C. Richter†
+
+Miklos Santha§
+
+Abstract
+The hitting time of a classical random walk (Markov chain) is the time required to detect the presence
+of – or equivalently, to find – a marked state. The hitting time of a quantum walk is subtler to define;
+in particular, it is unknown whether the detection and finding problems have the same time complexity.
+In this paper we define new Monte Carlo type classical and quantum hitting times, and we prove several
+relationships among these and the already existing Las Vegas type definitions. In particular, we show
+that for some marked state the two types of hitting time are of the same order in both the classical and
+the quantum case.
+Further, we prove that for any reversible ergodic Markov chain P , the quantum hitting time of the
+quantum analogue of P has the same order as the square root of the classical hitting time of P . We also
+investigate the (im)possibility of achieving a gap greater than quadratic using an alternative quantum
+walk. In doing so, we define a notion of reversibility for a broad class of quantum walks and show how to
+derive from any such quantum walk a classical analogue. For the special case of quantum walks built on
+reflections, we show that the hitting time of the classical analogue is exactly the square of the quantum
+walk.
+Finally, we present new quantum algorithms for the detection and finding problems. The complexities
+of both algorithms are related to the new, potentially smaller, quantum hitting times. The detection
+algorithm is based on phase estimation and is particularly simple. The finding algorithm combines a
+similar phase estimation based procedure with ideas of Tulsi from his recent theorem [Tul08] for the 2D
+grid. Extending his result, we show that for any state-transitive Markov chain with unique marked state,
+the quantum hitting time is of the same order for both the detection and finding problems.
+
+1
+
+Introduction
+
+Many classical randomized algorithms are based on random walks, or Markov chains. Some use random
+walks to generate random samples from the Markov chain’s stationary distribution, in which case the mixing time of the Markov chain is the complexity measure of interest. Others use random walks to search
+for a “marked” state in the Markov chain, in which case the hitting time is of interest. In recent years,
+researchers studying quantum walks have attempted to define natural notions of “quantum mixing time”
+[NV00, ABN+ 01, AAKV01] and “quantum hitting time” [AKR05, Sze04, MNRS07] and to develop quantum
+algorithmic applications to sampling and search problems.
+Ambainis [Amb04] was the first to solve a natural problem—the “element distinctness problem”—using
+a quantum walk. Following this, quantum walk algorithms were discovered for triangle finding [MSS07],
+matrix product verification [BŠ06], and group commutativity testing [MN07]. All of these are “hitting time”
+∗ Research supported in part by the European Commission IST Integrated Project Qubit Applications (QAP) 015848, the
+ANR Blanc AlgoQP grant of the French Research Ministry, NSERC Canada, CIFAR, an Ontario ERA, QuantumWorks, and
+ARO/NSA (USA).
+† LRI, Univ. Paris-Sud, CNRS; F-91405 Orsay, France; magniez@lri.fr, richterp@lri.fr.
+‡ C&O and IQC, U. Waterloo, and Perimeter Institute, Ontario N2L 3G1, Canada; anayak@uwaterloo.ca. Some of this work
+was conducted while this author was visiting LRI, U. Paris-Sud, Orsay, France. Research at Perimeter Institute is supported
+in part by the Government of Canada through NSERC and by the Province of Ontario through MEDT.
+§ LRI, Univ. Paris-Sud, CNRS; F-91405 Orsay, France and Centre for Quantum Technologies, National University of Singapore, Singapore 117543; santha@lri.fr. Research at the Centre for Quantum Technologies is funded by the Singapore Ministry
+of Education and the National Research Foundation.
+
+1
+
+applications involving quantum walk search on Johnson graphs—highly-connected graphs whose vertices
+are subsets of a fixed set and whose edges connect subsets differing by at most two elements. Quantum
+walk algorithms for the generic spatial search problem [AA05] were given by Shenvi et al. [SKW03] on the
+hypercube, and by Childs and Goldstone [CG04] and Ambainis et al. [AKR05] on the torus. Szegedy [Sze04]
+showed that for any symmetric Markov chain and any subset M of marked elements, we can detect whether
+or not M is nonempty in at most (of the order of) the square-root of the classical hitting time. To achieve this
+goal, Szegedy defined the quantum analogue of any symmetric Markov chain. Later Magniez et al. [MNRS07]
+extended this to define the quantum analogue of the larger class of irreducible Markov chains.
+Unresolved by Szegedy’s work is the question: with what probability does the algorithm output a marked
+state, as opposed to merely detecting that M is nonempty? This issue was addressed by Magniez et
+al. [MNRS07], who gave an algorithm which finds a marked state with constant probability √
+but whose
+√
+complexity may be more than the square root of the classical hitting time. Indeed, for the N × N
+grid their bound is Θ(N ) whereas the classical hitting time is Θ(N log N ). The algorithms of Ambainis et
+al. [AKR05] and Szegedy√[Sze04] perform better on the grid if there is a unique marked state: they find the
+marked state in time O( N · log N ). (The case of multiple marked elements may be reduced to this case
+at the cost of a polylog factor in run-time.) For some time it remained
+√ unclear if one could do better, until
+Tulsi [Tul08] showed how to find a unique marked element in time O( N log N ). His algorithm seems to be
+something of a departure from previous quantum walk algorithms, most of which have been analyzable as
+the product of two reflections à la the Grover algorithm [Gro96]. The 2D grid was the canonical example
+of a graph on which it was unknown how to find a marked state quantumly with the same complexity as
+detection. Tulsi’s result thus raises the question: is finding ever any harder than detection?
+In this paper we address several questions related to classical and quantum hitting times. In the literature
+on Markov chains, hitting time is usually defined as the complexity of the natural Las Vegas algorithm for
+finding a marked element by running the chain. We first give an alternative definition based on the Monte
+Carlo version of the same algorithm. To our knowledge, this variant of the hitting time has not been
+considered previously. We show that for some marked state, the two hitting times are of the same order
+(Theorem 2.3).
+Within the setting of abstract search algorithms presented by Ambainis et al. [AKR05], we introduce
+quantum analogues of the two classical hitting times (Definition 3.2). The analogue of the Las Vegas version
+was already present in Szegedy’s work [Sze04], whereas the other is new. Unlike in the classical case, detection
+and finding are substantially different problems in quantum computing. We address both problems here.
+For the detection problem, we introduce a new algorithm Detect based on phase estimation which is
+similar to the approach of Magniez et al. [MNRS07]. Our algorithm can detect the presence of a marked
+element in the starting state. The advantages of this algorithm are its simplicity and the fact that its
+complexity is related to the new Monte Carlo type quantum hitting time (Theorem 3.5).
+This is an
+improvement over the Szegedy detection algorithm whose complexity is related to the potentially larger Las
+Vegas quantum hitting time.
+We then present a variant of the above algorithm, called Rotate, which can be used for the more
+difficult problem of finding, and whose complexity is also related to the Monte Carlo type quantum hitting
+time (Theorem 3.9). This improves the finding algorithm due to Ambainis et al. whose complexity was
+characterized by a potentially larger quantity, the inverse of the smallest eigenphase of the search algorithm.
+Our algorithm is also simpler. Combining Rotate with the ideas in the Tulsi algorithm for the 2D grid, we
+can find a marked element with constant probability and with the same complexity as detection for a large
+class of quantum walks—the quantum analogue of state-transitive reversible ergodic Markov chains.
+As in the classical case, for some marked elements the two types of the quantum hitting time are of the
+same order (Fact 3.10 and Theorem 3.14). For any reversible ergodic Markov chain P , we prove that the
+quantum hitting time of the quantum analogue of P is of same order as the square root of the classical
+hitting time of P (Theorem 3.15). Moreover, for the Las Vegas hitting times they are exactly the same.
+Finally, we investigate the (im)possibility of achieving a greater than quadratic gap using some other
+quantum walk. For this we consider general quantum walks on the edges of an undirected graph G; these
+were defined, for example, in the survey paper of Ambainis [Amb03], see also [San08]. We define a quite
+
+2
+
+natural notion of reversibility for general quantum walks. We conjecture that for any reversible quantum
+walk U2 on an undirected graph G, there exists a reversible ergodic Markov chain P on G such that for
+every marked state, the quantum hitting time of U2 is at most the square root of the classical hitting time
+of P . We are able to prove this in the special case of quantum walks built on reflections (Theorem 3.18).
+Our proof introduces a classical analogue of such quantum walks which might be of independent interest
+(Definition 3.5). Curiously, the classical analogue is reversible if and only if the quantum walk is reversible
+(Lemma 3.17).
+
+2
+
+Classical hitting times
+
+Let P be an ergodic and reversible Markov chain over state space X = {1, . . . , n}, which we identify with
+its transition probability matrix. We suppose that the eigenvalues of P are nonnegative, by replacing P
+with (P + I)/2 if necessary. More generally, one may also assume that the eigenvalues of P are at least α,
+where α ∈ [0, 1), by replacing P with ((1 − α)P + (1 + α)I)/2 if necessary. We make this further assumption
+when needed, for instance in Section 4. Let π denote the stationary distribution of P . Let P−z be the
+(n − 1) × (n − 1) matrix we get by deleting from P the row and column indexed by z. Similarly, for a vector
+v, we let v−z stand for the vector obtained by omitting the z-coordinate of v.
+Claim 2.1. The eigenvalues of P−z are all in the interval [κn , 1), where κn is the smallest eigenvalue of P .
+Proof. The proof globally proceeds along the lines of the proof of Lemma 8 in [Sze04]. For x ∈ X let ex
+denote the characteristic vector of x. Let w1 , . . . , wn be the eigenvectors of P with associated eigenvalues
+1 = κ1 ≥ . . . ≥ κn > 0. Let v be an arbitrary eigenvector of Pz with eigenvalue λ. Since P is ergodic,
+kPz k < 1, therefore λ < 1. We show that λ ≥ κn . This is obviously true if λ = κk for some k; let us suppose
+that this is not the case.
+Let w be the vector obtained from P
+v by augmenting it with
+Pn a 0 in the z-coordinate. We express both w
+n
+and ez in the eigenbasis of P : let w = k=1 γk wk and ez = k=1 δk wk . Then wP = λw + νez for some real
+number ν. Moreover, ν 6= 0; otherwise w would have been an eigenvector of P , meaning that λ = κk , which
+contradicts our supposition. For k = 1, . . . , k, we have κk γk = λγk + νδk . Since w and ez are orthogonal, we
+P
+P
+|2
+also have nk=1 γk δ¯k = 0. Therefore nk=1 κ|δkk−λ
+= 0. The statement then follows since the left hand side of
+the above equation would be positive if λ were less than κn .
+Definition 2.1. For z ∈ X, the z-hitting time of P , denoted by HT(P, z), is the expected number of steps
+the chain P takes to reach the state z when started in the initial distribution π.
+†
+It is well known that the z-hitting time of P is given by the formula HT(P, z) = π−z
+(I − P−z )−1 u−z ,
+where u is the all-ones vector. Simple algebra shows that
+√
+√
+†
+π−z
+(I − P−z )−1 u−z =
+π−z † (I − S−z )−1 π−z ,
+
+p
+p
+−1
+√
+where π−z is the entry-wise square root of π−z and S−z is the “symmetrized form” S−z = Π−z P−z Π−z
+of P−z with Π−z = diag(πx )x6=z . The matrices P−z and S−z have the same spectrum since they are similar.
+Let {vj : j ≤ n − 1} be the set of normalized eigenvectors of S−z where the eigenvalue of vj is λj = cos θj
+with 0 <Pθj ≤ π/2. By reordering the eigenvalues we can suppose that 1 > λ1 ≥ . . . ≥ λn−1 ≥ 0. If
+√
+√
+π−z = j νj vj is the decomposition of π−z in the eigenbasis of S−z then the z-hitting time satisfies:
+HT(P, z)
+
+=
+
+X
+j
+
+νj2
+.
+1 − λj
+
+When 0 < θ ≤ π/2 then 1 − θ2 /2 ≤ cos θ ≤ 1 − θ2 /4. Therefore we can approximate the hitting time with
+another expectation that is very closely related to the analogous quantum notion. More precisely,Plet Hz be
+the random variable which takes the value 1/θj2 with probability νj2 , and 0 with probability 1 − j νj2 . We
+denote the expectation of Hz by E[Hz ]. Then we have 2 E[Hz ] ≤ HT(P, z) ≤ 4 E[Hz ].
+3
+
+In the definition of the hitting time the Markov chain is used in a Las Vegas algorithm: we count the
+(expected) number of steps to reach the marked element without error. We can also use the chain as an
+algorithm that reaches the marked element with some probability smaller than 1, leading to a Monte Carlo
+type definition. Technically, to be able to underline the analogies between the classical and quantum notions,
+we define the hitting time with error via the random variable Hz .
+Definition 2.2. For z ∈ X and for 0 < ε < 1, the ε-error z-hitting time of P , denoted by HTε (P, z) is
+defined as
+HTε (P, z) = min {y : Pr[Hz > y] ≤ ε}.
+Observe that for all z, if ε ≤ ε′ then HTε′ (P, z) ≤ HTε (P, z). We first show that the use of Hz for the
+definition of the Monte Carlo hitting time is indeed justified (proof in Appendix A). For this, let us denote
+by hε (P, z) the smallest integer k such that the probability that the chain does not reach z in the first k
+steps is at most ε.
+Theorem 2.2. For all z and ε, we have
+hε (P, z)
+HTε (P, z)
+
+
+
+2
+≤
+4 ln
+HTε/2 (P, z),
+ε
+1
+hε/3 (P, z).
+≤
+2
+
+and
+
+How much smaller than the Las Vegas hitting time can the Monte Carlo hitting time be? The following
+results state that for some z they are of the same order of magnitude.
+Theorem 2.3. We have the following inequalities between the two notions of hitting time:
+• For all z and ε,
+
+HTε (P, z) ≤
+
+1
+2ε
+
+HT(P, z).
+
+• There exists z such that for all ε < 1/2,
+
+HT(P, z) ≤ 4 HTε (P, z).
+
+Proof. The first statement simply follows from the Markov inequality and from the relation E[Hz ] ≤
+2
+HT(P, z)/2. For the second statement, let z be an element such
+P that ν1 ≥ 1/2. The existence of such
+an element is assured by Lemma 8 in [Sze04]. Then HT(P, z) ≤ j 4νj2 /θj2 ≤ 4/θ12 ≤ 4HTε (P, z).
+
+3
+3.1
+
+Quantum hitting times
+Two notions of quantum walk
+
+Let U = U2 U1 be an abstract search algorithm as in [AKR05], where U1 = I − 2|µihµ| for a “target vector” |µi
+with real entries, and U2 is a real unitary matrix with a unique 1-eigenvector |φ0 i. Without loss of generality
+we always assume that |φ0 i has real entries. The state |µi is the quantum analogue of the state z which we
+seek in the classical walk P , U2 the analogue of P , and |φ0 i the analogue of the stationary distribution π.
+The abstract search algorithm usually starts with state |φ0 i, and iterates U several times in order to get a
+large deviation from |φ0 i. In this paper, we prefer to start with a slightly different initial state. The general
+behavior of the abstract search algorithm remains unchanged by this. We replace the starting state |φ0 i by
+|φe0 i = |φ0 i− hφ0 |µi|µi, the (unnormalized) projection of the 1-eigenvector |φ0 i of U2 on the space orthogonal
+to |µi. This substitution was first considered in [Sze04], and corresponds to first making a measurement
+according (|µi, |µi⊥ ). If the measurement outputs |µi we are done. Otherwise we run the abstract search
+algorithm.
+This choice of the initial state is motivated by the results in Section 3.4 which relate quantum hitting
+time to classical hitting time. All other results in this paper remain valid if we keep |φ0 i.
+Ambainis et al. characterized the spectrum of U in term of the decomposition of |µi in the eigenvector
+basis of U2 . One of their results is:
+4
+
+Theorem 3.1 ([AKR05]). Let U2 be a unitary matrix with real entries and a unique 1-eigenvector |φ0 i. Let
+|µi be a unit vector with real entries, and let U1 = I − 2|µihµ|. Let U = U2 U1 .
+• If hφ0 |µi = 0, then |φe0 i = |φ0 i and U |φe0 i = |φe0 i.
+
+• If hφ0 |µi 6= 0, then U has no 1-eigenspace.
+
+Thus one can use U in order to detect if hφ0 |µi =
+6 0. Indeed, in that case, after a certain number T
+e
+of iterations of U on |φ0 i, the state moves far from the intial state |φe0 i. Such a deviation caused by some
+operator V (in our case V = U T , i.e., U iterated T times) is usually detected by using the well known control
+test which requires the use the controlled operator c-V . Namely observe that (H ⊗ I)(c-V )(H ⊗ I)|0i|ψi =
+1
+1
+2 |0i(|ψi + V |ψi) + 2 |1i(|ψi − V |ψi). Therefore a measurement of the first register gives outcome 1 with
+probability k|ψi − V |ψik2 /4.
+Szegedy [Sze04] designed a generic method for constructing an abstract search algorithm given a (classical)
+Markov chain. Let P = (pxy ) be an ergodic Markov chain over state space X = {1, . . . , n} with stationary
+distribution |πi. The time-reversal P ∗ of this chain is defined by equations πy p∗yx = πx pxy . The chain P is
+reversible if P = P ∗ .
+The quantum analogue of P may be thought of as a walk on the edges of the original Markov chain,
+rather than on its vertices. Thus, its state space is a vector subspace of H = CX×X . For a state |ψi ∈ H,
+let Πψ = |ψihψ| denote the orthogonal projector onto Span(|ψi), and let ref(ψ) = 2Πψ − Id denote the
+reflection through the line generated by |ψi, where Id is the identity operator on
+P H. If K is a subspace of
+H spanned by a set of mutually orthogonal states {|ψi i : i ∈ I}, then let ΠK = i∈I Πψi be the orthogonal
+projector onto K, and let ref(K) = 2ΠK − Id be the reflection through K. Let A = Span(|xi|px i : x ∈ X)
+and B = Span(|p∗y i|yi : y ∈ X) be vector subspaces of H, where
+Xp
+X√
+pxy |yi and |p∗y i =
+p∗yx |xi.
+|px i =
+x∈X
+
+y∈X
+
+Define similarly for any z ∈ X the subspaces A−z = Span(|xi|px i : x ∈ X \ {z}) and B−z = Span(|p∗y i|yi :
+y ∈ X \ {z}).
+Definition 3.1 ([Sze04, MNRS07]). Let P be an ergodic Markov chain. The unitary operation W (P ) =
+ref(B) · ref(A) defined on H is called the quantum analogue of P ; and the unitary operation W (P, z) =
+ref(B−z ) · ref(A−z ) defined on H is called the quantum analogue of P−z .
+The unitary operation SWAP is defined by SWAP|xi|yi = |yi|xi. When P is reversible, the connection
+between the quantum walk of Szegedy and the quantum walk of Ambainis et al. is made explicit by the
+following fact.
+Fact 3.2. Let z ∈ X and |µi = |zi|pz i. Let U2 = SWAP · ref(A) and U1 = I − 2|µihµ|. If P is reversible
+then (U2 U1 )2 = W (P, z). In particular, the unitary operators U = U2 U1 and W (P, z) are diagonal in the
+same orthonormal basis.
+
+3.2
+
+Phase estimation and quantum hitting time
+
+Let U be a unitary matrix with real entries. The potential eigenvalues of U are then 1, −1, and pairs of
+conjugate complex numbers (eiαj , e−iαj ) with 0 < αj < π, for 1 ≤ j ≤ J, for some J.
+Let |ψi be a vector with real entries and of norm at most one. Then |ψi uniquely decomposes as
+X
+|ψi = δ0 |w0 i +
+δj (|wj+ i + |wj− i) + δ−1 |w−1 i,
+(1)
+1≤j≤J
+
+where δ0 , δ−1 , δj are reals, |w0 i is a unit eigenvector of U with eigenvalue 1, |w−1 i is a unit eigenvector
+with eigenvalue −1, and |wj+ i, |wj− i are unit eigenvectors with respective eigenvalues eiαj and e−iαj , and
+
+|wj− i = |wj+ i.
+
+5
+
+We now describe a procedure whose purpose is to detect the state |ψi has a component orthogonal to
+the 1-eigenspace of U . In the context of the abstract search algorithm, this is equivalent to hφ0 |µi 6= 0. The
+idea, similar to the approach of Magniez et al. [MNRS07], is to apply the phase estimation algorithm of
+Kitaev [Kit95] and Cleve et al. [CEMM98] to U .
+Theorem 3.3 ([Kit95, CEMM98]). Given an eigenvector |vi of a unitary operator U with eigenvalue eiα ,
+the corresponding phase α ∈ (−π, π] can be determined with precision ∆ and error probability at most 1/3
+by a circuit Estimate. If |vi is a 1-eigenvector of U , then Estimate determines α = 0 with probability
+1. Moreover, Estimate makes O(1/∆) calls to the controlled operator c-U and its inverse, and it contains
+O((log 1/∆)2 ) additional gates.
+Based on the circuit Estimate, we can detect the presence of components orthogonal to the 1-eigenspace
+in an arbitrary state |ψi.
+Detect(U, ∆, ε) — Input: |ψi
+1. Apply Θ(log(1/ε)) times the phase estimation circuit
+Estimate for U with precision ∆ to the same state |ψi.
+2. If at least one of the estimated phases is nonzero, ACCEPT.
+Otherwise REJECT.
+Let QH be the random variable which takes the value 1/αj with probability 2δj2 , the value 1/π with
+2
+probability δ−1
+, and the value 0 otherwise. Observe that in the following lemma, and in the analysis of all
+our algorithms, the probabilities in fact sum to kψk2 , since |ψi is not necessarily normalized, and has norm
+at most 1.
+Lemma 3.4. Assume that Pr[QH > 1/∆] ≤ ε. Then the procedure Detect(U, ∆, ε) accepts |ψi with
+probability kψk2 − δ02 − O(ε), and moreover with probability 0 if |δ0 | = kψk. In addition, the number of
+applications of c-U is O(log(1/ε)/∆).
+Proof. Let us first assume that Estimate can compute the eigenphase of any eigenvector with certainty.
+This assumption is in fact valid when |δ0 | = kψk. Then the procedure Detect rejects exactly with probability
+δ02 .
+Assume now that Pr[QH > 1/∆] ≤ ε, and |δ0 | < kψk. First observe that Estimate with precision ∆
+uses 1/∆ applications of c-U . Then the precision ∆ in Estimate ensures a nonzero approximation of an
+eigenphase ±αj with probability at least 2/3Pprovided that αj ≥ ∆. By hypothesis, the contribution of these
+eigenphases has squared Euclidean norm 2 j δj2 . The success probability is then amplified to 1 − O(ε) by
+checking that all the O(log(1/ε)) outcomes of Estimate are nonzero. For the special case of eigenphase 0,
+whose contribution has squared Euclidean norm δ02 , Estimate gives approximation 0 with probability 1.
+The contribution of the other eigenphases has squared Euclidean norm less than ε in the vector |ψi.
+Therefore the overall acceptance probability is kψk2 − δ02 − O(ε).
+In the case of quantum walk, the above theorem justifies the following definitions of quantum hitting
+times. Let U be some abstract search U2 U1 , where U1 = I − 2|µihµ|, starting from state |φe0 i = |φ0 i − a0 |µi,
+where a0 = hµ|φ0 i. We now set |ψi = |φe0 i. Again, QH is the random variable which takes the value 1/αj
+2
+with probability 2δj2 , the value 1/π with probability δ−1
+, and 0 otherwise.
+Definition 3.2. The quantum |µi-hitting time of U2 is the expectation of QH , that is
+QHT(U2 , |µi)
+
+=
+
+2
+
+X δj2
+δ2
++ −1 .
+αj
+π
+j
+
+For 0 < ε < 1, the quantum ε-error |µi-hitting time of U2 is defined as
+QHTε (U2 , |µi)
+
+=
+
+min{y : Pr[QH > y] ≤ ε}.
+6
+
+Using Theorem 3.1, Lemma 3.4 and our definition of quantum hitting time, we directly get:
+Theorem 3.5. For every T ≥ max {1, QHTε (U2 , |µi)}, the procedure Detect(U, 1/T, ε) accepts |φe0 i with
+probability kφe0 k2 − O(ε) if hφ0 |µi =
+6 0, and accepts with probability 0 otherwise. Moreover the number of
+applications of c-U is O(log(1/ε) × T ).
+If one would like to deal only with normalized states, and to come back to the original starting state |φ0 i,
+we can encapsulate the projection to the space orthogonal to |µi into our algorithm such as in the following
+main procedure, and deduce its behavior from the above theorem.
+MainDetect(U2 , |µi, ∆, ε) — Input: |ψi
+1. Make a measurement according (|µi, |µi⊥ ).
+2. If the measurement outputs |µi, ACCEPT.
+Otherwise apply Detect(U, ∆, ε).
+Corollary 3.6. For every T ≥ max {1, QHTε (U2 , |µi)}, the procedure MainDetect(U2 , |µi, 1/T, ε) accepts
+|φ0 i with probability 1 − O(ε) if hφ0 |µi =
+6 0, and accepts with probability 0 otherwise.
+When the abstract search is built on the quantum analogue of a reversible Markov chain P and |µi =
+|zi|pz i for some z, we use the following terminology:
+• The quantum z-hitting time of P is QHT(P, z) = QHT(SWAP · ref(A), |zi|pz i);
+• For 0 < ε < 1, the quantum ε-error z-hitting time of P is QHTε (P, z) = QHTε (SWAP · ref(A), |zi|pz i).
+With different, more technical arguments, Szegedy proved results similar to Theorem 3.5 albeit with the
+parameter QHT(P, z) for symmetric Markov chains:
+Theorem 3.7 ([Sze04]). When t is chosen uniformly at random in {1, 2, . . . , ⌈QHT(P, z)⌉}, then the expectation of the deviation k(W (P, z))t |φe0 i − |φe0 ik is Ω(kφe0 k).
+
+Under certain assumptions, Ambainis et al. [AKR05] have a similar result in terms of the smallest
+eigenphase of U2 U1 .
+Suppose we wish to not only detect if hµ|φ0 i =
+6 0, but also to map |ψi to |µi. Then we are led to a
+procedure different from Detect. One possibility is to try to use U in order to move |ψi to an orthogonal
+state that is closer to |µi.
+P
+Definition 3.3. The U -rotation of |ψi is defined as δ0 |w0 i + j δj (|wj+ i − |wj− i) + δ−1 |w−1 i, where the
+
+	
+decomposition of |ψi in terms of the orthonormal set of eigenvectors |wj+ i, |wj− i of U is given by Eq. (1).
+
+Fact 3.8. If |ψi is orthogonal to both the 1-eigenspace and the (−1)-eigenspace of U , then the U -rotation of
+|ψi is orthogonal to |ψi.
+
+This operation can be implemented efficiently by the following procedure with further assumptions on U .
+Namely, we would like U to avoid having any eigenvalue close to −1. This is naturally the case when we
+consider the quantum analogue of a reversible Markov chain whose eigenvalues are all positive.
+Rotate(U, ∆, ε) — Input: |ψi
+1. Apply Θ(log(1/ε)) times the phase estimation circuit
+Estimate for U with precision ∆ to the same state |ψi.
+2. If the majority of estimated phases are negative
+Perform a Phase a Flip.
+Otherwise do nothing.
+3. Undo the Phase Estimations of Step 1.
+
+7
+
+Theorem 3.9. Assume that all eigenvalues eiα of U satisfy |α| ≤ π/2. Then for every T ≥ QHTε (U2 , |µi),
+√
+the procedure Rotate(U, 1/T, ε) maps |φe0 i to a state at Euclidean distance O( ε ) from the U -rotation of
+|φe0 i. Moreover, the number of applications of c-U is O(log(1/ε) × QHTε (U2 , |µi)).
+
+Proof. The proof follows the same argument as in Theorem 3.5.
+
+3.3
+
+Comparison between QHT and QHTε
+
+We assume henceforth that hφ0 |µi =
+6 0; otherwise, the problem is trivial—by our definition QHTε (U2 , |µi) =
+QHT(U2 , |µi) = 0.
+The Markov inequality immediately implies the following relationship between these two measures:
+Fact 3.10. For all U2 , |µi, and ε,
+
+1
+QHT(U2 , |µi).
+ε
+The other direction requires a closer look at the spectral decomposition of U2 U1 . In this section, we again
+follow the framework of the abstract search algorithm U = U2 U1 . The eigenvalues of U2 different from 1 are
+either −1 or they appear as complex conjugates e±iθj , where θj ∈ (0, π). For convenience, we assume that
+θ−1 = π, 0 = θ0 ≤ θ1 ≤ θ2 ≤ . . ., and we always use index j for positive integers. Recall that both |µi and
+the 1-eigenvector |φ0 i of U2 have real entries. Writing |µi in the eigenspace decomposition of U2 we get
+X
+
+−
+aj |φ+
+|µi = a0 |φ0 i +
+j i + |φj i + a−1 |φ−1 i,
+QHTε (U2 , |µi)
+
+≤
+
+j
+
+±iθj
+-eigenvectors of U2 such that a−1 and aj are real,
+where |φ−1 i is a (−1)-eigenvector of U2 , and |φ±
+j i are e
+
++
+|φ−1 i has real entries, and |φ−
+j i = |φj i. Since |φ0 i has real entries, a0 is also real.
+Ambainis et al. [AKR05] (see also Tulsi [Tul08]) show the following relation between the spectrum of U2
+and that of U .
+
+Lemma 3.11 ([AKR05, Tul08]). The eigenvalues e±iα of the operator U are solutions of the equation:
+
+
+
+
+
+α + θj
+α X 2
+α
+α − θj
+2
+a0 cot +
+aj cot
++ cot
+− a2−1 tan
+= 0.
+2
+2
+2
+2
+j
+The corresponding unnormalized eigenvectors |wα i = |µi + i|wα′ i satisfy hµ|wα′ i = 0 and
+
+
+
+
+
+X 
+α − θj
+α
+α
+α + θj
+−
+|wα′ i = a0 cot |φ0 i +
+aj cot
+|φ+
+i
++
+cot
+|φ
+i
+− a−1 tan |φi.
+j
+j
+2
+2
+2
+2
+j
+As in the classical case, we are only able to upper bound QHT by QHTε for some particular target
+states |µi. Therefore, we consider in the following lemma (proof in Appendix B) an arbitrary set of orthonormal vectors M = {|µz i} whose span contains |φ0 i. In the case of the quantum analogue of a Markov
+chain P as in Definition 3.1, a natural choice for |µz i is |zi|pz i for some z in the state space of the Markov
+chain. Recall that |φe0 i = |φ0 i − a0 |µi.
+Lemma 3.12. Let M = {|µz i} be a set of orthonormal vectors with real coefficients in the standard basis,
+such that |φ0 i ∈ Span(M ). For every z, let αz be the smallest positive real number α such that e±iα are
+eigenvalues of the operator U = U2 (I − 2|µz ihµz |). Then there exists z such that the length of the projection
+√
+of |φe0 i onto the subspace generated by |wαz i and |w−αz i is at least 1/ 2.
+
+Corollary 3.13. Let M = {|µz i} be a set of real orthonormal vectors such that |φ0 i ∈ Span(M ). For all U2
+there exists z such that for all ε ≤ 1/2,
+QHTε (U2 , |µz i)
+8
+
+=
+
+1
+.
+αz
+
+Theorem 3.14. Let M = {|µz i} be a set of real orthonormal vectors such that |φ0 i ∈ Span(M ). For all U2
+there exists z such that for all ε ≤ 1/2,
+QHT(U2 , |µz i)
+
+≤
+
+QHTε (U2 , |µz i).
+
+Proof. This is a consequence of Corollary 3.13 since QHT(U2 , |µz i) is by definition at most
+
+3.4
+
+1
+αz .
+
+Quadratic detection speedup for reversible chains
+
+Let P be an ergodic Markov chain over state space X = {1, . . . , n}. We further suppose that P is a reversible
+Markov chain with positive eigenvalues, otherwise we simply replace P with γP + (1 − γ)I, for any γ < 1/2.
+Let z ∈ X.
+Theorem 3.15. Assume that the eigenvalues of P are all positive. Then we have the following relations:
+p
+• For all z, QHT(P, z) ≤ HT(P, z)/2.
+p
+• For all z and ε, QHTε (P, z) = HTε (P, z).
+P √
+Proof. We follow the notation introduced in Sections 2 and 3.1. Then |φ0 i = x πx |xi|px i, |µi = |zi|pz i,
+P
+P
+√
+√
+√
+|φe0 i =
+π−z =
+π−z in the normalized
+x∈X\{z} πx |xi|px i. Let
+j νj vj be the decomposition of
+eigenbasis of P−z where the eigenvalue of vj is cos θP
+< π/2. Let vj [x] denote
+j , with 0 < θ1 ≤ . . . ≤ θn−1 P
+∗
+the x-coordinate of the vector vj . We set |ξj i =
+y6=z vj [y]|py i|yi. Then
+x6=z vj [x]|xi|px i and |ζj i =
+P
+νj |ξj i. For every j, the vectors |ξj i and |ζj i generate an eigenspace of W (P, z) that is also
+|φe0 i =
+j
+
+generated by two normalized eigenvectors with eigenvalues respectively e2iθj and e−2iθj . This argument is still
+true for SWAP · ref(A−z ) when we divide the phases by 2, leading to eigenvalues eiθj and e−iθj (cf. Fact 3.2).
+√
+Pn−1 ν 2
+Since the length of the projection of |φe0 i to this eigenspace is νj2 , we have QHT(P, z) = j=1 θjj = E[ Hz ].
+By the Jensen inequality we get
+p
+p
+E[Hz ] ≤
+HT(P, z)/2.
+QHT(P, z) ≤
+
+The second relation above immediately follows from QH 2 = Hz .
+
+The same quadratic speed-up as above holds when there are multiple marked elements in the state
+space X. The search algorithm and its analysis are similar and are omitted from this article.
+
+3.5
+
+On the quadratic speedup threshold
+
+In this section we consider a broad class of quantum walks defined on undirected graphs. We are able to
+show that for a special case of walks on graphs, the quadratic speedup is tight.
+Let X = {1, 2, . . . , n}. Our notion of quantum walk can be seen as a walk on the edges of a given
+undirected graph G(X, E). Let H(G) = Span(|xyi : (x, y) ∈ E) be the Hilbert space that a quantum walk
+on G should preserve. In the rest of this section, we only consider operators and states in H(G) for some
+given G. Observe that SWAP preserves H(G) since G is undirected.
+We introduce a notion of reversibility that is justified by Lemma 3.17 below.
+Definition 3.4. A quantum walk on an undirected graph G = (X, E) is a unitary
+U2 = SWAP · F defined
+P
+on a subspace of H(G), where F is matrix with real entries of the form F = x∈X |xihx| ⊗ F x , and where
+U2 has a single 1-eigenvector |φ0 i. The quantum walk is reversible when SWAP(|φ0 i) = |φ0 i.
+Observe that the definition implies that |φ0 i can be chosen with real entries. This definition of quantum
+walk appears, for example, in the survey paper of Ambainis [Amb03], see also [San08]. Szegedy considered
+for F x a specific kind of reflection based on Markov chain transition probabilities (see Section 3.1).
+
+9
+
+P √
+Definition 3.5. Let U2 = SWAP · F be a quantum walk with unit 1-eigenvector |φ0 i = x πx |xi|φx i,
+where πx ≥ 0 and |φx i is a unit vector with real entries. Then the classical analogue P = (pxy ) of U2 is
+defined as pxy = hy|φx i2 .
+Since |φ0 i is a 1-eigenvector of SWAP · F we directly state:
+P √
+Fact 3.16. Let |ψ x i = F x |φx i. Then |φ0 i = x πx |ψ x i|xi.
+
+Lemma 3.17. The classical analogue P of a quantum walk U2 on G is a Markov chain on G with stationary
+probability distribution π. Moreover, P is reversible if and only if U2 is a reversible quantum walk.
+Proof. First we show that P is a Markov chain on G. For every x, we have
+X
+X
+pxy =
+hy|φx i2 = kφx k2 = 1.
+y
+
+y
+
+Moreover pxy 6= 0 implies hy|φx i =
+6 0, which implies that (x, y) ∈ E since |φ0 i ∈ H(G).
+Now we verify that π is a stationary probability distribution. First, π is a probability distribution since
+|φx i for all x ∈ X and |φ0 i are unit vectors. That π is a stationary probability distribution can be seen from
+the following sequence of equalities which hold for every y ∈ X:
+X
+X
+πx pxy =
+hxy|φ0 i2
+by definition of P and |φ0 i
+x
+
+x
+
+=
+
+X
+x
+
+=
+
+πy hx|ψ y i2
+
+by Fact 3.16
+
+πy k|ψ y ik2 = πy .
+
+For reversibility, observe that we similarly have πx pxy = hxy|φ0 i2 and πy pyx = hyx|φ0 i2 = (hxy|SWAP|φ0 i)2 .
+P is reversible when these two expressions are equal for every x, y, which happens precisely when the quantum
+walk U2 is reversible.
+Finally, we show that the quadratic speedup is tight in the special case of walks for which all of the
+unitaries F x are reflections. We state the result using the notation above.
+Theorem 3.18. Let U2 = SWAP · F be a reversible quantum walk such that F x = 2|φx ihφx | − I, for all
+x ∈ X. Then for all z and ε,
+p
+QHTε (U2 , |zi|φz i) = QHTε (P, z) = HTε (P, z).
+
+Proof. Let U1 = I − 2|zihz| ⊗ |φz ihφz |, for some fixed z. Under the hypothesis of the theorem, (U2 U1 )2
+is a product of two reflections ref(A−z ) and ref(B−z ), where A−z = Span(|xi|φx i : x ∈ X \ {z}) and
+B−z = Span(|φy i|yi : y ∈ X \ {z}) = SWAP(A).
+2
+From [Sze04], we know
+spectrum of (U
+matrix
+P2 U1 ) yis completely defined by the discriminant
+P that the
+x
+∗
+D = A B, where A = x6=z |xi|φ ihx| and B = y6=z |φ i|yihy|. We get that D = (hx|φy ihφx |yi)x6=z,y6=z .
+√
+√
+The reversibility of U2 guarantees that hxy|πi = hyx|πi, which implies that πx hy|φx i = πy hx|φy i. Since
+√ −1
+√
+|φy i has real entries, we have D = ΠP−z Π , where Π = diag(πx )x6=z and P−z is the matrix obtained
+from P by deleting the row and column indexed by z.
+Observe that this discriminant is exactly that P
+of the quantum analogue W (P, z). So W (P, z) and
+√
+(U2 U1 )2 are equal up to a basis change which maps x πx |xi|px i to |φ0 i, |zi|pz i to |zi|φz i, and therefore
+P
+√
+πx |xi|px i to |φe0 i.
+x6=z
+
+10
+
+4
+
+Finding with constant probability
+
+In this section, we extend a technique devised by Tulsi [Tul08] for finding a marked state on the 2D grid in
+time that is the square-root of the classical hitting time. We prove that it may be applied to a larger class
+of Markov chains and target states. The technique may be combined with ideas developed in the earlier
+sections to give an algorithm for the quantum analogue of an arbitrary reversible ergodic Markov chain.
+We use the notation of Section 3.1. In our application, there is no (−1)-eigenvector of U2 . Therefore the
+marked state |µi has the following decomposition in an eigenvector basis of U2 :
+X
+−
+|µi = a0 |φ0 i +
+aj (|φ+
+(2)
+j i + |φj i),
+1≤j≤J
+
+where J is some positive integer. Last, we assume in the rest of this section that hφ0 |µi 6= 0.
+Lemma 4.1. The vectors |µi and |φe0 i have the following representation in the basis {|wα i} consisting of
+P
+P a i cot( α )
+the eigenvectors of U = U2 U1 as given by Lemma 3.11: |µi = α kw1α k2 |wα i, and |φe0 i = α 0kwα k22 |wα i.
+
+P
+α |ψi
+Proof. Any vector |ψi may be expressed in the orthogonal basis {|wα i} as |ψi = α hw
+kwα k2 |wα i. The first
+equation now follows from hwα |µi = (hµ| − ihwα′ |)|µi = 1.
+By Lemma 3.11, hφ0 |wα i = hφ0 |(|µi + i|wα′ i) = a0 + a0 i cot α2 . The second equation follows by combining
+the above with |φe0 i = |φ0 i − a0 |µi.
+P
+cot( α )
+Lemma 4.2. The inner product of the target state |µi and the U -rotation of |φe0 i is 2a0 α>0 kwα k2 2 .
+
+Theorem 3.15 shows that the quantum hitting time is bounded by the square-root of the classical hitting
+time when U2 is derived from a reversible Markov chain P , i.e., U2 = SWAP · ref(A) in the notation of
+Section 3.2. This allows for the detection of marked elements (or more generally for checking if hµ|φ0 i 6= 0)
+and also the creation of the U -rotation of |φe0 i in the stated time bound. However, the overlap of the U rotation of |φe0 i with the target |µi may be o(1). Tulsi [Tul08] discovered a technique, described below, to
+boost this overlap to Ω(1) in the case of a quantum walk on the 2D grid.
+Let θ ∈ [0, π/2). Let Rθ denote the rotation in C2 by angle θ:
+
+
+cos θ − sin θ
+Rθ =
+,
+sin θ
+cos θ
+and let |θi = Rθ† |0i, and |θ⊥ i = Rθ† |1i. Define U1θ = |0ih0| ⊗ Id + |1ih1| ⊗ U1 , and U2θ = (|θihθ| ⊗ (−Id) +
+|θ⊥ ihθ⊥ | ⊗ U2 ). Then U1θ = Id − 2|1ih1| ⊗ |µihµ|, meaning that the modified marked state is |1i|µi. Then the
+modified abstract search algorithm becomes:
+T(U1 , U2 , θ)
+
+=
+
+U2θ U1θ
+
+=
+
+(|θihθ| ⊗ (−Id) + |θ⊥ ihθ⊥ | ⊗ U2 )(|0ih0| ⊗ Id + |1ih1| ⊗ U1 )
+
+(3)
+
+This is precisely the circuit used by Tulsi: his rotation R̂θ = Rθ† in our notation. Tulsi [Tul08] proved that
+the principal eigenvalue of the operator above is closely related to that of the unitary operator U2 U1 . We
+extend his findings in terms that are more readily used in our context.
+The eigenvalues of U2θ are the same as those of U2 , except for the addition of the new eigenvalue −1.
+The eigenvectors corresponding to eigenvalues e±iθj are now |θ⊥ i|φ±
+j i. Any state of the form |θi|ψi is a −1
+θ
+eigenvector of U2 .
+Fact 4.3. The decomposition of |1i|µi in the eigenvector basis of U2θ is:
+
+
+X
+− 
+|1i|µi = cos θ |θ⊥ i a0 |φ0 i +
+aj (|φ+
+− sin θ |θi|µi,
+j i + |φj i)
+1≤j≤J
+
+where the coefficients a0 , aj are precisely those in Eq. (2).
+11
+
+θ
+
+Lemma 4.4. The eigenvalues e±iα , of the operator T(U1 , U2 , θ) are solutions to the equation
+
+
+
+
+
+x X 2
+x + θj
+x
+x − θj
+2
+a0 cot +
+aj cot
++ cot
+− tan2 θ tan
+= 0.
+2
+2
+2
+2
+j
+′
+′
+The corresponding unnormalized eigenvectors |wα,θ i = |1i|µi + i|wα,θ
+i satisfy h1, µ|wα,θ
+i = 0 and
+′
+|wα,θ
+i
+
+
+ θ
+
+
+ θ
+
+
+θ
+X 
+α
+−
+θ
+α
++
+θ
+α
+j
+j
+
+aj cot
+|φ0 i +
+|φ+
+|φ−
+= cos θ |θ⊥ i a0 cot
+j i + cot
+j i
+2
+2
+2
+j
+
+ θ 
+α
++ sin θ |θi tan
+|µi .
+2
+
+
+
+
+Proof. We apply Lemma 3.11 from Section 3.3 with aθ0 = a0 cos θ, aθj = aj cos θ, aθ−1 = sin θ. Note that U2
+does not have any (−1)-eigenvectors (by assumption), but U2θ does.
+The target vector in the modified algorithm is |1i|µi. The start state is chosen to be |φe0,θ i = |θ⊥ i|φe0 i.
+The following are analogous to Lemmata 4.1 and 4.2:
+Corollary 4.5. The vectors |1i|µi and |φe0,θ i have the following representation in the basis {|wα,θ i} consisting
+of the eigenvectors of T(U1 , U2 , θ) as given by Corollary 4.4:
+|1i|µi =
+
+X
+αθ
+
+1
+kwα,θ k
+
+|wα,θ i,
+2
+
+and
+
+|φe0,θ i = (a0 i cos θ)
+
+X cot( αθ )
+2
+|wα,θ i.
+kw
+k2
+α,θ
+θ
+α
+
+Corollary 4.6. The inner product of the target state |1i|µi and the T(U1 , U2 , θ)-rotation of |φe0,θ i is given
+θ
+P
+cot( α )
+by the expression (2a0 cos θ) αθ >0 kwα,θ2k2 .
+
+We choose for the rest of this section θ ∈ [0, π/2] such that tan θ = a0 cot(α1 /2)/10. Let αθ1 be the
+smallest positive eigenphase of the modified search algorithm T(U1 , U2 , θ).
+Lemma 4.7 (proof in Appendix C) proves that αθ1 is of the same order as the principal eigenphase α1 of
+the original algorithm U2 U1 . Lemma 4.8 (proof in Appendix D) is the final piece in our argument. It relates
+the norm of the principal eigenvectors of the modified walk to the norm of the original ones. Both lemmas
+extend corresponding results by Tulsi in the case of the 2D grid.
+
+Lemma 4.7. There is a unique eigenvalue phase αθ1 of the operator T(U1 , U2 , θ) in (0, α1 ]. Moreover,
+cot(αθ1 /2) ≤ 1.01 × cot(α1 /2). Therefore if 0 ≤ α1 ≤ π/4, then 0.78 × α1 ≤ αθ1 ≤ α1 .
+Lemma 4.8. kw±α1 ,θ k ≤ (3 cos θ) × kw±α1 k.
+We have all the ingredients for the main result of this section.
+Theorem 4.9. Let ε > 0 be any constant. Suppose that the squared length of the projection of the state |φe0 i
+onto the principal eigenspace of U2 U1 is bounded below by 1 − ε. Then, for every T ≥ QHTε (U2 , |φe0 i)/0.78,
+the procedure Rotate(T(U1 , U2 , θ), 1/T, 1/4) maps |φe0,θ i to a state with constant overlap with the target
+state |1i|µi.
+Proof. First we prove that T = QHTε (U2θ , |1i|µi) is of the order of QHTε (U2 , |µi). Let l = 2a20 (cot2 α21 )/kwα1 k2 .
+We know that l ≥ 1 − ε. Using Lemma 4.1 we get that QHTε (U2 , |µi) = 1/α1 . Moreover, by definition,
+T ≤ 1/αθ1 . By Lemma 4.7, T ≤ 1/(0.78α1) = QHTε (U2 , |µi)/0.78. We now get our conclusion by applying
+Corollary 4.6, Lemmata 4.7 and 4.8, and Theorem 3.9.
+We combine the above theorem with Lemma 3.12 to get our final result.
+12
+
+Corollary 4.10. Let P be a state-transitive reversible ergodic Markov chain, and let z be any state. Set
+|µi = |zi|pz i, U1 = I − 2|µihµ|, and let U2 be the quantum analogue of P . Then for every ε ≤ 1/2 and
+T ≥ QHTε (U2 , |φe0 i)/0.78, the procedure Rotate(T(U1 , U2 , θ), 1/T, 1/4) maps |φe0,θ i to a state with constant
+overlap with the target state |1i|µi.
+Proof. The proof is direct once we realize that the conclusions of Lemma 3.12 for a particular element z
+remain valid for any element because of the state-transitivity of P .
+
+References
+[AA05]
+
+S. Aaronson and A. Ambainis. Quantum search of spatial regions. Theory of Computing,
+1(4):47–79, 2005.
+
+[AAKV01] D. Aharonov, A. Ambainis, J. Kempe, and U. Vazirani. Quantum walks on graphs. Proceedings
+of the 33rd Annual ACM Symposium on Theory of Computing, pages 50–59, 2001.
+[ABN+ 01] A. Ambainis, E. Bach, A. Nayak, A. Vishwanath, and J. Watrous. One-dimensional quantum
+walks. Proceedings of the 33rd Annual ACM Symposium on Theory of Computing, pages 37–49,
+2001.
+[AKR05]
+
+A. Ambainis, J. Kempe, and A. Rivosh. Coins make quantum walks faster. In Proceedings of
+the Sixteenth Annual ACM-SIAM Symposium on Discrete Algorithms, pages 1099–1108, 2005.
+
+[Amb03]
+
+A. Ambainis. Quantum walks and their algorithmic applications. International Journal of
+Quantum Information, 1:507–518, 2003.
+
+[Amb04]
+
+A. Ambainis. Quantum walk algorithm for Element Distinctness. Proceedings of the 45th Symposium on Foundations of Computer Science, pages 22–31, 2004.
+
+[BŠ06]
+
+H. Buhrman and R. Špalek. Quantum verification of matrix products. Proceedings of the
+Seventeenth Annual ACM-SIAM Symposium on Discrete Algorithms, pages 880–889, 2006.
+
+[CEMM98] R. Cleve, A. Ekert, C. Macchiavello, and M. Mosca. Quantum algorithms revisited. Proceedings
+of the Royal Society of London, Series A, 454:339–354, 1998.
+[CG04]
+
+A. Childs and J. Goldstone. Spatial search and the Dirac equation. Physical Review A, 70:042312,
+2004.
+
+[Gro96]
+
+L. Grover. A fast quantum mechanical algorithm for database search. Proceedings of the TwentyEighth Annual ACM Symposium on the Theory of Computing, pages 212–219, 1996.
+
+[Kit95]
+
+A. Kitaev. Quantum measurements and the Abelian stabilizer problem. ECCC technical report
+96-003 and arXiv.org e-print quant-ph/9511026, 1995.
+
+[MN07]
+
+F. Magniez and A. Nayak. Quantum complexity of testing group commutativity. Algorithmica,
+48(3):221–232, 2007.
+
+[MNRS07] F. Magniez, A. Nayak, J. Roland, and M. Santha. Search via quantum walk. Proceedings of the
+39th ACM Symposium on Theory of Computing, pages 575–584, 2007.
+[MSS07]
+
+F. Magniez, M. Santha, and M. Szegedy. Quantum algorithms for the triangle problem. SIAM
+Journal on Computing, 37(2):611–629, 2007.
+
+[NV00]
+
+A. Nayak and A. Vishwanath. Quantum walk on the line. Technical Report quant-ph/0010117,
+arXiv, 2000.
+
+13
+
+[San08]
+
+M. Santha. Quantum walk based search algorithms. In Proceedings of the 5th Annual Conference
+on Theory and Applications of Models of Computation, volume 4978, pages 31–46. LNCS, 2008.
+
+[SKW03]
+
+N. Shenvi, J. Kempe, and K. Whaley. A quantum random walk search algorithm. Physical
+Review A, 67:052307, 2003.
+
+[Sze04]
+
+M. Szegedy. Quantum speed-up of Markov chain based algorithms. Proceedings of the 45th
+Symposium on Foundations of Computer Science, pages 32–41, 2004.
+
+[Tul08]
+
+A. Tulsi. Faster quantum walk algorithm for the two dimensional spatial search. Physical Review
+A, 2008. To appear.
+
+A
+
+Proof of Theorem 2.2
+
+
+Proof. For the first statement, we set k = 4 ln 2ε HTε/2 (P, z), and we denote by sk the probability that
+z is not reached in P
+the first k steps. The claim follows if we show that sk ≤ ε. It is not hard to see that
+†
+k
+sk = π−z
+P−z
+u−z = j νj2 (cos θj )k . We bound sk from above as follows:
+X
+X
+sk ≤
+νj2 +
+νj2 (cos θj )k
+j:1/θj2 >HTε/2 (P,z)
+
+
+≤ ε/2 + 1 −
+
+j:1/θj2 ≤HTε/2 (P,z)
+
+1
+4 HTε/2 (P, z)
+
+k
+
+.
+
+The first summation is at most ε/2 by the definition of HTε/2 (P, z), and the bound for the second summation
+is justified since 1/θj2 ≤ HTε/2 (P, z) implies cos θj ≤ 1 − 1/(4HTε/2 (P, z)). Thus the second term is also at
+most ε/2 by the choice of k.
+For the second statement, set k = 21 hε/3 (P, z). Then using the definition of hε/3 (P, z) and bounding
+(1 − 1/2k)2k from below by 1/3, we get
+
+2k
+X
+X
+X
+1
+ε
+1
+2
+2
+2k
+νj 1 −
+νj2 .
+νj (cos θj )
+>
+≥
+≥ s2k =
+3
+2k
+3
+1
+1
+j
+j:cos θj >1− 2k
+
+j:cos θj >1− 2k
+
+1
+Now observe that if 1/θj2 > k, then cos θj > 1− 2k
+. Therefore Pr[Hz > k] ≤ ε, and the statement follows.
+
+B
+
+Proof of Lemma 3.12
+
+Proof. We know from Lemma 3.11 that if
+|µz i
+then
+a20,z
+
+α
+cot
+2
+
+=
+
+=
+
+−
+
+a0,z |φ0 i +
+X
+
+a2j,z
+
+j
+
+X
+j
+
+
+−
+aj,z |φ+
+j i + |φj i + a−1,z |φi,
+
+ 
+
+
+
+α + θj
+α
+α − θj
+cot
++ cot
++ a2−1,z tan ,
+2
+2
+2
+
+where 0 < αz < θ1 ≤ θ2 ≤ . . . < π. Since
+
+
+
+ 
+α − θj
+α + θj
++ cot
+− cot
+2
+2
+
+=
+
+2 sin α
+,
+cos α − cos θj
+
+this is equivalent to
+a20,z cot
+
+α
+2
+
+=
+
+X
+j
+
+a2j,z
+
+2 sin α
+α
++ a2−1,z tan .
+cos α − cos θj
+2
+14
+
+(4)
+
+We first claim that there exists z such that |a0,z |2 ≤ |a1,z |2 . Indeed, since |φ0 i belongs to Span(M ),
+X
+X
+X
+X
+a20,z =
+hµz |φ0 i = 1 =
+hµz |φ+
+=
+a21,z .
+1i
+z
+
+z
+
+z
+
+z
+
+Fix now arbitrarily such a z. To simplify the notation, from now on we refer to αz and to the coefficients
+aj,z without the subscript z. Since all of the terms on the right hand side of Eq. (4) are positive, it follows
+that
+2 sin α
+α
+.
+(5)
+≥
+cot
+2
+cos α − cos θ1
+Since the right hand side decreases if θ1 is replaced by some θ1 < θ ≤ π, we obtain for every j > 1,
+cot
+and
+cot
+
+α
+2
+
+≥
+
+α
+2
+
+2 sin α
+,
+cos α − cos θj
+
+≥
+
+2 sin α
+cos α − cos π
+
+=
+
+2 tan
+
+α
+2
+
+(6)
+
+>
+
+tan
+
+α
+.
+2
+
+(7)
+
+′
+We also know that the eigenvectors |w±α i = |µi + i|w±α
+i corresponding to the eigenvalues e±iα satisfy
+
+
+
+
+
+X 
+±α − θj
+±α
+±α + θj
+±α
++
+−
+′
+aj cot
+|φj i + cot
+|φj i − a−1 tan
+|φ0 i +
+|φi.
+|w±α i = a0 cot
+2
+2
+2
+2
+j
+
+Let us now define the vector |si in the two dimensional space generated by |w±α i by
+|si
+
+|wα i − |w−α i
+.
+i
+
+=
+
+Observe that |µi is orthogonal to |w±α i and therefore to |si. Then the length of the projection of |φe0 i to
+the subspace is the same as the one of |φ0 i. This is at least |hs|φ0 i|/ksk, which we now bound from below.
+Since the functions tan and cot are odd, we get
+
+
+X   α − θj 
+
+α
+α + θj
+α
+−
+|si = 2a0 cot |φ0 i +
+aj cot
++ cot
+|φ+
+|φi,
+j i + |φj i − 2a−1 tan
+2
+2
+2
+2
+j
+and therefore
+ksk2
+
+=
+
+4a20 cot2
+
+X
+sin2 α
+α
+α
+a2j
++ 4a2−1 tan2 .
++8
+2
+2
+(cos
+α
+−
+cos
+θ
+)
+2
+j
+j
+
+From (4), (5), (6), and (7) it follows that
+a20 cot2
+
+α
+2
+
+≥
+
+2
+
+X
+j
+
+a2j
+
+sin2 α
+α
++ a2−1 tan2
+2
+(cos α − cos θj )
+2
+
+and therefore
+ksk2
+
+8a20 cot2
+
+≤
+
+α
+.
+2
+
+Since hs|φ0 i = 2a0 cot α2 , we can indeed conclude that
+|hs|φ0 i|
+ksk
+
+≥
+
+15
+
+1
+√ .
+2
+
+C
+
+Proof of Lemma 4.7
+
+Proof. By the definition of α1 (Lemma 3.11),
+
+
+
+
+
+α1 X 2
+α1 + θj
+α1 − θj
+a20 cot
+aj cot
++ cot
++
+2
+2
+2
+j
+
+=
+
+0.
+
+(8)
+
+Fix any θ ≥ 0 and define the monotonically decreasing and continuous function f : (0, θ1 ) 7→ R:
+
+
+
+
+
+x X 2
+x + θj
+x
+x − θj
+f (x) = a20 cot +
+aj cot
++ cot
+− tan2 θ tan .
+2
+2
+2
+2
+j
+We know that limx→0+ f (x) = +∞, limx→θ1 − f (x) = −∞, and f (α1 ) ≤ 0. Therefore there is a unique
+αθ1 ∈ (0, α1 ] such that f (αθ1 ) = 0.
+From the monotonicity of cot, for x ∈ (0, α1 ], we have
+
+
+
+
+
+
+X   α + θj 
+X 
+x − θj
+α − θj
+x + θj
+2
+2
+aj cot
++ cot
+≥
++ cot
+.
+aj cot
+2
+2
+2
+2
+j
+j
+Using this inequality together with Eq. (8) and the monotonicity of tan, we bound the function f from above
+as follows:
+f (x)
+
+x
+α
+x
+− a20 cot − tan2 θ tan
+2
+2
+2
+α
+α
+x
+2
+2
+2
+≥ a0 cot − a0 cot − tan θ tan
+2
+2
+2
+x
+α
+2
+2
+≥ a0 cot − 1.01 × a0 cot ,
+2
+2
+
+≥ a20 cot
+
+where the last inequality comes from the hypothesis 0 ≤ tan θ ≤ a0 cot(α1 /2)/10. Since f (αθ1 ) = 0, we get
+that cot(αθ1 /2) ≤ 1.01 × cot(α1 /2).
+We now prove that f (0.78 × α1 ) ≤ 0, which concludes the proof. In the rest of the proof,
+√ we restrict the
+variable x to the interval [0.78 × α1 , α1 ]. Let β be the solution of tan(β/2) = tan(α1 /2)/ 1.01 in [0, π/2).
+Then f (β) ≥ 0, and therefore αθ1 ≥ β.
+Since α1 ≥ 0, we have tan(α1 /2) ≥ α1 /2 and
+β
+2
+
+tan
+
+=
+
+tan( α21 )
+√
+1.01
+
+≥
+
+α1
+√
+.
+2 1.01
+
+Moreover since 0 ≤ β ≤ α1 ≤ π/4, we have tan(β/2) ≤ 2β/π, and therefore
+β
+
+D
+
+≥
+
+π
+√
+×α
+4 1.01
+
+≥
+
+0.78 × α1 .
+
+Proof of Lemma 4.8
+
+Proof. Since the two vectors |w±α1 ,θ i (respectively, |w±α1 i) have the same norm and are orthogonal, it
+suffices to upper bound the following squared norm:
+
+
+2
+θ
+θ
+X 
+α
+sin α1
++ tan2 θ tan2 1 
+a2j
+kwα1 ,θ − w−α1 ,θ k2 = 4 cos2 θ a20 cot2 αθ1 /2 + 2
+(9)
+θ − cos θ
+2
+cos
+α
+j
+1
+j
+16
+
+By Lemma 4.7,
+a20 cot2 αθ1 /2
+and
+tan2 θ tan2
+
+αθ1
+2
+
+=
+
+1.01 a20 cot2 α1 /2
+
+≤
+
+0.01 a20 cot2
+
+α1
+αθ
+tan2 1
+2
+2
+
+≤
+
+0.01 a20
+
+by the choice of tan θ = a0 cot(α1 /2)/10 and the monotonicity of cot2 = 1/ tan2 on (0, π/2). Since
+X
+j
+
+a2j
+
+
+
+sin αθ1
+cos αθ1 − cos θj
+
+2
+
+≤
+
+X
+j
+
+a2j
+
+
+
+sin α1
+cos α1 − cos θj
+
+2
+
+the quantity inside of the square brackets of (9) is at most:
+
+
+2
+X 
+sin α1
+a2j
+2 a20 cot2 α1 /2 + 2
++ a20  .
+cos
+α
+−
+cos
+θ
+1
+j
+j
+Hence,
+kwα1 ,θ − w−α1 ,θ k2
+
+≤
+
+(8 cos2 θ) × kwα1 − w−α1 k2 .
+
+17
+
+,
+
+(10)
+
+

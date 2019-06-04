@@ -1,0 +1,5 @@
+type = "file-corpus"
+list = "papers"
+encoding = "utf-8" # optional; this is the default
+#num-docs = 1000    # optional
+#metadata = [{name = "path", type = "string"}]    # metadata explained later
