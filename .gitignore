@@ -103,3 +103,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+#Data
+data/papers/*.txt
+data/papers_own_impl/*.txt
+papers-idx
