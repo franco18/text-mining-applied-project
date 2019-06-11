@@ -133,7 +133,7 @@ pip install metapy
 ```
 Luego es necesario configurar el archivo config.toml donde indicamos la configuración minima para correr el metapy. [ver mas](https://github.com/franco18/text-mining-applied-project/blob/master/config.toml)
 
-También es necesario configurar el archivo file.toml, donde se encuentra parametrizado donde van a estar referenciado los articulos.
+También es necesario configurar el archivo file.toml, donde van a estar referenciado los articulos.
 
 Se suben los archivos que serán tenidos en cuenta en el directorio 
 ```python
