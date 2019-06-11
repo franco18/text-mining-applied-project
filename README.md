@@ -1,3 +1,4 @@
+
 # Text-mining-applied-project
 
 ## Descripción
@@ -61,6 +62,8 @@ Adicional a lo antarior, se construye un lector de propiedades de la metadata pa
 
 ### Modelación
 
+
+#### Primera Entrega
 Dentro de los métodos para recuperar información de los textos, existen varios tipos de modelos. Por el momento, los modelos que están implementados para la recuperación de información son:
 
 1. **Term Frequency (TF):** Es la técnica más simple para reconocer la relevancia de un término dentro de un texto. Básicamente realiza el conteo de la palabra en el texto y mientras más grande sea este número más relevante es
@@ -69,9 +72,17 @@ Dentro de los métodos para recuperar información de los textos, existen varios
 4. **Inverse Document Frequency (IDF):** Este modelo está basado en el principio de que mientras menor sea la frecuencia de la palabra en el documento, más relevante y más información puede tener IDF = log(# total de documentos/# de documentos donde está la palabra)
 5. **TF-IDF:** Al tener los modelos ya cuantificados, tanto el TF (recomendable trabajar con la transformación) y el IDF, la multiplicación de ambos entrega información valiosa de cara a la similaridad de la búsqueda o Query con el documento.
 
+#### Segunda Entrega
+##### Inverted Index
+
+Es la estructura de datos más utilizada para la búsqueda en los sistemas de búsqueda y recuperación de información. Para la construcción de esta estructura de datos utilizamos los diccionarios de python para realizar una indexación por palabra y adicionar una lista de tuplas, donde cada una tiene la información del documento, el tfidf de la palabra, el tf y el tamaño en palabras del bag of words para el documento.
+
+##### Okapi BM25 
+Utilizamos el Okapi BM25 que es una función de ranking que nos permite calificar las búsquedas para la Recuperación de información y asignar la relevancia a cada uno de los documentos en un buscador que tiene las palabras que el usuario desea buscar.
+
 ## Arquitectura del código
 
-![Diagrama de arquitecuta de código](https://github.com/franco18/text-mining-applied-project/blob/master/diagram.jpeg)
+![Diagrama de arquitecuta de código](https://github.com/franco18/text-mining-applied-project/blob/master/Arquitectura.png)
 
 ## Guía de uso
 
@@ -87,7 +98,7 @@ nltk.download(['stopwords','punkt', 'wordnet'])
 3. Cada vez que se agregue un nuevo archivo se debe generar el bag of words. Para esto se ejecuta paso a paso el notebook llamado 
 
 ```python
-ProyectoIntegrador.ipynb
+Segunda_Entrega.ipynb
 ```
 
 4. En caso de necesitar generar de nuevo la información de la metadata, se debe ejecutar paso a paso el notebook llamado
@@ -113,3 +124,22 @@ pip install gensim
 
 Ubicado en la siguiente [ruta](https://github.com/franco18/text-mining-applied-project/blob/master/xml_parser/parser_metadata.ipynb)
 
+6.  Para la evaluación de los querys: 
+
+Utilizaremos una librería de Python con herramienta para procesar texto y la utilizaremos para construir un índice invertido y generar un ranker que nos ayude a comparar los documentos recuperados por nuestra consulta. Esto con la ayuda de una matriz de confusión para obtener las medidas de precision y recall.
+
+```python
+pip install metapy
+```
+Luego es necesario configurar el archivo config.toml donde indicamos la configuración minima para correr el metapy. [ver mas](https://github.com/franco18/text-mining-applied-project/blob/master/config.toml)
+
+También es necesario configurar el archivo file.toml, donde se encuentra parametrizado donde van a estar referenciado los articulos.
+
+Se suben los archivos que serán tenidos en cuenta en el directorio 
+```python
+data/papers.
+```
+Luego, ya es posible generar un indice invertido desde metapy con los siguientes comandos
+```python
+inv_idx = metapy.index.make_inverted_index("config.toml")
+```
